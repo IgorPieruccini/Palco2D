@@ -1,0 +1,40 @@
+<!doctype html>
+
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <title>Canvas Lab</title>
+
+  <style>
+    html,
+    head,
+    body {
+      margin: 0;
+      background-color: #2a2a2a;
+      width: 100%;
+      height: 100%;
+      max-height: 100vh;
+    }
+
+    #canvas {
+      width: 100%;
+      height: 100%;
+      border: 1px solid #000;
+
+      /* Help to illustrate the rasterizer's job: when artificially lowering resolution, show pixelated image */
+      image-rendering: crisp-edges;
+    }
+  </style>
+</head>
+
+<body>
+  <canvas id="canvas" width="800px" height="800px">
+    <!-- This message shows up only if the Canvas element isn't supported -->
+    HTML5 canvas not supported in your browser! These demos will not work.
+  </canvas>
+</body>
+
+</html>

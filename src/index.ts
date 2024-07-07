@@ -1,0 +1,42 @@
+import SimpleDrawing from './experiments/simple-drawing';
+import Layers from './experiments/layers';
+import ObjectEvents from './experiments/object-events';
+import DragExample from './experiments/drag-example';
+import Sprite from './experiments/sprite';
+import TileMap from './experiments/tile-map';
+
+const scenes = {
+  SimpleDrawing,
+  Layers,
+  ObjectEvents,
+  DragExample,
+  Sprite,
+  TileMap,
+}
+
+type SceneKeyType = keyof typeof scenes;
+const currentSceneName: SceneKeyType = 'TileMap';
+
+const dpr = (window.devicePixelRatio / 2) ?? 1;
+
+export const canvas = document.getElementById('canvas');
+
+if (!canvas) {
+  throw new Error('Canvas not found');
+}
+
+if (!(canvas instanceof HTMLCanvasElement)) {
+  throw new Error('Element is not a canvas');
+}
+
+canvas.setAttribute(
+  "width",
+  (window.innerWidth * dpr).toString(),
+);
+
+canvas.setAttribute(
+  "height",
+  (window.innerHeight * dpr).toString(),
+);
+
+scenes[currentSceneName](canvas);
