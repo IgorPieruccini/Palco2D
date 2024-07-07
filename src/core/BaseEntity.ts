@@ -1,5 +1,5 @@
 import { EntityEvents, Matrix, EventsType, Vec2 } from './types'
-import { getMatrixPosition, getMatrixRotation, getPositionFromMatrix, getRotationAngleFromMatrix, identityMatrix, multiplyMatrices } from './utils';
+import { getMatrixPosition, getMatrixRotation, getMatrixScale, getPositionFromMatrix, getRotationAngleFromMatrix, getScaleFromMatrix, identityMatrix, multiplyMatrices } from './utils';
 
 export interface BaseEntityProps {
   position: Vec2;
@@ -58,84 +58,90 @@ export class BaseEntity {
 
   render(ctx: CanvasRenderingContext2D) { }
 
+
+  private getAllParents() {
+    let parent = this.parent;
+    const parents: BaseEntity[] = [];
+    while (parent) {
+      parents.push(parent);
+      parent = parent.parent;
+    }
+    return parents;
+  }
+
+  getMatrix() {
+    const parents = this.getAllParents();
+
+    let matrix = identityMatrix;
+
+    for (let i = parents.length - 1; i >= 0; i--) {
+      const parent = parents[i];
+      const position = parent.position;
+      const angle = parent.rotation;
+
+      const rad = angle * (Math.PI / 180);
+
+
+      const positionM = getMatrixPosition(position.x, position.y);
+      const rotationM = getMatrixRotation(rad);
+      const scale = parent.getScale();
+      const scaleM = getMatrixScale(scale.x, scale.y);
+
+      const matrixResult = multiplyMatrices(multiplyMatrices(positionM, rotationM), scaleM);
+
+      const transformedMatrix = multiplyMatrices(matrix, matrixResult);
+
+      matrix = transformedMatrix;
+    }
+    return matrix;
+  }
+
   getRelativePostion(mousePosition: Vec2, relativeToParent?: boolean) {
-    const getAllParents = () => {
-      let parent = this.parent;
-      const parents: BaseEntity[] = [];
-      while (parent) {
-        parents.push(parent);
-        parent = parent.parent;
-      }
-      return parents;
+    const matrix = this.getMatrix();
+
+    // parent
+    const globalRotation = getRotationAngleFromMatrix(matrix);
+    const globalPosition = getPositionFromMatrix(matrix);
+    const globalScale = getScaleFromMatrix(matrix);
+
+    const cosAngle = Math.cos(-globalRotation);
+    const sinAngle = Math.sin(-globalRotation);
+
+    const translatedMousePosition = {
+      x: mousePosition.x - globalPosition.x,
+      y: mousePosition.y - globalPosition.y
     }
 
-
-    const getMatrix = (parents: BaseEntity[]) => {
-      let matrix = identityMatrix;
-      for (let i = parents.length - 1; i >= 0; i--) {
-        const parent = parents[i];
-        const position = parent.position;
-        const angle = parent.rotation;
-
-        const positionM = getMatrixPosition(position.x, position.y);
-        const rad = angle * (Math.PI / 180);
-        const rotationM = getMatrixRotation(rad);
-        const matrixResult = multiplyMatrices(positionM, rotationM);
-
-        const transformedMatrix = multiplyMatrices(matrix, matrixResult);
-
-        matrix = transformedMatrix;
-      }
-      return matrix;
+    const mouseLocalPosition = {
+      x: translatedMousePosition.x * cosAngle - translatedMousePosition.y * sinAngle,
+      y: translatedMousePosition.x * sinAngle + translatedMousePosition.y * cosAngle
     }
 
-    const getMouseRelativePosition = (matrix: Matrix, vec: Vec2) => {
-      // parent
-      const globalRotation = getRotationAngleFromMatrix(matrix);
-      const globalPosition = getPositionFromMatrix(matrix);
-
-      const cosAngle = Math.cos(-globalRotation);
-      const sinAngle = Math.sin(-globalRotation);
-
-      const translatedMousePosition = {
-        x: vec.x - globalPosition.x,
-        y: vec.y - globalPosition.y
-      }
-
-      const mouseLocalPosition = {
-        x: translatedMousePosition.x * cosAngle - translatedMousePosition.y * sinAngle,
-        y: translatedMousePosition.x * sinAngle + translatedMousePosition.y * cosAngle
-      }
-
-      if (relativeToParent)
-        return mouseLocalPosition;
-
-      // child
-      const translatedMousePositionChild = {
-        x: mouseLocalPosition.x - this.position.x,
-        y: mouseLocalPosition.y - this.position.y
-      }
-
-      const rad = this.rotation * (Math.PI / 180);
-      const cosAngleChild = Math.cos(-rad);
-      const sinAngleChild = Math.sin(-rad);
-
-      const mouseLocalPositionChild = {
-        x: translatedMousePositionChild.x * cosAngleChild - translatedMousePositionChild.y * sinAngleChild,
-        y: translatedMousePositionChild.x * sinAngleChild + translatedMousePositionChild.y * cosAngleChild
-      }
-
+    if (relativeToParent)
       return {
-        x: mouseLocalPositionChild.x,
-        y: mouseLocalPositionChild.y
+        x: mouseLocalPosition.x / globalScale.x,
+        y: mouseLocalPosition.y / globalScale.y
       }
+
+    // child
+    const translatedMousePositionChild = {
+      x: mouseLocalPosition.x - (this.position.x * globalScale.x),
+      y: mouseLocalPosition.y - (this.position.y * globalScale.y)
     }
 
-    const parents = getAllParents();
-    const matrix = getMatrix(parents);
-    const pos = getMouseRelativePosition(matrix, mousePosition);
+    const rad = this.rotation * (Math.PI / 180);
+    const cosAngleChild = Math.cos(-rad);
+    const sinAngleChild = Math.sin(-rad);
 
-    return pos;
+    const mouseLocalPositionChild = {
+      x: translatedMousePositionChild.x * cosAngleChild - translatedMousePositionChild.y * sinAngleChild,
+      y: translatedMousePositionChild.x * sinAngleChild + translatedMousePositionChild.y * cosAngleChild
+    }
+
+    return {
+      x: mouseLocalPositionChild.x,
+      y: mouseLocalPositionChild.y
+    }
   }
 
   addChild(child: BaseEntity) {

@@ -1,5 +1,6 @@
 import { BaseEntity } from "./BaseEntity";
 import { Vec2 } from "./types";
+import { getScaleFromMatrix } from "./utils";
 
 export class MouseHandler {
   private position: Vec2;
@@ -39,16 +40,19 @@ export class MouseHandler {
 
     const relativeMousePosition = entity.getRelativePostion(this.position);
 
+    const matrix = entity.getMatrix();
+    const globalScale = getScaleFromMatrix(matrix);
+
     const mousePos = {
       x: relativeMousePosition.x,
       y: relativeMousePosition.y,
     }
 
     return (
-      -size.x / 2 <= mousePos.x &&
-      size.x / 2 >= mousePos.x &&
-      -size.y / 2 <= mousePos.y &&
-      size.y / 2 >= mousePos.y
+      (-size.x * globalScale.x) / 2 <= mousePos.x &&
+      (size.x * globalScale.x) / 2 >= mousePos.x &&
+      (-size.y * globalScale.y) / 2 <= mousePos.y &&
+      (size.y * globalScale.y) / 2 >= mousePos.y
     );
   }
 

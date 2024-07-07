@@ -25,7 +25,7 @@ export default (canvas: HTMLCanvasElement) => {
   const addEntityEvents = (entity: BaseEntity) => {
     const originalSize = entity.size;
     entity.on('mousehover', () => {
-      entity.rotation += 1;
+      // entity.rotation += 1;
     });
 
     entity.on('mouseenter', () => {
@@ -50,8 +50,10 @@ export default (canvas: HTMLCanvasElement) => {
   const parent = new SquareEntity({
     position: { x: 300, y: 300 },
     size: { x: 100, y: 100 },
-    rotation: 90,
+    rotation: 45,
   });
+
+  parent.size = { x: 150, y: 150 };
 
   addEntityEvents(parent);
 
@@ -68,7 +70,7 @@ export default (canvas: HTMLCanvasElement) => {
     id: 111,
     position: { x: 100, y: 0 },
     size: { x: 50, y: 100 },
-    rotation: 90,
+    rotation: 0,
   });
 
   addEntityEvents(secondChild);
