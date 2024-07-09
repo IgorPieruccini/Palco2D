@@ -2,6 +2,8 @@ import { BaseEntity } from "./BaseEntity";
 import { FPSHandler } from "./FPSHandler";
 import { Sprite } from "./Sprite";
 
+const dpr = window.devicePixelRatio;
+
 export class RenderHandler {
   ctx: CanvasRenderingContext2D;
   entities: BaseEntity[];
@@ -12,6 +14,17 @@ export class RenderHandler {
     const sortedLayers = entities.sort((a, b) => a.layer - b.layer);
     this.entities = sortedLayers;
     this.render.bind(this)();
+
+    // Set the canvas to the correct size
+    this.ctx.transform(
+      dpr, // a
+      0, // b
+      0, // c  
+      dpr, // d
+      0, // e
+      0 // f
+    );
+
   }
 
   private renderLayers(entities: BaseEntity[]) {
@@ -50,12 +63,6 @@ export class RenderHandler {
           1
         );
 
-
-        this.ctx.beginPath();
-        this.ctx.fillStyle = 'red';
-        this.ctx.arc(0, 0, 5, 0, 2 * Math.PI);
-        this.ctx.fill();
-
         this.renderLayers(entity.children.slice());
         this.ctx.restore();
       }
@@ -74,7 +81,7 @@ export class RenderHandler {
 
   private render() {
     this.fpsHandler.loop();
-    this.ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+    this.ctx.clearRect(0, 0, window.innerWidth * dpr, window.innerHeight * dpr);
     const entitiesCopy = this.entities.slice();
     this.renderLayers.bind(this)(entitiesCopy);
     requestAnimationFrame(this.render.bind(this));
