@@ -4,6 +4,7 @@ import ObjectEvents from './experiments/object-events';
 import DragExample from './experiments/drag-example';
 import Sprite from './experiments/sprite';
 import TileMap from './experiments/tile-map';
+import BatchExample from './experiments/batch-example';
 
 const scenes = {
   SimpleDrawing,
@@ -12,10 +13,11 @@ const scenes = {
   DragExample,
   Sprite,
   TileMap,
+  BatchExample,
 }
 
 type SceneKeyType = keyof typeof scenes;
-const currentSceneName: SceneKeyType = 'TileMap';
+const currentSceneName: SceneKeyType = 'BatchExample';
 
 const dpr = window.devicePixelRatio;
 
