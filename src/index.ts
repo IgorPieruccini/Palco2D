@@ -15,7 +15,7 @@ const scenes = {
 }
 
 type SceneKeyType = keyof typeof scenes;
-const currentSceneName: SceneKeyType = 'DragExample';
+const currentSceneName: SceneKeyType = 'TileMap';
 
 const dpr = window.devicePixelRatio;
 
