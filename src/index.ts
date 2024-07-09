@@ -17,7 +17,7 @@ const scenes = {
 type SceneKeyType = keyof typeof scenes;
 const currentSceneName: SceneKeyType = 'TileMap';
 
-const dpr = (window.devicePixelRatio / 2) ?? 1;
+const dpr = window.devicePixelRatio;
 
 export const canvas = document.getElementById('canvas');
 

@@ -50,7 +50,7 @@ export default (canvas: HTMLCanvasElement) => {
   const parent = new SquareEntity({
     position: { x: 300, y: 300 },
     size: { x: 100, y: 100 },
-    rotation: 90,
+    rotation: 45,
   });
 
   addEntityEvents(parent);

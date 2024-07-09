@@ -27,6 +27,18 @@ export const getPositionFromMatrix = (matrix: number[][]) => {
   }
 }
 
+export const getScaleFromMatrix = (matrix: number[][]) => {
+  const a = matrix[0][0];
+  const b = matrix[1][0];
+  const c = matrix[0][1];
+  const d = matrix[1][1];
+
+  const x = Math.sqrt(a * a + b * b);
+  const y = Math.sqrt(c * c + d * d);
+
+  return { x, y };
+}
+
 export function getRotationAngleFromMatrix(matrix: number[][]) {
   const cosTheta = matrix[0][0];
   const sinTheta = matrix[1][0];
