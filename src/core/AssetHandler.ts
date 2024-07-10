@@ -36,8 +36,17 @@ export const AssetHandler = (() => {
       try {
         const res = await fetch(path);
         const svg = await res.text();
-        assets[name] = svg as SVGType;
-        return svg;
+
+        const divContainer = document.createElement('div');
+        divContainer.innerHTML = svg;
+
+        const svgElement = divContainer.querySelector('svg');
+        if (!svgElement) {
+          throw new Error('SVG element not found');
+        }
+
+        assets[name] = svgElement;
+        return svgElement;
       } catch (err) {
         throw new Error(`Failed to load svg: ${err}`);
       }

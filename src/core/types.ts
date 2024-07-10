@@ -26,7 +26,7 @@ export type TileMapType = {
 
 export type SupportedAssetsExtention = "png" | "json" | "svg";
 export type JsonType = { [key: string]: string | number | JsonType };
-export type SVGType = string;
+export type SVGType = SVGElement;
 
 export type SupportedAssetsType =
   HTMLImageElement |
