@@ -1,4 +1,4 @@
-import { SupportedAssetsType, TileMapType } from "./types";
+import { SVGType, SupportedAssetsType, TileMapType } from "./types";
 
 export const AssetHandler = (() => {
   const assets: { [key: string]: SupportedAssetsType } = {};
@@ -32,10 +32,22 @@ export const AssetHandler = (() => {
       }
     }
 
+    const loadSvg = async (name: string, path: string) => {
+      try {
+        const res = await fetch(path);
+        const svg = await res.text();
+        assets[name] = svg as SVGType;
+        return svg;
+      } catch (err) {
+        throw new Error(`Failed to load svg: ${err}`);
+      }
+    }
+
     return {
       loadPng,
       loadTileMap,
-      getAsset
+      getAsset,
+      loadSvg
     }
   }
   return Instance;

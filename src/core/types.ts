@@ -24,12 +24,11 @@ export type TileMapType = {
   sequence: string[];
 }
 
-export type SupportedAssetsExtention = "png" | "json";
-
+export type SupportedAssetsExtention = "png" | "json" | "svg";
 export type JsonType = { [key: string]: string | number | JsonType };
+export type SVGType = string;
+
 export type SupportedAssetsType =
   HTMLImageElement |
-  JSON |
-  TileMapType;
-
-
+  TileMapType |
+  SVGType;
