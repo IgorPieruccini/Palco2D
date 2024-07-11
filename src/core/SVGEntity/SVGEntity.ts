@@ -4,6 +4,7 @@ type SVGEntityProps = BaseEntityProps & { svg: SVGElement };
 
 type DrawRectProps = { x: number, y: number, width: number, height: number, style: string, transform?: string };
 type DrawCircleProps = { cx: number, cy: number, r: number, style: string, transform?: string };
+type DrawPolygonProps = { points: string, style: string, transform?: string };
 
 export class SVGEntity extends BaseEntity {
   svgElement: SVGElement;
@@ -68,6 +69,34 @@ export class SVGEntity extends BaseEntity {
     ctx.restore();
   }
 
+  private drawPolygon(ctx: CanvasRenderingContext2D, attr: DrawPolygonProps) {
+    const color = attr.style.split(':')[1].replace(';', '');
+    const coords = attr.points.split(' ').map((point) => {
+      const [x, y] = point.split(',');
+      return { x: parseFloat(x), y: parseFloat(y) };
+    });
+    ctx.save();
+    if (attr.transform) {
+      const regex = /\(([^)]+)\)/g;
+      const matches = attr.transform.match(regex);
+      if (!matches || matches?.length === 0) return;
+
+      const trim = matches[0]?.slice(1, - 1);
+      const matrixValues = trim.split(" ").map((value) => parseFloat(value));
+      ctx.transform(matrixValues[0], matrixValues[1], matrixValues[2], matrixValues[3], matrixValues[4], matrixValues[5]);
+    }
+
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    coords.forEach((coord) => {
+      ctx.lineTo(coord.x, coord.y);
+    })
+    ctx.fill();
+    ctx.closePath();
+    ctx.restore();
+
+  }
+
   drawSVG(ctx: CanvasRenderingContext2D, element: Element) {
     const children = Array.from(element.children);
 
@@ -82,15 +111,22 @@ export class SVGEntity extends BaseEntity {
 
       switch (elementTag) {
         case 'rect':
-          console.log('rect');
           const elementAttributes = this.getAttributes(child);
           this.drawRect(ctx, elementAttributes as unknown as DrawRectProps);
           break;
 
         case 'circle':
-          console.log('circle');
           const circleAttributes = this.getAttributes(child);
           this.drawCircle(ctx, circleAttributes as unknown as DrawCircleProps);
+          break;
+
+        case 'polygon':
+          const poligonAttributes = this.getAttributes(child);
+          this.drawPolygon(ctx, poligonAttributes as unknown as DrawPolygonProps);
+          break;
+
+        case 'path':
+          const pathAttributes = this.getAttributes(child);
           break;
 
         default:
