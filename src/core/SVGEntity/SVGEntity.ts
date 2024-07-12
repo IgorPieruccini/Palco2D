@@ -5,6 +5,7 @@ type SVGEntityProps = BaseEntityProps & { svg: SVGElement };
 type DrawRectProps = { x: number, y: number, width: number, height: number, style: string, transform?: string };
 type DrawCircleProps = { cx: number, cy: number, r: number, style: string, transform?: string };
 type DrawPolygonProps = { points: string, style: string, transform?: string };
+type DrawPathProps = { d: string, style: string, transform?: string };
 
 export class SVGEntity extends BaseEntity {
   svgElement: SVGElement;
@@ -94,6 +95,98 @@ export class SVGEntity extends BaseEntity {
     ctx.fill();
     ctx.closePath();
     ctx.restore();
+  }
+
+  private createPathCoords = (d: string, ctx: CanvasRenderingContext2D) => {
+    const coords = d.split(/(?=[MmHhVvLlCcSsQqTtAaZz])/);
+
+    console.log(coords);
+    let prevValues: number[] = [];
+    for (let i = 0; i < coords.length; i++) {
+      const command = coords[i][0];
+      const values = coords[i].slice(1).split(/,|(?=-)| /).map((value) => parseFloat(value)).filter((value) => !isNaN(value));
+
+      console.group('draw');
+      console.log('command', command);
+      console.log('values', values);
+      console.log('prevValues', prevValues);
+      console.groupEnd();
+
+      switch (command) {
+        case 'M':
+          ctx.moveTo(values[0], values[1]);
+          prevValues = values;
+          break;
+        case 'm':
+          ctx.moveTo(prevValues[0] + values[0], prevValues[1] + values[1]);
+          prevValues = values;
+          break;
+        case 'H':
+          ctx.lineTo(values[0], prevValues[1]);
+          prevValues = [values[0], prevValues[1]];
+          break;
+        case 'h':
+          ctx.lineTo(prevValues[0] + values[0], prevValues[1]);
+          prevValues = [prevValues[0] + values[0], prevValues[1]];
+          break;
+        case 'V':
+          ctx.lineTo(prevValues[0], values[0]);
+          prevValues = [prevValues[0], values[0]];
+          break;
+        case 'v':
+          ctx.lineTo(prevValues[0], prevValues[1] + values[0]);
+          prevValues = [prevValues[0], prevValues[1] + values[0]];
+          break;
+        case 'L':
+          ctx.lineTo(values[0], values[1]);
+          prevValues = values;
+          break;
+        case 'l':
+          ctx.lineTo(prevValues[0] + values[0], prevValues[1] + values[1]);
+          prevValues = [prevValues[0] + values[0], prevValues[1] + values[1]];
+          break;
+        case 'C': {
+          const positionCoords = [values[4], values[5]];
+          const bezierCoordsStart = [values[0], values[1]];
+          const bezierCoordsEnd = [values[2], values[3]];
+          ctx.bezierCurveTo(bezierCoordsStart[0], bezierCoordsStart[1], bezierCoordsEnd[0], bezierCoordsEnd[1], positionCoords[0], positionCoords[1]);
+          prevValues = positionCoords;
+          break;
+        }
+        case 'c': {
+          const positionCoords = [prevValues[0] + values[4], prevValues[1] + values[5]];
+          const bezierCoordsStart = [prevValues[0] + values[0], prevValues[1] + values[1]];
+          const bezierCoordsEnd = [prevValues[0] + values[2], prevValues[1] + values[3]];
+          ctx.bezierCurveTo(bezierCoordsStart[0], bezierCoordsStart[1], bezierCoordsEnd[0], bezierCoordsEnd[1], positionCoords[0], positionCoords[1]);
+          prevValues = positionCoords;
+          break;
+        }
+        default:
+          break;
+      }
+
+    }
+
+  }
+
+  private drawPath(ctx: CanvasRenderingContext2D, attr: DrawPathProps) {
+    const color = attr.style.split(':')[1].replace(';', '');
+    ctx.save();
+    if (attr.transform) {
+      const regex = /\(([^)]+)\)/g;
+      const matches = attr.transform.match(regex);
+      if (!matches || matches?.length === 0) return;
+
+      const trim = matches[0]?.slice(1, - 1);
+      const matrixValues = trim.split(" ").map((value) => parseFloat(value));
+      ctx.transform(matrixValues[0], matrixValues[1], matrixValues[2], matrixValues[3], matrixValues[4], matrixValues[5]);
+    }
+
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    this.createPathCoords(attr.d, ctx);
+    ctx.fill();
+    ctx.restore();
 
   }
 
@@ -127,13 +220,12 @@ export class SVGEntity extends BaseEntity {
 
         case 'path':
           const pathAttributes = this.getAttributes(child);
+          this.drawPath(ctx, pathAttributes as unknown as DrawPathProps);
           break;
 
         default:
           break;
       }
-
-
     });
   }
 
