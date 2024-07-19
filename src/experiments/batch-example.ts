@@ -2,6 +2,8 @@
 import { AssetHandler } from "../core/AssetHandler";
 import { BaseEntity } from "../core/BaseEntity";
 import { BatchGraphicHandler } from "../core/BatchGrahicHandler";
+import { MouseHandler } from "../core/MouseHandler";
+import { RenderHandler } from "../core/RenderHandler";
 import { Sprite } from "../core/Sprite";
 
 export default (canvas: HTMLCanvasElement) => {
@@ -17,6 +19,18 @@ export default (canvas: HTMLCanvasElement) => {
 
   const init = async () => {
     const texture = await AssetHandler().loadPng('frog', 'assets/ninja-frog-jump.png');
+
+    const mainFrog = new Sprite({
+      texture,
+      position: { x: 100, y: 100 },
+      rotation: 0,
+      layer: 0,
+    });
+
+    mainFrog.size = { x: 54, y: 54 };
+    mainFrog.on('mousehover', () => {
+      mainFrog.rotation += 2;
+    });
 
     const createFrogs = () => {
       const entities: BaseEntity[] = [];
@@ -39,11 +53,22 @@ export default (canvas: HTMLCanvasElement) => {
 
     const entities = createFrogs();
     bacthHandler.batchStaticObjects(entities);
-    const drawStatic0 = bacthHandler.getBatch('STATIC0');
-    const drawStatic1 = bacthHandler.getBatch('STATIC1');
+    const statics = bacthHandler.getAllStaticBatches();
 
-    drawStatic0(ctx);
-    drawStatic1(ctx);
+    const staticEntities = statics.map((drawMethod) => {
+      const entitiy = new BaseEntity({
+        position: { x: 0, y: 0 },
+        rotation: 0,
+        size: { x: 1, y: 1 },
+        layer: 0
+      });
+      entitiy.render = drawMethod;
+      return entitiy;
+    });
+
+
+    new RenderHandler(ctx, [...staticEntities, mainFrog]);
+    new MouseHandler(canvas, [mainFrog]);
   };
 
   init();

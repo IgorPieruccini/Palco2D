@@ -9,7 +9,7 @@ export class RenderHandler {
   entities: BaseEntity[];
   private fpsHandler = FPSHandler();
 
-  constructor(ctx: CanvasRenderingContext2D, entities: BaseEntity[], staticEntities?: Array<(ctx: CanvasRenderingContext2D) => void>) {
+  constructor(ctx: CanvasRenderingContext2D, entities: BaseEntity[]) {
     this.ctx = ctx;
     const sortedLayers = entities.sort((a, b) => a.layer - b.layer);
     this.entities = sortedLayers;
@@ -66,6 +66,7 @@ export class RenderHandler {
         this.renderLayers(entity.children.slice());
         this.ctx.restore();
       }
+
       this.animateEntity(entity)
     }
   }
