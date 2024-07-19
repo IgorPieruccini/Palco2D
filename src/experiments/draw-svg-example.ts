@@ -10,7 +10,7 @@ export default (canvas: HTMLCanvasElement) => {
   }
 
   const init = async () => {
-    const svgElement = await AssetHandler().loadSvg('svg', '/assets/image-svg.svg');
+    const svgElement = await AssetHandler().loadSvg('svg', '/assets/pen-svgrepo-com.svg');
     console.log(svgElement);
 
     const svgEntity = new SVGEntity({
@@ -21,7 +21,7 @@ export default (canvas: HTMLCanvasElement) => {
     });
 
 
-    ctx.scale(20, 20);
+    ctx.scale(1, 1);
     svgEntity.drawSVG(ctx, svgElement);
 
 

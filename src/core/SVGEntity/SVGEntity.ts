@@ -5,7 +5,7 @@ type SVGEntityProps = BaseEntityProps & { svg: SVGElement };
 type DrawRectProps = { x: number, y: number, width: number, height: number, style: string, transform?: string };
 type DrawCircleProps = { cx: number, cy: number, r: number, style: string, transform?: string };
 type DrawPolygonProps = { points: string, style: string, transform?: string };
-type DrawPathProps = { d: string, style: string, transform?: string };
+type DrawPathProps = { d: string, style: string, transform?: string, fill: string };
 
 export class SVGEntity extends BaseEntity {
   svgElement: SVGElement;
@@ -170,7 +170,8 @@ export class SVGEntity extends BaseEntity {
   }
 
   private drawPath(ctx: CanvasRenderingContext2D, attr: DrawPathProps) {
-    const color = attr.style.split(':')[1].replace(';', '');
+    const styleAttribute = attr.style;
+    const fill = attr.fill;
     ctx.save();
     if (attr.transform) {
       const regex = /\(([^)]+)\)/g;
@@ -182,7 +183,15 @@ export class SVGEntity extends BaseEntity {
       ctx.transform(matrixValues[0], matrixValues[1], matrixValues[2], matrixValues[3], matrixValues[4], matrixValues[5]);
     }
 
-    ctx.fillStyle = color;
+    if (styleAttribute) {
+      const color = styleAttribute.split(':')[1].replace(';', '');
+      ctx.fillStyle = color;
+    };
+
+    if (fill) {
+      ctx.fillStyle = fill.split(' ')[0];
+    }
+
     ctx.beginPath();
     this.createPathCoords(attr.d, ctx);
     ctx.fill();
@@ -219,6 +228,7 @@ export class SVGEntity extends BaseEntity {
           break;
 
         case 'path':
+          console.log('path');
           const pathAttributes = this.getAttributes(child);
           this.drawPath(ctx, pathAttributes as unknown as DrawPathProps);
           break;
