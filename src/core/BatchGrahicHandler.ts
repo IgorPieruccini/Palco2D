@@ -1,52 +1,47 @@
-export class BatchGraphicHandler {
-  private canvas: HTMLCanvasElement;
-  private ctx: CanvasRenderingContext2D;
-  private batches: Record<string, HTMLCanvasElement> = {};
+import { BaseEntity } from "./BaseEntity";
+import { RenderHandler } from "./RenderHandler";
 
-  constructor() {
-    this.canvas = document.createElement("canvas");
-    if (this.canvas === null) {
+const dpr = window.devicePixelRatio;
+
+export class BatchGraphicHandler {
+  private batches: Record<string, (ctx: CanvasRenderingContext2D) => void> = {};
+
+
+  private createCanvas() {
+    const canvas = document.createElement("canvas");
+
+    canvas.setAttribute(
+      "width",
+      (window.innerWidth * dpr).toString(),
+    );
+
+    canvas.setAttribute(
+      "height",
+      (window.innerHeight * dpr).toString(),
+    );
+
+    if (canvas === null) {
       throw new Error("Could not create canvas");
     }
 
-    const ctx = this.canvas.getContext("2d", { willReadFrequently: true });
+    const ctx = canvas.getContext("2d", { willReadFrequently: true });
     if (ctx === null) {
       throw new Error("Could not get canvas context");
     }
 
-    this.ctx = ctx;
+    return { canvas, ctx };
   }
 
-  /**
-   * Create a offscreeen canvas and draw on it
-   * @param draw - function to draw on the canvas context
-   * @example
-   * const offscreenCanvas = this.canvas.batchRender.getBatch(this.batchKey);
-   * ctx.drawImage(offscreenCanvas,x,y);
-   */
-  batch(
-    draw: (ctx: CanvasRenderingContext2D) => void,
-    width: number,
-    height: number,
-    key: string,
-  ) {
+  batch(key: string, canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D) {
+
     if (this.batches[key]) {
       return;
     }
 
-    if (this.canvas === null) {
-      throw new Error("Could not create canvas");
-    }
-    this.canvas.width = width;
-    this.canvas.height = height;
+    this.batches[key] = (ctx: CanvasRenderingContext2D) => {
+      ctx.drawImage(canvas, 0, 0);
+    };
 
-    if (this.ctx === null) {
-      throw new Error("Could not get canvas context");
-    }
-
-    draw(this.ctx);
-
-    this.batches[key] = this.canvas;
   }
 
   /**
@@ -58,5 +53,29 @@ export class BatchGraphicHandler {
     }
     return this.batches[key];
   }
+
+  batchStaticObjects(entities: BaseEntity[]) {
+    const staticEntities = entities.filter((entity) => entity.static);
+
+    // Group all static entities in a batch divided by layers
+    const staticLayers: Record<number, BaseEntity[]> = staticEntities.reduce((acc, entity) => {
+      const layer = entity.layer || 0;
+      if (!acc[layer]) {
+        acc[layer] = [];
+      }
+      acc[layer].push(entity);
+      return acc;
+    }, {} as Record<number, BaseEntity[]>);
+
+    Object.keys(staticLayers).forEach((layer) => {
+      const { canvas, ctx } = this.createCanvas();
+      const layerEntities = staticLayers[parseInt(layer)];
+      new RenderHandler(ctx, layerEntities);
+      this.batch('STATIC' + layer, canvas, ctx);
+    });
+
+
+  }
+
 }
 

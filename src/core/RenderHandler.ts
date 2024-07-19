@@ -9,7 +9,7 @@ export class RenderHandler {
   entities: BaseEntity[];
   private fpsHandler = FPSHandler();
 
-  constructor(ctx: CanvasRenderingContext2D, entities: BaseEntity[]) {
+  constructor(ctx: CanvasRenderingContext2D, entities: BaseEntity[], staticEntities?: Array<(ctx: CanvasRenderingContext2D) => void>) {
     this.ctx = ctx;
     const sortedLayers = entities.sort((a, b) => a.layer - b.layer);
     this.entities = sortedLayers;
