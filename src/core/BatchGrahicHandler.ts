@@ -3,8 +3,13 @@ import { RenderHandler } from "./RenderHandler";
 
 const dpr = window.devicePixelRatio;
 
+type BatchType = {
+  draw: (ctx: CanvasRenderingContext2D) => void;
+  layer: number;
+}
+
 export class BatchGraphicHandler {
-  private batches: Record<string, (ctx: CanvasRenderingContext2D) => void> = {};
+  private batches: Record<string, BatchType> = {};
 
   private createCanvas() {
     const canvas = document.createElement("canvas");
@@ -31,16 +36,18 @@ export class BatchGraphicHandler {
     return { canvas, ctx };
   }
 
-  batch(key: string, canvas: HTMLCanvasElement) {
+  batch(key: string, canvas: HTMLCanvasElement, layer: number) {
 
     if (this.batches[key]) {
       return;
     }
 
-    this.batches[key] = (ctx: CanvasRenderingContext2D) => {
-      ctx.drawImage(canvas, 0, 0);
-    };
-
+    this.batches[key] = {
+      draw: (ctx: CanvasRenderingContext2D) => {
+        ctx.drawImage(canvas, 0, 0);
+      },
+      layer
+    }
   }
 
   /**
@@ -74,12 +81,11 @@ export class BatchGraphicHandler {
 
     Object.keys(staticLayers).forEach((layer) => {
       const { canvas, ctx } = this.createCanvas();
-      const layerEntities = staticLayers[parseInt(layer)];
-      new RenderHandler(ctx, layerEntities);
-      this.batch('STATIC' + layer, canvas);
+      const layerInt = parseInt(layer);
+      const layerEntities = staticLayers[layerInt];
+      new RenderHandler(ctx, layerEntities, 1);
+      this.batch('STATIC' + layer, canvas, layerInt);
     });
-
-
   }
 
 }

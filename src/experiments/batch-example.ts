@@ -22,12 +22,12 @@ export default (canvas: HTMLCanvasElement) => {
 
     const mainFrog = new Sprite({
       texture,
-      position: { x: 100, y: 100 },
+      position: { x: 120, y: 100 },
       rotation: 0,
       layer: 0,
     });
 
-    mainFrog.size = { x: 54, y: 54 };
+    mainFrog.size = { x: 84, y: 84 };
     mainFrog.on('mousehover', () => {
       mainFrog.rotation += 2;
     });
@@ -45,6 +45,7 @@ export default (canvas: HTMLCanvasElement) => {
             static: true
           });
 
+
           entities.push(frog);
         }
       }
@@ -55,14 +56,14 @@ export default (canvas: HTMLCanvasElement) => {
     bacthHandler.batchStaticObjects(entities);
     const statics = bacthHandler.getAllStaticBatches();
 
-    const staticEntities = statics.map((drawMethod) => {
+    const staticEntities = statics.map((batch) => {
       const entitiy = new BaseEntity({
         position: { x: 0, y: 0 },
         rotation: 0,
         size: { x: 1, y: 1 },
-        layer: 0
+        layer: batch.layer
       });
-      entitiy.render = drawMethod;
+      entitiy.render = batch.draw;
       return entitiy;
     });
 
@@ -72,9 +73,4 @@ export default (canvas: HTMLCanvasElement) => {
   };
 
   init();
-
-
-
-
-
 } 
