@@ -80,5 +80,5 @@ export default (canvas: HTMLCanvasElement) => {
   const entities = [parent];
 
   new MouseHandler(canvas, entities);
-  new RenderHandler(ctx, entities);
+  new RenderHandler(canvas, entities);
 } 

@@ -22,7 +22,7 @@ export default (canvas: HTMLCanvasElement) => {
 
     const mainFrog = new Sprite({
       texture,
-      position: { x: 120, y: 100 },
+      position: { x: 100, y: 100 },
       rotation: 0,
       layer: 0,
     });
@@ -58,7 +58,7 @@ export default (canvas: HTMLCanvasElement) => {
 
     const staticEntities = statics.map((batch) => {
       const entitiy = new BaseEntity({
-        position: { x: 0, y: 0 },
+        position: { x: -1, y: 0 },
         rotation: 0,
         size: { x: 1, y: 1 },
         layer: batch.layer
@@ -68,7 +68,7 @@ export default (canvas: HTMLCanvasElement) => {
     });
 
 
-    new RenderHandler(ctx, [...staticEntities, mainFrog]);
+    new RenderHandler(canvas, [mainFrog]);
     new MouseHandler(canvas, [mainFrog]);
   };
 

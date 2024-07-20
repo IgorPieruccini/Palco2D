@@ -28,12 +28,7 @@ export class BatchGraphicHandler {
       throw new Error("Could not create canvas");
     }
 
-    const ctx = canvas.getContext("2d", { willReadFrequently: true });
-    if (ctx === null) {
-      throw new Error("Could not get canvas context");
-    }
-
-    return { canvas, ctx };
+    return canvas;
   }
 
   batch(key: string, canvas: HTMLCanvasElement, layer: number) {
@@ -80,10 +75,10 @@ export class BatchGraphicHandler {
     }, {} as Record<number, BaseEntity[]>);
 
     Object.keys(staticLayers).forEach((layer) => {
-      const { canvas, ctx } = this.createCanvas();
+      const canvas = this.createCanvas();
       const layerInt = parseInt(layer);
       const layerEntities = staticLayers[layerInt];
-      new RenderHandler(ctx, layerEntities, 1);
+      new RenderHandler(canvas, layerEntities, 1);
       this.batch('STATIC' + layer, canvas, layerInt);
     });
   }

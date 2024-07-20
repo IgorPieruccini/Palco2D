@@ -24,5 +24,5 @@ export default (canvas: HTMLCanvasElement) => {
     rotation: 0
   }));
 
-  new RenderHandler(ctx, entities);
+  new RenderHandler(canvas, entities);
 } 

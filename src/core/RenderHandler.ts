@@ -5,14 +5,24 @@ import { Sprite } from "./Sprite";
 const dpr = window.devicePixelRatio;
 
 export class RenderHandler {
+  canvas: HTMLCanvasElement;
   ctx: CanvasRenderingContext2D;
   entities: BaseEntity[];
   private fpsHandler = FPSHandler();
 
-  constructor(ctx: CanvasRenderingContext2D, entities: BaseEntity[], customDPS?: number) {
+  constructor(canvas: HTMLCanvasElement, entities: BaseEntity[], customDPS?: number) {
+    this.canvas = canvas;
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) {
+      throw new Error('Canvas context not found');
+    }
     this.ctx = ctx;
+
+
     const sortedLayers = entities.sort((a, b) => a.layer - b.layer);
     this.entities = sortedLayers;
+
     this.render.bind(this)();
 
     // Set the canvas to the correct size
@@ -24,17 +34,26 @@ export class RenderHandler {
       0, // e
       0 // f
     );
-
   }
 
   private renderLayers(entities: BaseEntity[]) {
     for (let x = 0; x < entities.length; x++) {
       const entity = entities[x];
 
+      const isInViewPort = entity.isObjectInViewport({
+        position: { x: 0, y: 0 },
+        size: { x: this.canvas.width, y: this.canvas.height }
+      });
+
       this.ctx.save();
       this.ctx.translate(entity.position.x, entity.position.y);
       this.ctx.rotate(entity.rotation * (Math.PI / 180));
-      entity.render(this.ctx);
+
+      if (isInViewPort && !entity.static) {
+        entity.render(this.ctx);
+        this.animateEntity(entity)
+      }
+
       this.ctx.restore();
 
       if (entity.children.length > 0) {
@@ -66,8 +85,6 @@ export class RenderHandler {
         this.renderLayers(entity.children.slice());
         this.ctx.restore();
       }
-
-      this.animateEntity(entity)
     }
   }
 

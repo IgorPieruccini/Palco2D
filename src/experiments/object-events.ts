@@ -51,5 +51,5 @@ export default (canvas: HTMLCanvasElement) => {
   }
 
   new MouseHandler(canvas, entities);
-  new RenderHandler(ctx, entities);
+  new RenderHandler(canvas, entities);
 } 

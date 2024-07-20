@@ -25,7 +25,9 @@ export class BaseEntity {
   private initialSize: Vec2;
 
   constructor(props: BaseEntityProps) {
+    console.log("create entity", props);
     this.id = props.id || Math.random();
+    console.log("id", this.id);
     this.position = props.position;
     this.size = props.size;
     this.initialSize = { x: props.size.x, y: props.size.y };
@@ -150,6 +152,17 @@ export class BaseEntity {
   addChild(child: BaseEntity) {
     this.children.push(child);
     child.setParent(this);
+  }
+
+  isObjectInViewport(viewport: { position: Vec2, size: Vec2 }) {
+    if (
+      this.position.x + this.size.x < viewport.position.x ||
+      this.position.x > viewport.position.x + viewport.size.x ||
+      this.position.y + this.size.y < viewport.position.y ||
+      this.position.y > viewport.position.y + viewport.size.y) {
+      return false;
+    }
+    return true;
   }
 
   private setParent(parentEntity: BaseEntity) {
