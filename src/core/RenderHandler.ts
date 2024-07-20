@@ -9,7 +9,7 @@ export class RenderHandler {
   entities: BaseEntity[];
   private fpsHandler = FPSHandler();
 
-  constructor(ctx: CanvasRenderingContext2D, entities: BaseEntity[]) {
+  constructor(ctx: CanvasRenderingContext2D, entities: BaseEntity[], customDPS?: number) {
     this.ctx = ctx;
     const sortedLayers = entities.sort((a, b) => a.layer - b.layer);
     this.entities = sortedLayers;
@@ -17,10 +17,10 @@ export class RenderHandler {
 
     // Set the canvas to the correct size
     this.ctx.transform(
-      dpr, // a
+      customDPS || dpr, // a
       0, // b
       0, // c  
-      dpr, // d
+      customDPS || dpr, // d
       0, // e
       0 // f
     );
@@ -66,6 +66,7 @@ export class RenderHandler {
         this.renderLayers(entity.children.slice());
         this.ctx.restore();
       }
+
       this.animateEntity(entity)
     }
   }

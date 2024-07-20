@@ -7,6 +7,7 @@ export interface BaseEntityProps {
   rotation: number;
   layer?: number;
   id?: number;
+  static?: boolean;
 }
 
 export class BaseEntity {
@@ -19,6 +20,7 @@ export class BaseEntity {
   children: BaseEntity[];
   onEntityEvent: EntityEvents;
   parent: BaseEntity | null;
+  static: boolean = false;
 
   private initialSize: Vec2;
 
@@ -33,6 +35,7 @@ export class BaseEntity {
     this.children = [];
     this.onEntityEvent = {};
     this.parent = null;
+    this.static = props.static || false;
   }
 
   public on(event: EventsType, callback: () => void) {
