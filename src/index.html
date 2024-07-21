@@ -15,16 +15,33 @@
       width: 100%;
       height: 100vh;
       max-height: 100vh;
+    }
+
+    .canvas-wrapper {
+      width: 100%;
+      height: 800px;
+      max-height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
     }
 
-    #canvas {
-      width: 800px;
-      height: 600px;
+    #select-example {
+      width: 200px;
+      padding: 10px;
+      margin: 10px;
       border: 1px solid #000;
-      background-color: #fff;
+      border-radius: 5px;
+      position: absolute;
+      top: 10px;
+      left: 10px;
+    }
+
+    #canvas {
+      width: 1124px;
+      height: 810px;
+      border: 1px solid #000;
+      background-color: #494949;
 
       /* Help to illustrate the rasterizer's job: when artificially lowering resolution, show pixelated image */
       image-rendering: crisp-edges;
@@ -33,10 +50,13 @@
 </head>
 
 <body>
-  <canvas id="canvas">
-    <!-- This message shows up only if the Canvas element isn't supported -->
-    HTML5 canvas not supported in your browser! These demos will not work.
-  </canvas>
+  <div class="canvas-wrapper">
+    <canvas id="canvas">
+      <!-- This message shows up only if the Canvas element isn't supported -->
+      HTML5 canvas not supported in your browser! These demos will not work.
+    </canvas>
+    <div>
+      <select id="select-example" />
 </body>
 
 </html

@@ -17,11 +17,12 @@ const scenes = {
 }
 
 type SceneKeyType = keyof typeof scenes;
-const currentSceneName: SceneKeyType = 'BatchExample';
+const initialScene: SceneKeyType = "TileMap";
 
 const dpr = window.devicePixelRatio;
 
-export const canvas = document.getElementById('canvas');
+export const canvas = document.getElementById('canvas') as HTMLCanvasElement;
+console.log(canvas)
 
 if (!canvas) {
   throw new Error('Canvas not found');
@@ -44,4 +45,30 @@ canvas.setAttribute(
   (height * dpr).toString(),
 );
 
-scenes[currentSceneName](canvas);
+const createSceneDropdown = () => {
+  const select = document.getElementById('select-example') as HTMLSelectElement;
+
+  if (!select) {
+    throw new Error('Select element not found');
+  }
+
+  Object.keys(scenes).forEach((sceneName) => {
+    const option = document.createElement('option');
+    if (sceneName === initialScene) {
+      option.selected = true
+    }
+    option.value = sceneName;
+    option.text = sceneName;
+    select.appendChild(option);
+  });
+
+  select.addEventListener('change', (event) => {
+    const sceneName = (event.target as HTMLSelectElement).value as SceneKeyType;
+    scenes[sceneName](canvas);
+  });
+
+  document.body.appendChild(select);
+}
+
+createSceneDropdown();
+scenes[initialScene](canvas);
