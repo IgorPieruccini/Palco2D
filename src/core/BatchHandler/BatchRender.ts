@@ -1,14 +1,9 @@
-import { BaseEntity } from "./BaseEntity";
-import { FPSHandler } from "./FPSHandler";
-import { Sprite } from "./Sprite";
+import { BaseEntity } from "../BaseEntity";
 
-const dpr = window.devicePixelRatio;
-
-export class RenderHandler {
+export class BatchRender {
   canvas: HTMLCanvasElement;
   ctx: CanvasRenderingContext2D;
   entities: BaseEntity[];
-  private fpsHandler = FPSHandler();
 
   constructor(canvas: HTMLCanvasElement, entities: BaseEntity[]) {
     this.canvas = canvas;
@@ -27,10 +22,10 @@ export class RenderHandler {
 
     // Set the canvas to the correct size
     this.ctx.transform(
-      dpr, // a
+      1, // a
       0, // b
       0, // c  
-      dpr, // d
+      1, // d
       0, // e
       0 // f
     );
@@ -40,19 +35,11 @@ export class RenderHandler {
     for (let x = 0; x < entities.length; x++) {
       const entity = entities[x];
 
-      const isInViewPort = entity.isObjectInViewport({
-        position: { x: 0, y: 0 },
-        size: { x: this.canvas.width, y: this.canvas.height }
-      });
-
       this.ctx.save();
       this.ctx.translate(entity.position.x, entity.position.y);
       this.ctx.rotate(entity.rotation * (Math.PI / 180));
 
-      if (isInViewPort && !entity.static) {
-        entity.render(this.ctx);
-        this.animateEntity(entity)
-      }
+      entity.render(this.ctx);
 
       this.ctx.restore();
 
@@ -88,21 +75,9 @@ export class RenderHandler {
     }
   }
 
-  //TODO: Create abstract class for entities that can be animated
-  private animateEntity(sprite: BaseEntity) {
-    if (sprite instanceof Sprite) {
-      if (sprite.canBeAnimated()) {
-        sprite.animate(this.fpsHandler.getDeltaTime());
-      }
-    }
-  }
-
   private render() {
-    this.fpsHandler.loop();
-    this.ctx.clearRect(0, 0, window.innerWidth * dpr, window.innerHeight * dpr);
     const entitiesCopy = this.entities.slice();
     this.renderLayers.bind(this)(entitiesCopy);
-    requestAnimationFrame(this.render.bind(this));
   }
 
 }

@@ -42,7 +42,7 @@ export default (canvas: HTMLCanvasElement) => {
     createFrogs();
 
     new MouseHandler(canvas, entities);
-    new RenderHandler(ctx, entities);
+    new RenderHandler(canvas, entities);
   }
 
   init();

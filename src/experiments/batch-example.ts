@@ -1,7 +1,7 @@
 
 import { AssetHandler } from "../core/AssetHandler";
 import { BaseEntity } from "../core/BaseEntity";
-import { BatchGraphicHandler } from "../core/BatchGrahicHandler";
+import { BatchHandler } from "../core/BatchHandler";
 import { MouseHandler } from "../core/MouseHandler";
 import { RenderHandler } from "../core/RenderHandler";
 import { Sprite } from "../core/Sprite";
@@ -15,7 +15,7 @@ export default (canvas: HTMLCanvasElement) => {
   }
 
 
-  const bacthHandler = new BatchGraphicHandler();
+  const bacthHandler = new BatchHandler();
 
   const init = async () => {
     const texture = await AssetHandler().loadPng('frog', 'assets/ninja-frog-jump.png');
@@ -58,7 +58,7 @@ export default (canvas: HTMLCanvasElement) => {
 
     const staticEntities = statics.map((batch) => {
       const entitiy = new BaseEntity({
-        position: { x: 0, y: 0 },
+        position: { x: -1, y: 0 },
         rotation: 0,
         size: { x: 1, y: 1 },
         layer: batch.layer
@@ -68,7 +68,7 @@ export default (canvas: HTMLCanvasElement) => {
     });
 
 
-    new RenderHandler(ctx, [...staticEntities, mainFrog]);
+    new RenderHandler(canvas, [...staticEntities, mainFrog]);
     new MouseHandler(canvas, [mainFrog]);
   };
 
