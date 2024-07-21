@@ -1,7 +1,7 @@
 
 import { AssetHandler } from "../core/AssetHandler";
 import { BaseEntity } from "../core/BaseEntity";
-import { BatchGraphicHandler } from "../core/BatchHandler";
+import { BatchHandler } from "../core/BatchHandler";
 import { MouseHandler } from "../core/MouseHandler";
 import { RenderHandler } from "../core/RenderHandler";
 import { Sprite } from "../core/Sprite";
@@ -15,7 +15,7 @@ export default (canvas: HTMLCanvasElement) => {
   }
 
 
-  const bacthHandler = new BatchGraphicHandler();
+  const bacthHandler = new BatchHandler();
 
   const init = async () => {
     const texture = await AssetHandler().loadPng('frog', 'assets/ninja-frog-jump.png');

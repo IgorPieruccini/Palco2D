@@ -8,7 +8,7 @@ type BatchType = {
   layer: number;
 }
 
-export class BatchGraphicHandler {
+export class BatchHandler {
   private batches: Record<string, BatchType> = {};
 
   private createCanvas() {
