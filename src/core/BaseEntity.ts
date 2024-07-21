@@ -1,17 +1,17 @@
 import { EntityEvents, Matrix, EventsType, Vec2 } from './types'
-import { getMatrixPosition, getMatrixRotation, getMatrixScale, getPositionFromMatrix, getRotationAngleFromMatrix, getScaleFromMatrix, identityMatrix, multiplyMatrices } from './utils';
+import { generateUUID, getMatrixPosition, getMatrixRotation, getMatrixScale, getPositionFromMatrix, getRotationAngleFromMatrix, getScaleFromMatrix, identityMatrix, multiplyMatrices } from './utils';
 
 export interface BaseEntityProps {
   position: Vec2;
   size: Vec2;
   rotation: number;
   layer?: number;
-  id?: number;
+  id?: string;
   static?: boolean;
 }
 
 export class BaseEntity {
-  id: number;
+  id: string;
   position: Vec2;
   size: Vec2;
   rotation: number;
@@ -25,7 +25,7 @@ export class BaseEntity {
   private initialSize: Vec2;
 
   constructor(props: BaseEntityProps) {
-    this.id = props.id || Math.random();
+    this.id = props.id || generateUUID();
     this.position = props.position;
     this.size = props.size;
     this.initialSize = { x: props.size.x, y: props.size.y };

@@ -56,7 +56,6 @@ export default (canvas: HTMLCanvasElement) => {
   addEntityEvents(parent);
 
   const child = new SquareEntity({
-    id: 100,
     position: { x: 200, y: 0 },
     size: { x: 50, y: 50 },
     rotation: 0,
@@ -65,7 +64,6 @@ export default (canvas: HTMLCanvasElement) => {
   addEntityEvents(child);
 
   const secondChild = new SquareEntity({
-    id: 111,
     position: { x: 100, y: 0 },
     size: { x: 50, y: 100 },
     rotation: 90,
