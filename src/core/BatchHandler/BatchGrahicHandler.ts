@@ -1,5 +1,5 @@
-import { BaseEntity } from "./BaseEntity";
-import { RenderHandler } from "./RenderHandler";
+import { BaseEntity } from "../BaseEntity";
+import { BatchRender } from "./BatchRender";
 
 const dpr = window.devicePixelRatio;
 
@@ -78,7 +78,7 @@ export class BatchGraphicHandler {
       const canvas = this.createCanvas();
       const layerInt = parseInt(layer);
       const layerEntities = staticLayers[layerInt];
-      new RenderHandler(canvas, layerEntities, 1);
+      new BatchRender(canvas, layerEntities);
       this.batch('STATIC' + layer, canvas, layerInt);
     });
   }

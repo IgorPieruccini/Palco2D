@@ -25,9 +25,7 @@ export class BaseEntity {
   private initialSize: Vec2;
 
   constructor(props: BaseEntityProps) {
-    console.log("create entity", props);
     this.id = props.id || Math.random();
-    console.log("id", this.id);
     this.position = props.position;
     this.size = props.size;
     this.initialSize = { x: props.size.x, y: props.size.y };

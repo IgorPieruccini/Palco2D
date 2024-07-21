@@ -1,7 +1,7 @@
 
 import { AssetHandler } from "../core/AssetHandler";
 import { BaseEntity } from "../core/BaseEntity";
-import { BatchGraphicHandler } from "../core/BatchGrahicHandler";
+import { BatchGraphicHandler } from "../core/BatchHandler";
 import { MouseHandler } from "../core/MouseHandler";
 import { RenderHandler } from "../core/RenderHandler";
 import { Sprite } from "../core/Sprite";
@@ -22,7 +22,7 @@ export default (canvas: HTMLCanvasElement) => {
 
     const mainFrog = new Sprite({
       texture,
-      position: { x: 100, y: 100 },
+      position: { x: 120, y: 100 },
       rotation: 0,
       layer: 0,
     });
@@ -68,7 +68,7 @@ export default (canvas: HTMLCanvasElement) => {
     });
 
 
-    new RenderHandler(canvas, [mainFrog]);
+    new RenderHandler(canvas, [...staticEntities, mainFrog]);
     new MouseHandler(canvas, [mainFrog]);
   };
 

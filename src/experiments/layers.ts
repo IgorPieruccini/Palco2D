@@ -43,7 +43,6 @@ export default (canvas: HTMLCanvasElement) => {
 
     entity.on('mouseleave', () => {
       entity.color = originalColor;
-      console.log('leave');
     });
 
     entity.on('mousedown', () => {
