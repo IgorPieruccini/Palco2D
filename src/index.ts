@@ -31,14 +31,17 @@ if (!(canvas instanceof HTMLCanvasElement)) {
   throw new Error('Element is not a canvas');
 }
 
+const width = canvas.clientWidth;
+const height = canvas.clientHeight;
+
 canvas.setAttribute(
   "width",
-  (window.innerWidth * dpr).toString(),
+  (width * dpr).toString(),
 );
 
 canvas.setAttribute(
   "height",
-  (window.innerHeight * dpr).toString(),
+  (height * dpr).toString(),
 );
 
 scenes[currentSceneName](canvas);

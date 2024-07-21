@@ -6,8 +6,10 @@ export class MouseHandler {
   private position: Vec2;
   private entities: BaseEntity[];
   private hoveredEntity: BaseEntity | null;
+  private domRect: DOMRect;
 
   constructor(canvas: HTMLCanvasElement, entities: BaseEntity[]) {
+    this.domRect = canvas.getBoundingClientRect();
     this.position = { x: 0, y: 0 };
     this.entities = entities;
     this.hoveredEntity = null;
@@ -21,7 +23,7 @@ export class MouseHandler {
   }
 
   private updateMousePosition(event: MouseEvent) {
-    this.position = { x: event.clientX, y: event.clientY };
+    this.position = { x: event.clientX - this.domRect.x, y: event.clientY - this.domRect.y };
     this.dispatchEventToEntities(this.entities);
   }
 
