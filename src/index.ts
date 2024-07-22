@@ -1,9 +1,3 @@
-// import SimpleDrawing from './experiments/simple-drawing';
-// import Layers from './experiments/layers';
-// import ObjectEvents from './experiments/object-events';
-// import DragExample from './experiments/drag-example';
-// import Sprite from './experiments/sprite';
-// import BatchExample from './experiments/batch-example';
 import { Scene } from './core/SceneHandler/Scene';
 import { SceneHandler } from './core/SceneHandler/SceneHandler';
 import { SceneExample } from './experiments/scene';
@@ -39,7 +33,7 @@ const scene = new SceneExample(canvas, "scenes");
 const tileMap = new TileMapExample(canvas, "TileMap");
 
 const scenes: Scene[] = [scene, tileMap];
-const initialScene = "scenes";
+const initialScene = "TileMap";
 
 const sceneHandler = new SceneHandler(scenes);
 

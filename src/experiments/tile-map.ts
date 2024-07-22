@@ -11,12 +11,10 @@ export class TileMapExample extends Scene {
   public async start() {
     const ninjaTexture = await AssetHandler().loadPng('frog', 'assets/ninja-frog-run.png');
     const ninjaTileMap = await AssetHandler().loadTileMap('frog-tilemap', 'assets/ninja-frog-run.tilemap.json');
-
-    const entities: Sprite[] = [];
-
+    console.log(this.render.entities.length);
 
     const createFrogs = () => {
-      for (let x = 0; x < 1000; x++) {
+      for (let x = 0; x < 500; x++) {
         const frog = new Sprite({
           texture: ninjaTexture,
           position: { x: Math.random() * this.canvas.width, y: Math.random() * this.canvas.height },

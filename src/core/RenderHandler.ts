@@ -37,7 +37,9 @@ export class RenderHandler {
 
   public stopRender() {
     this.running = false;
+    console.log("on stop render", this.entities.length);
     this.entities = [];
+    console.log("stop render", this.entities);
     this.ctx.clearRect(0, 0, this.canvas.clientWidth * dpr, this.canvas.clientHeight * dpr);
   }
 

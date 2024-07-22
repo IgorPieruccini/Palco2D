@@ -16,6 +16,7 @@ export class SceneHandler {
     }
 
     if (this.currentScene) {
+      console.log("stopping current scene", this.currentScene.getName());
       this.currentScene.stop();
     }
 
@@ -40,6 +41,7 @@ export class SceneHandler {
     if (!scene) {
       throw new Error(`Scene ${name} not found`);
     }
+    this.currentScene = scene;
     scene.start();
   }
 
