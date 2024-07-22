@@ -34,6 +34,7 @@ export class MouseHandler {
     this.canvas.removeEventListener('mousedown', this.binded.onMouseDown);
     this.canvas.removeEventListener('mouseup', this.binded.onMouseUp);
     this.entities = [];
+    this.hoveredEntity = null;
   }
 
   public addEntity(entity: BaseEntity) {
@@ -81,7 +82,6 @@ export class MouseHandler {
   }
 
   private dispatchEventToEntities(entities: BaseEntity[]) {
-    console.log("dispatch", entities.length);
     for (let x = entities.length - 1; x >= 0; x--) {
       const entity = entities[x];
 

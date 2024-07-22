@@ -16,7 +16,6 @@ export class SceneHandler {
     }
 
     if (this.currentScene) {
-      console.log("stopping current scene", this.currentScene.getName());
       this.currentScene.stop();
     }
 
