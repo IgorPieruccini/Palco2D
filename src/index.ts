@@ -1,28 +1,18 @@
-import SimpleDrawing from './experiments/simple-drawing';
-import Layers from './experiments/layers';
-import ObjectEvents from './experiments/object-events';
-import DragExample from './experiments/drag-example';
-import Sprite from './experiments/sprite';
-import TileMap from './experiments/tile-map';
-import BatchExample from './experiments/batch-example';
+// import SimpleDrawing from './experiments/simple-drawing';
+// import Layers from './experiments/layers';
+// import ObjectEvents from './experiments/object-events';
+// import DragExample from './experiments/drag-example';
+// import Sprite from './experiments/sprite';
+// import BatchExample from './experiments/batch-example';
+import { Scene } from './core/SceneHandler/Scene';
+import { SceneHandler } from './core/SceneHandler/SceneHandler';
+import { SceneExample } from './experiments/scene';
+import { TileMapExample } from './experiments/tile-map';
 
-const scenes = {
-  SimpleDrawing,
-  Layers,
-  ObjectEvents,
-  DragExample,
-  Sprite,
-  TileMap,
-  BatchExample,
-}
-
-type SceneKeyType = keyof typeof scenes;
-const initialScene: SceneKeyType = "TileMap";
 
 const dpr = window.devicePixelRatio;
 
 export const canvas = document.getElementById('canvas') as HTMLCanvasElement;
-console.log(canvas)
 
 if (!canvas) {
   throw new Error('Canvas not found');
@@ -45,6 +35,14 @@ canvas.setAttribute(
   (height * dpr).toString(),
 );
 
+const scene = new SceneExample(canvas, "scenes");
+const tileMap = new TileMapExample(canvas, "TileMap");
+
+const scenes: Scene[] = [scene, tileMap];
+const initialScene = "scenes";
+
+const sceneHandler = new SceneHandler(scenes);
+
 const createSceneDropdown = () => {
   const select = document.getElementById('select-example') as HTMLSelectElement;
 
@@ -52,8 +50,9 @@ const createSceneDropdown = () => {
     throw new Error('Select element not found');
   }
 
-  Object.keys(scenes).forEach((sceneName) => {
+  scenes.forEach((scene) => {
     const option = document.createElement('option');
+    const sceneName = scene.getName();
     if (sceneName === initialScene) {
       option.selected = true
     }
@@ -63,12 +62,12 @@ const createSceneDropdown = () => {
   });
 
   select.addEventListener('change', (event) => {
-    const sceneName = (event.target as HTMLSelectElement).value as SceneKeyType;
-    scenes[sceneName](canvas);
+    sceneHandler.setCurrentScene((event.target as HTMLSelectElement).value);
   });
 
   document.body.appendChild(select);
 }
 
 createSceneDropdown();
-scenes[initialScene](canvas);
+sceneHandler.startScene(initialScene);
+

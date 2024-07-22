@@ -9,6 +9,7 @@ export class RenderHandler {
   ctx: CanvasRenderingContext2D;
   entities: BaseEntity[];
   private fpsHandler = FPSHandler();
+  private running = false;
 
   constructor(canvas: HTMLCanvasElement, entities: BaseEntity[]) {
     this.canvas = canvas;
@@ -23,8 +24,6 @@ export class RenderHandler {
     const sortedLayers = entities.sort((a, b) => a.layer - b.layer);
     this.entities = sortedLayers;
 
-    this.render.bind(this)();
-
     // Set the canvas to the correct size
     this.ctx.transform(
       dpr, // a
@@ -34,6 +33,27 @@ export class RenderHandler {
       0, // e
       0 // f
     );
+  }
+
+  public stopRender() {
+    this.running = false;
+    this.entities = [];
+    this.ctx.clearRect(0, 0, this.canvas.clientWidth * dpr, this.canvas.clientHeight * dpr);
+  }
+
+  public startRender() {
+    this.running = true;
+    this.render.bind(this)();
+  }
+
+  public addEntity(entity: BaseEntity) {
+    const entities = [...this.entities, entity];
+    this.entities = entities.sort((a, b) => a.layer - b.layer);
+  }
+
+  public addEntities(entities: BaseEntity[]) {
+    const concatedEntities = [...this.entities, ...entities];
+    this.entities = concatedEntities.sort((a, b) => a.layer - b.layer);
   }
 
   private renderLayers(entities: BaseEntity[]) {
@@ -102,7 +122,10 @@ export class RenderHandler {
     this.ctx.clearRect(0, 0, window.innerWidth * dpr, window.innerHeight * dpr);
     const entitiesCopy = this.entities.slice();
     this.renderLayers.bind(this)(entitiesCopy);
-    requestAnimationFrame(this.render.bind(this));
+
+    if (this.running) {
+      requestAnimationFrame(this.render.bind(this));
+    }
   }
 
 }
