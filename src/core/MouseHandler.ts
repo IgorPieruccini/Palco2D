@@ -17,16 +17,22 @@ export class MouseHandler {
     this.hoveredEntity = null;
   }
 
+  binded = {
+    updateMousePosition: this.updateMousePosition.bind(this),
+    onMouseDown: this.onMouseDown.bind(this),
+    onMouseUp: this.onMouseUp.bind(this),
+  }
+
   public start() {
-    this.canvas.addEventListener('mousemove', this.updateMousePosition.bind(this));
-    this.canvas.addEventListener('mousedown', this.onMouseDown.bind(this));
-    this.canvas.addEventListener('mouseup', this.onMouseUp.bind(this));
+    this.canvas.addEventListener('mousemove', this.binded.updateMousePosition);
+    this.canvas.addEventListener('mousedown', this.binded.onMouseDown);
+    this.canvas.addEventListener('mouseup', this.binded.onMouseUp);
   }
 
   public stop() {
-    removeEventListener('mousemove', this.updateMousePosition.bind(this));
-    removeEventListener('mousedown', this.onMouseDown.bind(this));
-    removeEventListener('mouseup', this.onMouseUp.bind(this));
+    this.canvas.removeEventListener('mousemove', this.binded.updateMousePosition);
+    this.canvas.removeEventListener('mousedown', this.binded.onMouseDown);
+    this.canvas.removeEventListener('mouseup', this.binded.onMouseUp);
     this.entities = [];
   }
 
@@ -75,6 +81,7 @@ export class MouseHandler {
   }
 
   private dispatchEventToEntities(entities: BaseEntity[]) {
+    console.log("dispatch", entities.length);
     for (let x = entities.length - 1; x >= 0; x--) {
       const entity = entities[x];
 

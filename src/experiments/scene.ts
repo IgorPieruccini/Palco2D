@@ -12,7 +12,7 @@ export class SceneExample extends Scene {
     const texture = await AssetHandler().loadPng('frog', 'assets/ninja-frog-jump.png');
 
     const createFrogs = () => {
-      for (let x = 0; x < 1000; x++) {
+      for (let x = 0; x < 300; x++) {
         const frog = new Sprite({
           texture,
           position: { x: Math.random() * this.canvas.width, y: Math.random() * this.canvas.height },

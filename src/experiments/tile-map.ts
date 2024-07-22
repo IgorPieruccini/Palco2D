@@ -11,7 +11,6 @@ export class TileMapExample extends Scene {
   public async start() {
     const ninjaTexture = await AssetHandler().loadPng('frog', 'assets/ninja-frog-run.png');
     const ninjaTileMap = await AssetHandler().loadTileMap('frog-tilemap', 'assets/ninja-frog-run.tilemap.json');
-    console.log(this.render.entities.length);
 
     const createFrogs = () => {
       for (let x = 0; x < 500; x++) {
