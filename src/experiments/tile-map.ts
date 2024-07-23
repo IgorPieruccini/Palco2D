@@ -1,28 +1,18 @@
 import { AssetHandler } from "../core/AssetHandler";
-import { MouseHandler } from "../core/MouseHandler";
-import { RenderHandler } from "../core/RenderHandler";
+import { Scene } from "../core/SceneHandler/Scene";
 import { Sprite } from "../core/Sprite";
 
-export default (canvas: HTMLCanvasElement) => {
+export class TileMapExample extends Scene {
 
-  const ctx = canvas.getContext('2d');
-
-  if (!ctx) {
-    throw new Error('Context not found');
-  }
-
-  const init = async () => {
+  public async start() {
     const ninjaTexture = await AssetHandler().loadPng('frog', 'assets/ninja-frog-run.png');
     const ninjaTileMap = await AssetHandler().loadTileMap('frog-tilemap', 'assets/ninja-frog-run.tilemap.json');
 
-    const entities: Sprite[] = [];
-
-
     const createFrogs = () => {
-      for (let x = 0; x < 1000; x++) {
+      for (let x = 0; x < 500; x++) {
         const frog = new Sprite({
           texture: ninjaTexture,
-          position: { x: Math.random() * canvas.width, y: Math.random() * canvas.height },
+          position: { x: Math.random() * this.canvas.width, y: Math.random() * this.canvas.height },
           rotation: 0,
           tileMap: ninjaTileMap,
         });
@@ -37,16 +27,16 @@ export default (canvas: HTMLCanvasElement) => {
         });
 
 
-        entities.push(frog);
+        this.mouseHandler.addEntity(frog);
+        this.render.addEntity(frog);
       }
     }
 
     createFrogs();
 
-    new MouseHandler(canvas, entities);
-    new RenderHandler(canvas, entities);
+    this.render.startRender();
+    this.mouseHandler.start();
   }
 
-  init();
+}
 
-} 

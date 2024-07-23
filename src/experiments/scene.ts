@@ -2,8 +2,7 @@ import { AssetHandler } from "../core/AssetHandler";
 import { Scene } from "../core/SceneHandler/Scene";
 import { Sprite } from "../core/Sprite";
 
-
-export class SpriteExample extends Scene {
+export class SceneExample extends Scene {
 
   public async start() {
     const texture = await AssetHandler().loadPng('frog', 'assets/ninja-frog-jump.png');
@@ -35,6 +34,6 @@ export class SpriteExample extends Scene {
 
     this.mouseHandler.start();
     this.render.startRender();
-
   }
+
 }

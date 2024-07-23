@@ -3,23 +3,46 @@ import { Vec2 } from "./types";
 import { getScaleFromMatrix } from "./utils";
 
 export class MouseHandler {
+  private canvas: HTMLCanvasElement;
   private position: Vec2;
   private entities: BaseEntity[];
   private hoveredEntity: BaseEntity | null;
   private domRect: DOMRect;
 
   constructor(canvas: HTMLCanvasElement, entities: BaseEntity[]) {
+    this.canvas = canvas;
     this.domRect = canvas.getBoundingClientRect();
     this.position = { x: 0, y: 0 };
     this.entities = entities;
     this.hoveredEntity = null;
-    this.init(canvas);
   }
 
-  private init(canvas: HTMLCanvasElement) {
-    canvas.addEventListener('mousemove', this.updateMousePosition.bind(this));
-    canvas.addEventListener('mousedown', this.onMouseDown.bind(this));
-    canvas.addEventListener('mouseup', this.onMouseUp.bind(this));
+  binded = {
+    updateMousePosition: this.updateMousePosition.bind(this),
+    onMouseDown: this.onMouseDown.bind(this),
+    onMouseUp: this.onMouseUp.bind(this),
+  }
+
+  public start() {
+    this.canvas.addEventListener('mousemove', this.binded.updateMousePosition);
+    this.canvas.addEventListener('mousedown', this.binded.onMouseDown);
+    this.canvas.addEventListener('mouseup', this.binded.onMouseUp);
+  }
+
+  public stop() {
+    this.canvas.removeEventListener('mousemove', this.binded.updateMousePosition);
+    this.canvas.removeEventListener('mousedown', this.binded.onMouseDown);
+    this.canvas.removeEventListener('mouseup', this.binded.onMouseUp);
+    this.entities = [];
+    this.hoveredEntity = null;
+  }
+
+  public addEntity(entity: BaseEntity) {
+    this.entities.push(entity);
+  }
+
+  public addEntities(entities: BaseEntity[]) {
+    this.entities = [...this.entities, ...entities];
   }
 
   private updateMousePosition(event: MouseEvent) {

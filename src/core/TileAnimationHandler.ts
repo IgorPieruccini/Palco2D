@@ -4,7 +4,7 @@ import { TileMapType } from "./types";
 export class TileAnimationHandler {
   private entity: Sprite;
   private frame: number = 0;
-  private speed: number = 100 / 2;
+  private speed: number = 10;
   private tileMap: TileMapType;
   private isPlaying: boolean;
   private elapsedTime: number = 0;
@@ -24,7 +24,7 @@ export class TileAnimationHandler {
     this.elapsedTime += deltaTime;
 
     if (this.elapsedTime >= this.speed) {
-      this.elapsedTime = this.elapsedTime - this.speed;
+      this.elapsedTime = 0;
       this.frame += 1;
 
       const sequence = this.tileMap.sequence;

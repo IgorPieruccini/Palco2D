@@ -16,11 +16,13 @@ export class BatchHandler {
 
     canvas.setAttribute(
       "width",
+      // TODO: use the size of main canvas or calculate the boundaries of objects
       (window.innerWidth * dpr).toString(),
     );
 
     canvas.setAttribute(
       "height",
+      // TODO: use the size of main canvas or calculate the boundaries of objects
       (window.innerHeight * dpr).toString(),
     );
 
