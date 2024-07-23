@@ -23,7 +23,7 @@ export class LayersExample extends Scene {
     const onDrag = (event: MouseEvent) => {
       const mousePosition: Vec2 = { x: event.clientX, y: event.clientY };
       if (dragEntitiy) {
-        const relativePosition = dragEntitiy.getRelativePostion(mousePosition);
+        const relativePosition = dragEntitiy.getRelativePostion(mousePosition, true);
         dragEntitiy.position = relativePosition;
       }
     };

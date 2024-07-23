@@ -18,23 +18,18 @@ export class ObjectEventsExample extends Scene {
 
       square.on('mousehover', () => {
         square.rotation += 1;
-        if (dragEntitiy) {
-          square.position = dragEntitiy.position;
-        }
       });
 
       square.on('mouseenter', () => {
-        dragEntitiy = square;
         square.size = { x: 120, y: 120 };
       });
 
       square.on('mouseleave', () => {
-        dragEntitiy = null;
         square.size = { x: 100, y: 100 };
       });
 
       square.on('mousedown', () => {
-        square.size = { x: 20, y: 20 };
+        square.size = { x: 110, y: 110 };
       });
 
       entities.push(square);
