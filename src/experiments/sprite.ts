@@ -1,27 +1,18 @@
 import { AssetHandler } from "../core/AssetHandler";
-import { BaseEntity } from "../core/BaseEntity";
-import { MouseHandler } from "../core/MouseHandler";
-import { RenderHandler } from "../core/RenderHandler";
+import { Scene } from "../core/SceneHandler/Scene";
 import { Sprite } from "../core/Sprite";
 
-export default (canvas: HTMLCanvasElement) => {
 
-  const ctx = canvas.getContext('2d');
+export class SpriteExample extends Scene {
 
-  if (!ctx) {
-    throw new Error('Context not found');
-  }
-
-  const init = async () => {
+  public async start() {
     const texture = await AssetHandler().loadPng('frog', 'assets/ninja-frog-jump.png');
 
-    const entities: BaseEntity[] = [];
-
     const createFrogs = () => {
-      for (let x = 0; x < 1000; x++) {
+      for (let x = 0; x < 300; x++) {
         const frog = new Sprite({
           texture,
-          position: { x: Math.random() * canvas.width, y: Math.random() * canvas.height },
+          position: { x: Math.random() * this.canvas.width, y: Math.random() * this.canvas.height },
           rotation: 0
         });
 
@@ -35,16 +26,15 @@ export default (canvas: HTMLCanvasElement) => {
           frog.size = { x: frog.size.x - 10, y: frog.size.y - 10 };
         });
 
-        entities.push(frog);
+        this.mouseHandler.addEntity(frog);
+        this.render.addEntity(frog);
       }
     }
 
     createFrogs();
 
-    new MouseHandler(canvas, entities);
-    new RenderHandler(canvas, entities);
+    this.mouseHandler.start();
+    this.render.startRender();
+
   }
-
-  init();
-
-} 
+}

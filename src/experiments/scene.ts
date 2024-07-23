@@ -1,12 +1,8 @@
 import { AssetHandler } from "../core/AssetHandler";
-import { BaseEntity } from "../core/BaseEntity";
 import { Scene } from "../core/SceneHandler/Scene";
 import { Sprite } from "../core/Sprite";
 
 export class SceneExample extends Scene {
-  constructor(canvas: HTMLCanvasElement, name: string) {
-    super(canvas, name);
-  }
 
   public async start() {
     const texture = await AssetHandler().loadPng('frog', 'assets/ninja-frog-jump.png');

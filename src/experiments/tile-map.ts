@@ -4,10 +4,6 @@ import { Sprite } from "../core/Sprite";
 
 export class TileMapExample extends Scene {
 
-  constructor(canvas: HTMLCanvasElement, name: string) {
-    super(canvas, name);
-  }
-
   public async start() {
     const ninjaTexture = await AssetHandler().loadPng('frog', 'assets/ninja-frog-run.png');
     const ninjaTileMap = await AssetHandler().loadTileMap('frog-tilemap', 'assets/ninja-frog-run.tilemap.json');

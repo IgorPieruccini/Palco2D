@@ -1,6 +1,11 @@
 import { Scene } from './core/SceneHandler/Scene';
 import { SceneHandler } from './core/SceneHandler/SceneHandler';
+import { BatchExample } from './experiments/batch-example';
+import { DragExample } from './experiments/drag-example';
+import { LayersExample } from './experiments/layers';
+import { ObjectEventsExample } from './experiments/object-events';
 import { SceneExample } from './experiments/scene';
+import { SpriteExample } from './experiments/sprite';
 import { TileMapExample } from './experiments/tile-map';
 
 
@@ -29,10 +34,14 @@ canvas.setAttribute(
   (height * dpr).toString(),
 );
 
-const scene = new SceneExample(canvas, "scenes");
 const tileMap = new TileMapExample(canvas, "TileMap");
+const sprite = new SpriteExample(canvas, "Sprite");
+const objectEvents = new ObjectEventsExample(canvas, "ObjectEvent");
+const layer = new LayersExample(canvas, "Layer");
+const drag = new DragExample(canvas, "DragExample");
+const batch = new BatchExample(canvas, "BatchExample");
 
-const scenes: Scene[] = [scene, tileMap];
+const scenes: Scene[] = [tileMap, sprite, objectEvents, layer, drag, batch];
 const initialScene = "TileMap";
 
 const sceneHandler = new SceneHandler(scenes);
