@@ -153,11 +153,23 @@ export class BaseEntity {
   }
 
   isObjectInViewport(viewport: { position: Vec2, size: Vec2 }) {
+
+    const globalMatrix = this.getMatrix();
+    const positionM = getMatrixPosition(this.position.x, this.position.y);
+    const rotationM = getMatrixRotation(this.rotation * (Math.PI / 180));
+    const scaleM = getMatrixScale(this.size.x, this.size.y);
+
+    const matrix = multiplyMatrices(multiplyMatrices(positionM, rotationM), scaleM);
+    const matrixResult = multiplyMatrices(globalMatrix, matrix);
+
+    const position = getPositionFromMatrix(matrixResult);
+    const size = getScaleFromMatrix(matrixResult);
+
     if (
-      this.position.x + this.size.x < viewport.position.x ||
-      this.position.x > viewport.position.x + viewport.size.x ||
-      this.position.y + this.size.y < viewport.position.y ||
-      this.position.y > viewport.position.y + viewport.size.y) {
+      position.x + size.x < viewport.position.x ||
+      position.x - size.x > viewport.position.x + viewport.size.x ||
+      position.y + size.y < viewport.position.y ||
+      position.y - size.x > viewport.position.y + viewport.size.y) {
       return false;
     }
     return true;

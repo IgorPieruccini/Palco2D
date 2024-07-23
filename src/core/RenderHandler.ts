@@ -64,7 +64,7 @@ export class RenderHandler {
 
       const isInViewPort = entity.isObjectInViewport({
         position: { x: 0, y: 0 },
-        size: { x: this.canvas.width, y: this.canvas.height }
+        size: { x: this.canvas.clientWidth, y: this.canvas.clientHeight }
       });
 
       this.ctx.save();

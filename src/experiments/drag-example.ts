@@ -43,6 +43,7 @@ export class DragExample extends Scene {
     }
 
     const parent = new SquareEntity({
+      id: 'parent',
       position: { x: 300, y: 300 },
       size: { x: 100, y: 100 },
       rotation: 45,
@@ -51,6 +52,7 @@ export class DragExample extends Scene {
     addEntityEvents(parent);
 
     const child = new SquareEntity({
+      id: 'firstChild',
       position: { x: 200, y: 0 },
       size: { x: 50, y: 50 },
       rotation: 0,
@@ -59,6 +61,7 @@ export class DragExample extends Scene {
     addEntityEvents(child);
 
     const secondChild = new SquareEntity({
+      id: 'secondChild',
       position: { x: 100, y: 0 },
       size: { x: 50, y: 100 },
       rotation: 90,
