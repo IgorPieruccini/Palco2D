@@ -24,27 +24,25 @@ export class RenderHandler {
     const sortedLayers = entities.sort((a, b) => a.layer - b.layer);
     this.entities = sortedLayers;
 
+    // Set the canvas to the correct size
+    this.ctx.transform(
+      10 / dpr, // a
+      0, // b
+      0, // c  
+      10 / dpr, // d
+      0, // e
+      0 // f
+    );
   }
 
   public stopRender() {
     this.running = false;
     this.entities = [];
-    this.ctx.restore();
     this.ctx.clearRect(0, 0, this.canvas.clientWidth * dpr, this.canvas.clientHeight * dpr);
   }
 
   public startRender() {
     this.running = true;
-    this.ctx.save();
-    // Set the canvas to the correct size
-    this.ctx.transform(
-      dpr, // a
-      0, // b
-      0, // c  
-      dpr, // d
-      0, // e
-      0 // f
-    );
     this.render.bind(this)();
   }
 

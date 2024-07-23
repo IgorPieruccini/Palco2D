@@ -38,8 +38,8 @@ export class TileMapExample extends Scene {
 
     createFrogs();
 
-    this.mouseHandler.start();
     this.render.startRender();
+    this.mouseHandler.start();
   }
 
 }
