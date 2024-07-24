@@ -4,7 +4,6 @@ import { BatchExample } from './experiments/batch-example';
 import { DragExample } from './experiments/drag-example';
 import { LayersExample } from './experiments/layers';
 import { ObjectEventsExample } from './experiments/object-events';
-import { SceneExample } from './experiments/scene';
 import { SpriteExample } from './experiments/sprite';
 import { TileMapExample } from './experiments/tile-map';
 
