@@ -1,11 +1,11 @@
-import { resolve } from "path";
+import { resolve, dirname } from "path";
 import url from "url";
-import HtmlWebpackPlugin from "html-webpack-plugin";
 
-const __dirname = url.fileURLToPath(import.meta.url);
+const __filename = url.fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 export default {
-  mode: "development",
+  mode: "production",
   entry: "./src/index.ts",
   devtool: "inline-source-map",
   module: {
@@ -26,10 +26,4 @@ export default {
     publicPath: "/",
     clean: true,
   },
-  plugins: [
-    new HtmlWebpackPlugin({
-      title: "WebGL Lab",
-      template: "./src/index.html",
-    }),
-  ],
 };
