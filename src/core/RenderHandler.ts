@@ -1,6 +1,7 @@
 import { BaseEntity } from "./BaseEntity";
 import { FPSHandler } from "./FPSHandler";
 import { Sprite } from "./Sprite";
+import { getMatrixPosition, getMatrixRotation, getMatrixScale, getPositionFromMatrix, getRotationAngleFromMatrix, multiplyMatrices } from "./utils";
 
 const dpr = window.devicePixelRatio;
 
@@ -81,27 +82,21 @@ export class RenderHandler {
       if (entity.children.length > 0) {
         this.ctx.save();
         const scale = entity.getScale();
-
-        // apply translation matrix
-        this.ctx.transform(
-          scale.x, // a
-          0, // b
-          0, // c  
-          scale.y, // d
-          entity.position.x, // e
-          entity.position.y // f
-        );
-
         const rad = entity.rotation * (Math.PI / 180);
 
-        // apply rotation matrix
+        const positionM = getMatrixPosition(entity.position.x, entity.position.y);
+        const rotationM = getMatrixRotation(rad);
+        const scaleM = getMatrixScale(scale.x, scale.y);
+
+        const multipliedMatrix = multiplyMatrices(multiplyMatrices(positionM, rotationM), scaleM);
+
         this.ctx.transform(
-          Math.cos(rad), // a
-          Math.sin(rad), // b
-          -Math.sin(rad), // c  
-          Math.cos(rad), // d
-          1,
-          1
+          multipliedMatrix[0][0], // a
+          multipliedMatrix[1][0], // b
+          multipliedMatrix[0][1], // c  
+          multipliedMatrix[1][1], // d
+          multipliedMatrix[0][2], // e
+          multipliedMatrix[1][2] // f
         );
 
         this.renderLayers(entity.children.slice());

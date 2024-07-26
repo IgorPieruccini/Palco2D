@@ -1,8 +1,8 @@
 import { BaseEntity, BaseEntityProps } from "./BaseEntity";
+import { Vec2 } from "./types";
 
 type TextProps = Omit<BaseEntityProps, 'size'>
   & {
-    ctx: CanvasRenderingContext2D,
     text: string,
     color?: string,
     font?: string,
@@ -16,9 +16,10 @@ export class Text extends BaseEntity {
   font: string = 'Arial';
   fontSize: number = 20;
   maxWidth: number | undefined = undefined;
+  dimations: Vec2 = { x: 0, y: 0 };
 
   constructor(props: TextProps) {
-    const size = { x: 0, y: 0 };
+    const size = { x: 1, y: 1 };
     super({ ...props, size });
 
     this.text = props.text;
@@ -31,17 +32,32 @@ export class Text extends BaseEntity {
 
   private setTextBoundary(ctx: CanvasRenderingContext2D) {
     const metrics = ctx.measureText(this.text);
-    this.size = { x: metrics.width, y: metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent };
+    const fontHeight = metrics.fontBoundingBoxAscent + metrics.actualBoundingBoxDescent;
+    this.dimations = { x: metrics.width, y: fontHeight };
+  }
+
+  isPointOverEntity(point: Vec2) {
+    const relativePosition = this.getRelativePostion(point);
+
+    const mousePos = {
+      x: relativePosition.x,
+      y: relativePosition.y,
+    }
+
+    return (
+      this.dimations.x >= mousePos.x &&
+      0 <= mousePos.x &&
+      this.dimations.y >= mousePos.y &&
+      0 <= mousePos.y
+    );
   }
 
   render(ctx: CanvasRenderingContext2D) {
-    ctx.save();
     ctx.fillStyle = this.color;
     ctx.font = `${this.fontSize}px ${this.font}`;
-    ctx.fillText(this.text, -this.size.x / 2, this.size.y / 2, this.maxWidth);
-
+    ctx.textBaseline = 'top';
+    ctx.fillText(this.text, 0, 0, this.maxWidth);
     this.setTextBoundary(ctx);
-    ctx.restore();
   }
 
 }
