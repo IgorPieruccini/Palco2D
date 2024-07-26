@@ -13,7 +13,6 @@ export class TextExample extends Scene {
     const addEventsToText = (text: Text) => {
 
       text.on('mouseenter', () => {
-        console.log(text.id);
         text.color = 'red';
       });
 
