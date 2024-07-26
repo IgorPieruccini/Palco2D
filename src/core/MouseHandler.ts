@@ -60,27 +60,6 @@ export class MouseHandler {
     this.hoveredEntity.onEntityEvent.mouseup?.();
   }
 
-  private isMouseOverEntity(entity: BaseEntity) {
-    const { size } = entity;
-
-    const relativeMousePosition = entity.getRelativePostion(this.position);
-
-    const matrix = entity.getMatrix();
-    const globalScale = getScaleFromMatrix(matrix);
-
-    const mousePos = {
-      x: relativeMousePosition.x,
-      y: relativeMousePosition.y,
-    }
-
-    return (
-      (-size.x * globalScale.x) / 2 <= mousePos.x &&
-      (size.x * globalScale.x) / 2 >= mousePos.x &&
-      (-size.y * globalScale.y) / 2 <= mousePos.y &&
-      (size.y * globalScale.y) / 2 >= mousePos.y
-    );
-  }
-
   private dispatchEventToEntities(entities: BaseEntity[]) {
     for (let x = entities.length - 1; x >= 0; x--) {
       const entity = entities[x];
@@ -91,7 +70,7 @@ export class MouseHandler {
         );
       }
 
-      const isMouseOver = this.isMouseOverEntity(entity);
+      const isMouseOver = entity.isPointOverEntity(this.position);
 
       if (!isMouseOver && this.hoveredEntity?.id === entity.id) {
         entity?.onEntityEvent.mouseleave?.();

@@ -152,6 +152,26 @@ export class BaseEntity {
     child.setParent(this);
   }
 
+  isPointOverEntity(point: Vec2) {
+    const relativePosition = this.getRelativePostion(point);
+
+
+    const matrix = this.getMatrix();
+    const globalScale = getScaleFromMatrix(matrix);
+
+    const mousePos = {
+      x: relativePosition.x,
+      y: relativePosition.y,
+    }
+
+    return (
+      (-this.size.x * globalScale.x) / 2 <= mousePos.x &&
+      (this.size.x * globalScale.x) / 2 >= mousePos.x &&
+      (-this.size.y * globalScale.y) / 2 <= mousePos.y &&
+      (this.size.y * globalScale.y) / 2 >= mousePos.y
+    );
+  }
+
   isObjectInViewport(viewport: { position: Vec2, size: Vec2 }) {
 
     const globalMatrix = this.getMatrix();

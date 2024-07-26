@@ -4,8 +4,8 @@ import { BatchExample } from './experiments/batch-example';
 import { DragExample } from './experiments/drag-example';
 import { LayersExample } from './experiments/layers';
 import { ObjectEventsExample } from './experiments/object-events';
-import { SceneExample } from './experiments/scene';
 import { SpriteExample } from './experiments/sprite';
+import { TextExample } from './experiments/text-example';
 import { TileMapExample } from './experiments/tile-map';
 
 
@@ -40,9 +40,10 @@ const objectEvents = new ObjectEventsExample(canvas, "ObjectEvent");
 const layer = new LayersExample(canvas, "Layer");
 const drag = new DragExample(canvas, "DragExample");
 const batch = new BatchExample(canvas, "BatchExample");
+const text = new TextExample(canvas, "TextExample");
 
-const scenes: Scene[] = [tileMap, sprite, objectEvents, layer, drag, batch];
-const initialScene = "TileMap";
+const scenes: Scene[] = [tileMap, sprite, objectEvents, layer, drag, batch, text];
+const initialScene = "TextExample";
 
 const sceneHandler = new SceneHandler(scenes);
 

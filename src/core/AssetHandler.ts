@@ -32,9 +32,21 @@ export const AssetHandler = (() => {
       }
     }
 
+    const loadFont = async (name: string, path: string) => {
+      return new Promise<FontFace>((resolve, reject) => {
+        const font = new FontFace(name, `url(${path})`);
+        font.load().then((loadedFont) => {
+          //@ts-ignore FontFaceSet does have a add method: https://developer.mozilla.org/en-US/docs/Web/API/FontFaceSet/add
+          document.fonts.add(loadedFont);
+          resolve(loadedFont);
+        }).catch((err) => reject(err));
+      });
+    }
+
     return {
       loadPng,
       loadTileMap,
+      loadFont,
       getAsset
     }
   }
