@@ -1,7 +1,7 @@
 {
-  "name": "canvas-lab",
+  "name": "palco-2d",
   "version": "1.0.0",
-  "description": "Lab project to test and learn canvas2D",
+  "description": "canvas 2D framework to help manipulating graphics",
   "type": "module",
   "main": "index.ts",
   "scripts": {
