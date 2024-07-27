@@ -32,4 +32,11 @@ export type SupportedAssetsType =
   JSON |
   TileMapType;
 
-
+export interface BaseEntityProps {
+  position: Vec2;
+  size: Vec2;
+  rotation: number;
+  layer?: number;
+  id?: string;
+  static?: boolean;
+}

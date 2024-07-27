@@ -1,6 +1,6 @@
-import { BaseEntity, BaseEntityProps } from "./BaseEntity";
+import { BaseEntity } from "./BaseEntity";
 import { TileAnimationHandler } from "./TileAnimationHandler";
-import { BaseTile, TileMapType } from "./types";
+import { BaseEntityProps, BaseTile, TileMapType } from "./types";
 
 type SpriteProps = Omit<BaseEntityProps, "size"> &
 { texture: HTMLImageElement, tileMap?: TileMapType };
@@ -24,8 +24,11 @@ export class Sprite extends BaseEntity {
     if (this.tileMap) {
       const sequence = this.tileMap.sequence;
       this.size = this.tileMap.size;
-      this.currentTile = this.tileMap.map[sequence[0]];
-      this.animation = new TileAnimationHandler(this);
+      const firstTile = Object.keys(this.tileMap.map)[0];
+      this.currentTile = this.tileMap.map[sequence[0] || firstTile];
+      if (this.currentTile === undefined) {
+        this.animation = new TileAnimationHandler(this);
+      }
     } else {
       this.currentTile = {
         x: 0, y: 0, width: this.size.x, height: this.size.y
@@ -35,7 +38,12 @@ export class Sprite extends BaseEntity {
 
   setTile(key: string) {
     if (this.tileMap) {
+      const tileMapKey = this.tileMap.map[key];
+      if (!tileMapKey) {
+        throw new Error(`Tile with key ${key} not found`);
+      }
       this.currentTile = this.tileMap.map[key];
+      this.size = { x: this.currentTile.width, y: this.currentTile.height };
     }
   }
 

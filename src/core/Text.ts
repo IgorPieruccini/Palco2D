@@ -1,5 +1,5 @@
-import { BaseEntity, BaseEntityProps } from "./BaseEntity";
-import { Vec2 } from "./types";
+import { BaseEntity } from "./BaseEntity";
+import { BaseEntityProps, Vec2 } from "./types";
 
 type TextProps = Omit<BaseEntityProps, 'size'>
   & {

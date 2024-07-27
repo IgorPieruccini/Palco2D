@@ -1,14 +1,5 @@
-import { EntityEvents, Matrix, EventsType, Vec2 } from './types'
+import { EntityEvents, Matrix, EventsType, Vec2, BaseEntityProps } from './types'
 import { generateUUID, getMatrixPosition, getMatrixRotation, getMatrixScale, getPositionFromMatrix, getRotationAngleFromMatrix, getScaleFromMatrix, identityMatrix, multiplyMatrices } from './utils';
-
-export interface BaseEntityProps {
-  position: Vec2;
-  size: Vec2;
-  rotation: number;
-  layer?: number;
-  id?: string;
-  static?: boolean;
-}
 
 export class BaseEntity {
   id: string;
