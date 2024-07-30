@@ -2,6 +2,7 @@ import { Scene } from './core/SceneHandler/Scene';
 import { SceneHandler } from './core/SceneHandler/SceneHandler';
 import { BatchExample } from './experiments/batch-example';
 import { DragExample } from './experiments/drag-example';
+import { FlipSpriteExample } from './experiments/fip-sprite';
 import { LayersExample } from './experiments/layers';
 import { ObjectEventsExample } from './experiments/object-events';
 import { SpriteExample } from './experiments/sprite';
@@ -41,9 +42,10 @@ const layer = new LayersExample(canvas, "Layer");
 const drag = new DragExample(canvas, "DragExample");
 const batch = new BatchExample(canvas, "BatchExample");
 const text = new TextExample(canvas, "TextExample");
+const flippedSprite = new FlipSpriteExample(canvas, "Flip sprite");
 
-const scenes: Scene[] = [tileMap, sprite, objectEvents, layer, drag, batch, text];
-const initialScene = "TextExample";
+const scenes: Scene[] = [tileMap, sprite, objectEvents, layer, drag, batch, text, flippedSprite];
+const initialScene = "Flip sprite";
 
 const sceneHandler = new SceneHandler(scenes);
 
