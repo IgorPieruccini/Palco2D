@@ -26,9 +26,7 @@ export class Sprite extends BaseEntity {
       this.size = this.tileMap.size;
       const firstTile = Object.keys(this.tileMap.map)[0];
       this.currentTile = this.tileMap.map[sequence[0] || firstTile];
-      if (this.currentTile === undefined) {
-        this.animation = new TileAnimationHandler(this);
-      }
+      this.animation = new TileAnimationHandler(this);
     } else {
       this.currentTile = {
         x: 0, y: 0, width: this.size.x, height: this.size.y

@@ -45,7 +45,7 @@ const text = new TextExample(canvas, "TextExample");
 const flippedSprite = new FlipSpriteExample(canvas, "Flip sprite");
 
 const scenes: Scene[] = [tileMap, sprite, objectEvents, layer, drag, batch, text, flippedSprite];
-const initialScene = "Flip sprite";
+const initialScene = "TileMap";
 
 const sceneHandler = new SceneHandler(scenes);
 
