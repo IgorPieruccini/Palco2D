@@ -1,6 +1,7 @@
 import { Scene } from './core/SceneHandler/Scene';
 import { SceneHandler } from './core/SceneHandler/SceneHandler';
 import { BatchExample } from './experiments/batch-example';
+import { BlendingModeExample } from './experiments/blending-mode';
 import { DragExample } from './experiments/drag-example';
 import { FlipSpriteExample } from './experiments/fip-sprite';
 import { LayersExample } from './experiments/layers';
@@ -43,9 +44,10 @@ const drag = new DragExample(canvas, "DragExample");
 const batch = new BatchExample(canvas, "BatchExample");
 const text = new TextExample(canvas, "TextExample");
 const flippedSprite = new FlipSpriteExample(canvas, "Flip sprite");
+const blendingMode = new BlendingModeExample(canvas, "Blending Mode");
 
-const scenes: Scene[] = [tileMap, sprite, objectEvents, layer, drag, batch, text, flippedSprite];
-const initialScene = "TileMap";
+const scenes: Scene[] = [tileMap, sprite, objectEvents, layer, drag, batch, text, flippedSprite, blendingMode];
+const initialScene = "Blending Mode";
 
 const sceneHandler = new SceneHandler(scenes);
 

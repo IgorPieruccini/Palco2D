@@ -1,4 +1,4 @@
-import { EntityEvents, Matrix, EventsType, Vec2, BaseEntityProps } from './types'
+import { EntityEvents, EventsType, Vec2, BaseEntityProps } from './types'
 import { generateUUID, getMatrixPosition, getMatrixRotation, getMatrixScale, getPositionFromMatrix, getRotationAngleFromMatrix, getScaleFromMatrix, identityMatrix, multiplyMatrices } from './utils';
 
 export class BaseEntity {
@@ -12,6 +12,7 @@ export class BaseEntity {
   onEntityEvent: EntityEvents;
   parent: BaseEntity | null;
   static: boolean = false;
+  globalCompositeOperation: GlobalCompositeOperation = 'source-over';
 
   private initialSize: Vec2;
 
@@ -27,6 +28,7 @@ export class BaseEntity {
     this.onEntityEvent = {};
     this.parent = null;
     this.static = props.static || false;
+    this.globalCompositeOperation = props.globalCompositeOperation || 'source-over';
   }
 
   public on(event: EventsType, callback: () => void) {

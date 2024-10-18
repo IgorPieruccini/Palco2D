@@ -39,4 +39,5 @@ export interface BaseEntityProps {
   layer?: number;
   id?: string;
   static?: boolean;
+  globalCompositeOperation?: GlobalCompositeOperation;
 }
