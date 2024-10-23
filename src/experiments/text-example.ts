@@ -8,6 +8,7 @@ export class TextExample extends Scene {
   public async start() {
 
     await AssetHandler().loadFont('PixelifySans', 'assets/PixelifySans-Regular.ttf');
+    await AssetHandler().loadFont('BebasNeue', 'assets/BebasNeue-Regular.ttf');
 
 
     const addEventsToText = (text: Text) => {
@@ -46,32 +47,27 @@ export class TextExample extends Scene {
       id: 'text-child',
       text: 'Click me!',
       color: 'white',
-      font: 'PixelifySans',
-      fontSize: 30,
+      stroke: {
+        strokeColor: 'blue',
+        lineWidth: 10,
+      },
+      font: 'BebasNeue',
+      fontSize: 100,
       position: { x: 0, y: 100 },
       rotation: 0,
+      shadow: {
+        shadowColor: 'black',
+        shadowBlur: 0,
+        shadowOffsetX: 10,
+        shadowOffsetY: 2,
+      },
     });
     addEventsToText(childText);
 
     parentText.addChild(childText);
 
 
-    const graph1 = new SquareEntity({
-      position: { x: 300, y: 400 },
-      size: { x: 100, y: 100 },
-      rotation: 90,
-    });
-
-    const graph2 = new SquareEntity({
-      position: { x: 120, y: 0 },
-      size: { x: 100, y: 100 },
-      rotation: 0,
-    });
-
-
-    graph1.addChild(graph2);
-
-    this.render.addEntities([parentText, graph1]);
+    this.render.addEntities([parentText]);
     this.render.startRender();
 
     this.mouseHandler.addEntities([parentText, childText]);

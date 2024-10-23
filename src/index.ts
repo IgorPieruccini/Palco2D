@@ -47,7 +47,7 @@ const flippedSprite = new FlipSpriteExample(canvas, "Flip sprite");
 const blendingMode = new BlendingModeExample(canvas, "Blending Mode");
 
 const scenes: Scene[] = [tileMap, sprite, objectEvents, layer, drag, batch, text, flippedSprite, blendingMode];
-const initialScene = "Blending Mode";
+const initialScene = "TextExample";
 
 const sceneHandler = new SceneHandler(scenes);
 

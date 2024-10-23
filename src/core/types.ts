@@ -41,3 +41,4 @@ export interface BaseEntityProps {
   static?: boolean;
   globalCompositeOperation?: GlobalCompositeOperation;
 }
+
