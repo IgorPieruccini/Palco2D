@@ -1,5 +1,21 @@
-import { EntityEvents, EventsType, Vec2, BaseEntityProps } from './types'
-import { generateUUID, getMatrixPosition, getMatrixRotation, getMatrixScale, getPositionFromMatrix, getRotationAngleFromMatrix, getScaleFromMatrix, identityMatrix, multiplyMatrices } from './utils';
+import {
+  EntityEvents,
+  EventsType,
+  Vec2,
+  BaseEntityProps,
+  SerializedBaseEntityProps,
+} from "./types";
+import {
+  generateUUID,
+  getMatrixPosition,
+  getMatrixRotation,
+  getMatrixScale,
+  getPositionFromMatrix,
+  getRotationAngleFromMatrix,
+  getScaleFromMatrix,
+  identityMatrix,
+  multiplyMatrices,
+} from "./utils";
 
 export class BaseEntity {
   id: string;
@@ -12,7 +28,7 @@ export class BaseEntity {
   onEntityEvent: EntityEvents;
   parent: BaseEntity | null;
   static: boolean = false;
-  globalCompositeOperation: GlobalCompositeOperation = 'source-over';
+  globalCompositeOperation: GlobalCompositeOperation = "source-over";
 
   private initialSize: Vec2;
 
@@ -28,32 +44,32 @@ export class BaseEntity {
     this.onEntityEvent = {};
     this.parent = null;
     this.static = props.static || false;
-    this.globalCompositeOperation = props.globalCompositeOperation || 'source-over';
+    this.globalCompositeOperation =
+      props.globalCompositeOperation || "source-over";
   }
 
   public on(event: EventsType, callback: () => void) {
     this.onEntityEvent = {
       ...this.onEntityEvent,
-      [event]: callback
-    }
+      [event]: callback,
+    };
   }
 
   public getScale() {
     return {
       x: this.size.x / this.initialSize.x,
-      y: this.size.y / this.initialSize.y
-    }
+      y: this.size.y / this.initialSize.y,
+    };
   }
 
   public getPivotPosition() {
     return {
       x: this.position.x + this.size.x / 2,
-      y: this.position.y + this.size.y / 2
-    }
+      y: this.position.y + this.size.y / 2,
+    };
   }
 
   render(ctx: CanvasRenderingContext2D) { }
-
 
   private getAllParents() {
     let parent = this.parent;
@@ -77,13 +93,15 @@ export class BaseEntity {
 
       const rad = angle * (Math.PI / 180);
 
-
       const positionM = getMatrixPosition(position.x, position.y);
       const rotationM = getMatrixRotation(rad);
       const scale = parent.getScale();
       const scaleM = getMatrixScale(scale.x, scale.y);
 
-      const matrixResult = multiplyMatrices(multiplyMatrices(positionM, rotationM), scaleM);
+      const matrixResult = multiplyMatrices(
+        multiplyMatrices(positionM, rotationM),
+        scaleM,
+      );
 
       const transformedMatrix = multiplyMatrices(matrix, matrixResult);
 
@@ -105,39 +123,47 @@ export class BaseEntity {
 
     const translatedMousePosition = {
       x: mousePosition.x - globalPosition.x,
-      y: mousePosition.y - globalPosition.y
-    }
+      y: mousePosition.y - globalPosition.y,
+    };
 
     const mouseLocalPosition = {
-      x: translatedMousePosition.x * cosAngle - translatedMousePosition.y * sinAngle,
-      y: translatedMousePosition.x * sinAngle + translatedMousePosition.y * cosAngle
-    }
+      x:
+        translatedMousePosition.x * cosAngle -
+        translatedMousePosition.y * sinAngle,
+      y:
+        translatedMousePosition.x * sinAngle +
+        translatedMousePosition.y * cosAngle,
+    };
 
     if (relativeToParent)
       return {
         x: mouseLocalPosition.x / globalScale.x,
-        y: mouseLocalPosition.y / globalScale.y
-      }
+        y: mouseLocalPosition.y / globalScale.y,
+      };
 
     // child
     const translatedMousePositionChild = {
-      x: mouseLocalPosition.x - (this.position.x * globalScale.x),
-      y: mouseLocalPosition.y - (this.position.y * globalScale.y)
-    }
+      x: mouseLocalPosition.x - this.position.x * globalScale.x,
+      y: mouseLocalPosition.y - this.position.y * globalScale.y,
+    };
 
     const rad = this.rotation * (Math.PI / 180);
     const cosAngleChild = Math.cos(-rad);
     const sinAngleChild = Math.sin(-rad);
 
     const mouseLocalPositionChild = {
-      x: translatedMousePositionChild.x * cosAngleChild - translatedMousePositionChild.y * sinAngleChild,
-      y: translatedMousePositionChild.x * sinAngleChild + translatedMousePositionChild.y * cosAngleChild
-    }
+      x:
+        translatedMousePositionChild.x * cosAngleChild -
+        translatedMousePositionChild.y * sinAngleChild,
+      y:
+        translatedMousePositionChild.x * sinAngleChild +
+        translatedMousePositionChild.y * cosAngleChild,
+    };
 
     return {
       x: mouseLocalPositionChild.x,
-      y: mouseLocalPositionChild.y
-    }
+      y: mouseLocalPositionChild.y,
+    };
   }
 
   addChild(child: BaseEntity) {
@@ -148,14 +174,13 @@ export class BaseEntity {
   isPointOverEntity(point: Vec2) {
     const relativePosition = this.getRelativePostion(point);
 
-
     const matrix = this.getMatrix();
     const globalScale = getScaleFromMatrix(matrix);
 
     const mousePos = {
       x: relativePosition.x,
       y: relativePosition.y,
-    }
+    };
 
     return (
       (-this.size.x * globalScale.x) / 2 <= mousePos.x &&
@@ -165,14 +190,16 @@ export class BaseEntity {
     );
   }
 
-  isObjectInViewport(viewport: { position: Vec2, size: Vec2 }) {
-
+  isObjectInViewport(viewport: { position: Vec2; size: Vec2 }) {
     const globalMatrix = this.getMatrix();
     const positionM = getMatrixPosition(this.position.x, this.position.y);
     const rotationM = getMatrixRotation(this.rotation * (Math.PI / 180));
     const scaleM = getMatrixScale(this.size.x, this.size.y);
 
-    const matrix = multiplyMatrices(multiplyMatrices(positionM, rotationM), scaleM);
+    const matrix = multiplyMatrices(
+      multiplyMatrices(positionM, rotationM),
+      scaleM,
+    );
     const matrixResult = multiplyMatrices(globalMatrix, matrix);
 
     const position = getPositionFromMatrix(matrixResult);
@@ -182,7 +209,8 @@ export class BaseEntity {
       position.x + size.x < viewport.position.x ||
       position.x - size.x > viewport.position.x + viewport.size.x ||
       position.y + size.y < viewport.position.y ||
-      position.y - size.x > viewport.position.y + viewport.size.y) {
+      position.y - size.x > viewport.position.y + viewport.size.y
+    ) {
       return false;
     }
     return true;
@@ -190,5 +218,27 @@ export class BaseEntity {
 
   private setParent(parentEntity: BaseEntity) {
     this.parent = parentEntity;
+  }
+
+  public serialize(): SerializedBaseEntityProps {
+    return {
+      id: this.id,
+      position: this.position,
+      size: this.size,
+      rotation: this.rotation,
+      layer: this.layer,
+      children: this.children.map((child) => child.serialize()),
+    };
+  }
+
+  public static deserialize<T extends SerializedBaseEntityProps>(
+    props: T,
+  ): BaseEntity {
+    const entity = new BaseEntity(props);
+
+    entity.children = props.children.map((childProps) =>
+      BaseEntity.deserialize(childProps),
+    );
+    return entity;
   }
 }
