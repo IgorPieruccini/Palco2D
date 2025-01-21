@@ -1,35 +1,33 @@
 import { BaseEntity } from "./BaseEntity";
 import { BaseEntityProps, Vec2 } from "./types";
 
-
 type Shadow = {
   shadowColor: string;
   shadowBlur: number;
   shadowOffsetX: number;
   shadowOffsetY: number;
-}
+};
 
 type Stroke = {
   strokeColor: string;
   lineWidth: number;
-}
+};
 
-type TextProps = Omit<BaseEntityProps, 'size'>
-  & {
-    text: string,
-    color?: string,
-    stroke?: Stroke,
-    font?: string,
-    fontSize?: number,
-    maxWidth?: number,
-    shadow?: Shadow
-  }
+type TextProps = Omit<BaseEntityProps, "size"> & {
+  text: string;
+  color?: string;
+  stroke?: Stroke;
+  font?: string;
+  fontSize?: number;
+  maxWidth?: number;
+  shadow?: Shadow;
+};
 
 export class Text extends BaseEntity {
-  text: string = '';
-  color: string = 'black';
+  text: string = "";
+  color: string = "black";
   stroke: Stroke | undefined = undefined;
-  font: string = 'Arial';
+  font: string = "Arial";
   fontSize: number = 20;
   maxWidth: number | undefined = undefined;
   dimations: Vec2 = { x: 0, y: 0 };
@@ -51,7 +49,8 @@ export class Text extends BaseEntity {
 
   private setTextBoundary(ctx: CanvasRenderingContext2D) {
     const metrics = ctx.measureText(this.text);
-    const fontHeight = metrics.fontBoundingBoxAscent + metrics.actualBoundingBoxDescent;
+    const fontHeight =
+      metrics.fontBoundingBoxAscent + metrics.actualBoundingBoxDescent;
     this.dimations = { x: metrics.width, y: fontHeight };
   }
 
@@ -61,7 +60,7 @@ export class Text extends BaseEntity {
     const mousePos = {
       x: relativePosition.x,
       y: relativePosition.y,
-    }
+    };
 
     return (
       this.dimations.x >= mousePos.x &&
@@ -73,13 +72,13 @@ export class Text extends BaseEntity {
 
   render(ctx: CanvasRenderingContext2D) {
     ctx.font = `${this.fontSize}px ${this.font}`;
-    ctx.textBaseline = 'top';
+    ctx.textBaseline = "top";
 
     if (this.shadow) {
       ctx.shadowColor = this.shadow.shadowColor;
       ctx.shadowBlur = this.shadow.shadowBlur;
       ctx.shadowOffsetX = this.shadow.shadowOffsetX;
-      ctx.shadowOffsetY = this.shadow.shadowOffsetY
+      ctx.shadowOffsetY = this.shadow.shadowOffsetY;
     }
 
     if (this.stroke) {
@@ -94,4 +93,18 @@ export class Text extends BaseEntity {
     this.setTextBoundary(ctx);
   }
 
+  serialize() {
+    const data = super.serialize();
+    return {
+      ...data,
+      type: "text",
+      text: this.text,
+      color: this.color,
+      font: this.font,
+      fontSize: this.fontSize,
+      maxWidth: this.maxWidth,
+      shadow: this.shadow,
+      stroke: this.stroke,
+    };
+  }
 }

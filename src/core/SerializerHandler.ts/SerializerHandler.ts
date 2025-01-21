@@ -1,7 +1,7 @@
 import { BaseEntity } from "../BaseEntity";
 import { Sprite } from "../Sprite";
 import { SquareEntity } from "../SquareEntity";
-import { BaseEntityProps, SerializedBaseEntityProps } from "../types";
+import { Text } from "../Text";
 
 export interface SerializableClass {
   new(args: any): BaseEntity;
@@ -13,6 +13,7 @@ const DEFAULT_SERIALIZER_CLASSES: SerializableClasses = {
   baseEntity: BaseEntity,
   squareEntity: SquareEntity,
   spriteEntity: Sprite,
+  textEntity: Text,
 };
 
 export class SerializerHandler {

@@ -34,7 +34,6 @@ export class SerializeExample extends Scene {
           static: false,
           globalCompositeOperation: "source-over",
           color: "red",
-          children: [],
         },
         {
           type: "spriteEntity",
@@ -46,7 +45,21 @@ export class SerializeExample extends Scene {
           static: false,
           globalCompositeOperation: "source-over",
           texture,
-          children: [],
+        },
+        {
+          type: "textEntity",
+          id: "4",
+          // TODO: now working  with negative values
+          position: { x: 0, y: 200 },
+          size: { x: 10, y: 20 },
+          rotation: 0,
+          layer: 0,
+          static: false,
+          globalCompositeOperation: "source-over",
+          text: "Serialize Example",
+          font: "Arial",
+          fontSize: 24,
+          color: "black",
         },
       ],
     };
