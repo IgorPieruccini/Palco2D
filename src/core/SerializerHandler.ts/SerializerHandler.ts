@@ -1,9 +1,10 @@
 import { BaseEntity } from "../BaseEntity";
+import { Sprite } from "../Sprite";
 import { SquareEntity } from "../SquareEntity";
 import { BaseEntityProps, SerializedBaseEntityProps } from "../types";
 
 export interface SerializableClass {
-  new(args: BaseEntityProps): BaseEntity;
+  new(args: any): BaseEntity;
 }
 
 export type SerializableClasses<T = Record<string, SerializableClass>> = T;
@@ -11,6 +12,7 @@ export type SerializableClasses<T = Record<string, SerializableClass>> = T;
 const DEFAULT_SERIALIZER_CLASSES: SerializableClasses = {
   baseEntity: BaseEntity,
   squareEntity: SquareEntity,
+  spriteEntity: Sprite,
 };
 
 export class SerializerHandler {
@@ -20,7 +22,7 @@ export class SerializerHandler {
     this.serializers = { ...DEFAULT_SERIALIZER_CLASSES, ...props };
   }
 
-  public createFromJson(props: SerializedBaseEntityProps): BaseEntity {
+  public createFromJson(props: any): BaseEntity {
     const { type, ...data } = props;
 
     const serializer = this.serializers[type];
@@ -31,8 +33,10 @@ export class SerializerHandler {
 
     const entity = new serializer(data);
 
-    for (const child of props.children) {
-      entity.children.push(this.createFromJson(child));
+    if (props.children) {
+      for (const child of props.children) {
+        entity.children.push(this.createFromJson(child));
+      }
     }
 
     return entity;

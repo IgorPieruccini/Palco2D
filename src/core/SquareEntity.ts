@@ -1,8 +1,15 @@
 import { BaseEntity } from "./BaseEntity";
-import { SerializedBaseEntityProps } from "./types";
+import { BaseEntityProps, SerializedBaseEntityProps } from "./types";
 
 export class SquareEntity extends BaseEntity {
   public color: string = "#eab676";
+
+  constructor(props: BaseEntityProps & { color?: string }) {
+    super(props);
+    if (props.color) {
+      this.color = props.color;
+    }
+  }
 
   render(ctx: CanvasRenderingContext2D) {
     if (this.globalCompositeOperation) {

@@ -2,11 +2,12 @@ import { BaseEntity } from "./BaseEntity";
 import { TileAnimationHandler } from "./TileAnimationHandler";
 import { BaseEntityProps, BaseTile, TileMapType } from "./types";
 
-type SpriteProps = Omit<BaseEntityProps, "size"> &
-{ texture: HTMLImageElement, tileMap?: TileMapType };
+type SpriteProps = Omit<BaseEntityProps, "size"> & {
+  texture: HTMLImageElement;
+  tileMap?: TileMapType;
+};
 
 export class Sprite extends BaseEntity {
-
   private texture: HTMLImageElement;
   private tileMap: TileMapType | undefined;
   private currentTile: BaseTile;
@@ -29,8 +30,11 @@ export class Sprite extends BaseEntity {
       this.animation = new TileAnimationHandler(this);
     } else {
       this.currentTile = {
-        x: 0, y: 0, width: this.size.x, height: this.size.y
-      }
+        x: 0,
+        y: 0,
+        width: this.size.x,
+        height: this.size.y,
+      };
     }
   }
 
@@ -71,7 +75,17 @@ export class Sprite extends BaseEntity {
       -this.size.x / 2,
       -this.size.y / 2,
       this.size.x,
-      this.size.y
+      this.size.y,
     );
+  }
+
+  serialize() {
+    const data = super.serialize();
+    return {
+      ...data,
+      type: "sprite",
+      texture: this.texture.src,
+      tileMap: this.tileMap,
+    };
   }
 }
