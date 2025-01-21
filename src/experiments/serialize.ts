@@ -1,14 +1,18 @@
 import { Scene } from "../core/SceneHandler/Scene";
+import { SerializerHandler } from "../core/SerializerHandler.ts/SerializerHandler";
 import { SquareEntity } from "../core/SquareEntity";
 import { SerializedBaseEntityProps } from "../core/types";
 
 export class SerializeExample extends Scene {
   public async start() {
+    const serializer = new SerializerHandler({});
+
     const entities = [];
 
     const json: SerializedBaseEntityProps<
       SerializedBaseEntityProps & { color: string }
     > = {
+      type: "squareEntity",
       id: "1",
       position: { x: 200, y: 200 },
       size: { x: 100, y: 100 },
@@ -19,9 +23,10 @@ export class SerializeExample extends Scene {
       color: "#eab676",
       children: [
         {
+          type: "squareEntity",
           id: "2",
-          position: { x: 100, y: 50 },
-          size: { x: 50, y: 50 },
+          position: { x: 100, y: 100 },
+          size: { x: 100, y: 100 },
           rotation: 0,
           layer: 0,
           static: false,
@@ -32,7 +37,7 @@ export class SerializeExample extends Scene {
       ],
     };
 
-    const entity = SquareEntity.deserialize(json);
+    const entity = serializer.createFromJson(json);
 
     entity.on("mousedown", () => {
       window.alert(JSON.stringify(entity.serialize()));

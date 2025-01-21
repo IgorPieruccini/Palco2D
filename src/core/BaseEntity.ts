@@ -222,6 +222,7 @@ export class BaseEntity {
 
   public serialize(): SerializedBaseEntityProps {
     return {
+      type: "baseEntity",
       id: this.id,
       position: this.position,
       size: this.size,
@@ -229,16 +230,5 @@ export class BaseEntity {
       layer: this.layer,
       children: this.children.map((child) => child.serialize()),
     };
-  }
-
-  public static deserialize<T extends SerializedBaseEntityProps>(
-    props: T,
-  ): BaseEntity {
-    const entity = new BaseEntity(props);
-
-    entity.children = props.children.map((childProps) =>
-      BaseEntity.deserialize(childProps),
-    );
-    return entity;
   }
 }

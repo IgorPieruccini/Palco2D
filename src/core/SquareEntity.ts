@@ -16,32 +16,8 @@ export class SquareEntity extends BaseEntity {
     const data = super.serialize();
     return {
       ...data,
+      type: "squareEntity",
       color: this.color,
     };
   }
 }
-
-// @ts-expect-error - override static method
-SquareEntity.deserialize = (
-  data: SerializedBaseEntityProps & { color: string },
-): SquareEntity => {
-  const entity = new SquareEntity({
-    id: data.id,
-    position: data.position,
-    size: data.size,
-    rotation: data.rotation,
-    layer: data.layer,
-    static: data.static,
-    globalCompositeOperation: data.globalCompositeOperation,
-  });
-
-  entity.color = data.color;
-
-  if (data.children) {
-    data.children.forEach((child) => {
-      entity.children.push(SquareEntity.deserialize(child));
-    });
-  }
-
-  return entity;
-};

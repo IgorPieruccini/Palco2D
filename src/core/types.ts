@@ -47,5 +47,6 @@ export interface BaseEntityProps {
 export type SerializedBaseEntityProps<
   T extends BaseEntityProps = BaseEntityProps,
 > = T & {
+  type: string;
   children: SerializedBaseEntityProps<T>[];
 };
