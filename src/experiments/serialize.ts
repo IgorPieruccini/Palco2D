@@ -49,8 +49,7 @@ export class SerializeExample extends Scene {
         {
           type: "textEntity",
           id: "4",
-          // TODO: now working  with negative values
-          position: { x: 0, y: 200 },
+          position: { x: 0, y: -100 },
           size: { x: 10, y: 20 },
           rotation: 0,
           layer: 0,

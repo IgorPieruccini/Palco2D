@@ -36,7 +36,9 @@ export class SerializerHandler {
 
     if (props.children) {
       for (const child of props.children) {
-        entity.children.push(this.createFromJson(child));
+        const childEntity = this.createFromJson(child);
+        childEntity.parent = entity;
+        entity.children.push(childEntity);
       }
     }
 
