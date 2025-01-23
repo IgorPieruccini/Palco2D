@@ -3,22 +3,21 @@ import { Scene } from "../core/SceneHandler/Scene";
 import { Sprite } from "../core/Sprite";
 
 export class FlipSpriteExample extends Scene {
-
   public async start() {
-    const texture = await AssetHandler().loadPng('frog', 'assets/ninja-frog-jump.png');
+    await AssetHandler().loadPng("assets/ninja-frog-jump.png");
 
     const frog = new Sprite({
-      texture,
+      texture: "assets/ninja-frog-jump.png",
       position: { x: 100, y: 100 },
-      rotation: 0
+      rotation: 0,
     });
 
     frog.size = { x: 64, y: 64 };
 
     const flippedFrog = new Sprite({
-      texture,
+      texture: "assets/ninja-frog-jump.png",
       position: { x: 200, y: 100 },
-      rotation: 0
+      rotation: 0,
     });
 
     flippedFrog.size = { x: -64, y: 64 };

@@ -1,10 +1,11 @@
+import { AssetHandler } from "./AssetHandler";
 import { BaseEntity } from "./BaseEntity";
 import { TileAnimationHandler } from "./TileAnimationHandler";
 import { BaseEntityProps, BaseTile, TileMapType } from "./types";
 
 type SpriteProps = Omit<BaseEntityProps, "size"> & {
-  texture: HTMLImageElement;
-  tileMap?: TileMapType;
+  texture: string;
+  tileMap?: string;
 };
 
 export class Sprite extends BaseEntity {
@@ -15,12 +16,21 @@ export class Sprite extends BaseEntity {
 
   constructor(props: SpriteProps) {
     const { texture, ...rest } = props;
-    const size = { x: texture.width, y: texture.height };
+    const loadedTexture = AssetHandler().getAsset<HTMLImageElement>(texture);
+
+    const size = { x: loadedTexture.width, y: loadedTexture.height };
 
     super({ ...rest, size });
 
-    this.texture = texture;
-    this.tileMap = props.tileMap;
+    this.texture = loadedTexture;
+
+    if (props.tileMap) {
+      const tileMap = AssetHandler().getAsset<TileMapType>(props.tileMap);
+      if (!tileMap) {
+        throw new Error(`TileMap with key ${props.tileMap} not found`);
+      }
+      this.tileMap = tileMap;
+    }
 
     if (this.tileMap) {
       const sequence = this.tileMap.sequence;

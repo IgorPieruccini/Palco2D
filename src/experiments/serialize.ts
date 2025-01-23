@@ -4,12 +4,11 @@ import { SerializerHandler } from "../core/SerializerHandler.ts/SerializerHandle
 
 export class SerializeExample extends Scene {
   public async start() {
-    const serializer = new SerializerHandler({});
+    await AssetHandler().loadPng("assets/ninja-frog-jump.png");
+    await AssetHandler().loadPng("assets/ninja-frog-run.png");
+    await AssetHandler().loadTileMap("assets/ninja-frog-run.tilemap.json");
 
-    const texture = await AssetHandler().loadPng(
-      "frog",
-      "assets/ninja-frog-jump.png",
-    );
+    const serializer = new SerializerHandler({});
 
     const entities = [];
 
@@ -44,7 +43,7 @@ export class SerializeExample extends Scene {
           layer: 0,
           static: false,
           globalCompositeOperation: "source-over",
-          texture,
+          texture: "assets/ninja-frog-jump.png",
         },
         {
           type: "textEntity",
@@ -60,10 +59,29 @@ export class SerializeExample extends Scene {
           fontSize: 24,
           color: "black",
         },
+        {
+          type: "spriteEntity",
+          id: "5",
+          position: { x: 100, y: 100 },
+          size: { x: 120, y: 100 },
+          rotation: 0,
+          layer: 0,
+          static: false,
+          globalCompositeOperation: "source-over",
+          texture: "assets/ninja-frog-run.png",
+          tileMap: "assets/ninja-frog-run.tilemap.json",
+        },
       ],
     };
 
-    const entity = serializer.createFromJson(json);
+    const entity = await serializer.createFromJson(json);
+
+    // TODO: find out how to have a better type for objects
+    //@ts-expect-error - This is a test
+    entity.children[3].animation.setSpeed(2);
+
+    //@ts-expect-error - This is a test
+    entity.children[3].animation?.start();
 
     entity.on("mousedown", () => {
       window.alert(JSON.stringify(entity.serialize()));

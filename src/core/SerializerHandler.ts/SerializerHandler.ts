@@ -23,7 +23,29 @@ export class SerializerHandler {
     this.serializers = { ...DEFAULT_SERIALIZER_CLASSES, ...props };
   }
 
-  public createFromJson(props: any): BaseEntity {
+  private collectAssets(
+    props: Record<string, any>,
+  ): { key: string; url: string }[] {
+    const assets: { key: string; url: string }[] = [];
+
+    Object.keys(props).forEach((key) => {
+      const value = props[key];
+      if (typeof value === "object") {
+        if (value.key && value.url) {
+          assets.push(value);
+        } else {
+          const nestedAssets = this.collectAssets(value);
+          if (nestedAssets.length) {
+            assets.push(...nestedAssets);
+          }
+        }
+      }
+    });
+
+    return assets;
+  }
+
+  public async createFromJson(props: any): Promise<BaseEntity> {
     const { type, ...data } = props;
 
     const serializer = this.serializers[type];
@@ -36,7 +58,7 @@ export class SerializerHandler {
 
     if (props.children) {
       for (const child of props.children) {
-        const childEntity = this.createFromJson(child);
+        const childEntity = await this.createFromJson(child);
         childEntity.parent = entity;
         entity.children.push(childEntity);
       }
