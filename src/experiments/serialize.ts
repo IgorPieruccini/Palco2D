@@ -1,5 +1,6 @@
 import { Scene } from "../core/SceneHandler/Scene";
 import { SerializerHandler } from "../core/SerializerHandler.ts/SerializerHandler";
+import { Sprite } from "../core/Sprite";
 import { CustomSprite } from "./customs/CustomSprite";
 
 export class SerializeExample extends Scene {
@@ -86,18 +87,20 @@ export class SerializeExample extends Scene {
 
     const entities = await serializer.createFromJson(json);
 
-    // TODO: find out how to have a better type for objects
-    //@ts-expect-error - This is a test
-    entities[0].children[3].animation.setSpeed(2);
+    const animatedSprite = this.getEntityById("5", entities);
+    if (animatedSprite instanceof Sprite) {
+      animatedSprite.animation?.setSpeed(2);
+      animatedSprite.animation?.start();
+    }
 
-    //@ts-expect-error - This is a test
-    entities[0].children[3].animation?.start();
+    const firstEnity = this.getEntityById("1", entities);
 
-    entities[0].on("mousedown", () => {
+    firstEnity?.on("mousedown", () => {
       window.alert(JSON.stringify(entities[0].serialize()));
     });
 
-    entities[1].on("mousedown", () => {
+    const customEntity = this.getEntityById("6", entities);
+    customEntity?.on("mousedown", () => {
       window.alert(JSON.stringify(entities[1].serialize()));
     });
 

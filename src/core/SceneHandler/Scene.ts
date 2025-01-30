@@ -1,3 +1,4 @@
+import { BaseEntity } from "../BaseEntity";
 import { MouseHandler } from "../MouseHandler";
 import { RenderHandler } from "../RenderHandler";
 
@@ -11,9 +12,9 @@ export class Scene {
   constructor(canvas: HTMLCanvasElement, name: string) {
     this.canvas = canvas;
 
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext("2d");
     if (!ctx) {
-      throw new Error('Canvas context not found');
+      throw new Error("Canvas context not found");
     }
 
     this.ctx = ctx;
@@ -31,5 +32,23 @@ export class Scene {
   public stop() {
     this.mouseHandler.stop();
     this.render.stopRender();
+  }
+
+  public getEntityById(id: string, entities?: BaseEntity[]): BaseEntity | null {
+    const searchableEntities = entities || this.render.entities;
+    for (const entity of searchableEntities) {
+      if (entity.id === id) {
+        return entity;
+      }
+
+      if (entity.children?.length > 0) {
+        const foundEntity = this.getEntityById(id, entity.children);
+        if (foundEntity) {
+          return foundEntity;
+        }
+      }
+    }
+
+    return null;
   }
 }
