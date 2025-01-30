@@ -63,11 +63,13 @@ export class SerializerHandler {
     }
   }
 
-  public async createFromJson(props: any): Promise<BaseEntity> {
-    const { type, ...data } = props;
-
-    const assetsCollection = this.collectAssets(props);
-    await this.loadAssets(assetsCollection);
+  private async serializeEntity(
+    type: string,
+    data: Record<string, any>,
+  ): Promise<BaseEntity> {
+    if (!type) {
+      throw new Error("Type is required");
+    }
 
     const serializer = this.serializers[type];
 
@@ -77,14 +79,35 @@ export class SerializerHandler {
 
     const entity = new serializer(data);
 
-    if (props.children) {
-      for (const child of props.children) {
-        const childEntity = await this.createFromJson(child);
+    if (data.children) {
+      for (const child of data.children) {
+        const childEntity = await this.serializeEntity(child.type, child);
         childEntity.parent = entity;
         entity.children.push(childEntity);
       }
     }
 
     return entity;
+  }
+
+  public async createFromJson(props: any): Promise<BaseEntity[]> {
+    const assetsCollection = this.collectAssets(props);
+    await this.loadAssets(assetsCollection);
+
+    const entities: BaseEntity[] = [];
+
+    if (Array.isArray(props)) {
+      for (const entity of props) {
+        const { type, ...data } = entity;
+        const entityInstance = await this.serializeEntity(type, data);
+        entities.push(entityInstance);
+      }
+    } else {
+      const { type, ...data } = props;
+      const entity = await this.serializeEntity(type, data);
+      entities.push(entity);
+    }
+
+    return entities;
   }
 }

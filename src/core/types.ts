@@ -44,6 +44,11 @@ export interface BaseEntityProps {
   globalCompositeOperation?: GlobalCompositeOperation;
 }
 
+export type SpriteProps = Omit<BaseEntityProps, "size"> & {
+  texture: string;
+  tileMap?: string;
+};
+
 export type SerializedBaseEntityProps<
   T extends BaseEntityProps = BaseEntityProps,
 > = T & {
