@@ -95,7 +95,6 @@ export class Sprite extends BaseEntity {
       ...data,
       type: "sprite",
       texture: this.texture.src,
-      tileMap: this.tileMap,
     };
   }
 }
