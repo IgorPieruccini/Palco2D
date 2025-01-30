@@ -1,3 +1,4 @@
+import { AssetHandler } from "../AssetHandler";
 import { BaseEntity } from "../BaseEntity";
 import { Sprite } from "../Sprite";
 import { SquareEntity } from "../SquareEntity";
@@ -8,6 +9,10 @@ export interface SerializableClass {
 }
 
 export type SerializableClasses<T = Record<string, SerializableClass>> = T;
+
+const DEFAULT_ASSET_PROPERTIES = ["texture", "tileMap"];
+type AssetProperties = (typeof DEFAULT_ASSET_PROPERTIES)[number];
+type AssetsCollection = { key: AssetProperties; url: string }[];
 
 const DEFAULT_SERIALIZER_CLASSES: SerializableClasses = {
   baseEntity: BaseEntity,
@@ -23,30 +28,46 @@ export class SerializerHandler {
     this.serializers = { ...DEFAULT_SERIALIZER_CLASSES, ...props };
   }
 
-  private collectAssets(
-    props: Record<string, any>,
-  ): { key: string; url: string }[] {
-    const assets: { key: string; url: string }[] = [];
+  private collectAssets(props: Record<string, any>): AssetsCollection {
+    const urls: AssetsCollection = [];
 
     Object.keys(props).forEach((key) => {
       const value = props[key];
+
       if (typeof value === "object") {
-        if (value.key && value.url) {
-          assets.push(value);
-        } else {
-          const nestedAssets = this.collectAssets(value);
-          if (nestedAssets.length) {
-            assets.push(...nestedAssets);
-          }
-        }
+        const collectedAssets = this.collectAssets(value);
+        urls.push(...collectedAssets);
+      } else if (Array.isArray(value)) {
+        value.forEach((item) => {
+          const collectedAsserts = this.collectAssets(item);
+          urls.push(...collectedAsserts);
+        });
+      } else if (DEFAULT_ASSET_PROPERTIES.includes(key)) {
+        urls.push({ key, url: value });
       }
     });
 
-    return assets;
+    return urls;
+  }
+
+  private async loadAssets(assets: AssetsCollection) {
+    for (const asset of assets) {
+      switch (asset.key) {
+        case "texture":
+          await AssetHandler().loadPng(asset.url);
+          break;
+        case "tileMap":
+          await AssetHandler().loadTileMap(asset.url);
+          break;
+      }
+    }
   }
 
   public async createFromJson(props: any): Promise<BaseEntity> {
     const { type, ...data } = props;
+
+    const assetsCollection = this.collectAssets(props);
+    await this.loadAssets(assetsCollection);
 
     const serializer = this.serializers[type];
 

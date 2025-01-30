@@ -1,13 +1,8 @@
-import { AssetHandler } from "../core/AssetHandler";
 import { Scene } from "../core/SceneHandler/Scene";
 import { SerializerHandler } from "../core/SerializerHandler.ts/SerializerHandler";
 
 export class SerializeExample extends Scene {
   public async start() {
-    await AssetHandler().loadPng("assets/ninja-frog-jump.png");
-    await AssetHandler().loadPng("assets/ninja-frog-run.png");
-    await AssetHandler().loadTileMap("assets/ninja-frog-run.tilemap.json");
-
     const serializer = new SerializerHandler({});
 
     const entities = [];
