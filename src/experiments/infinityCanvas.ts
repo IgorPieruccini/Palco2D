@@ -27,13 +27,43 @@ export class InvitiyCanvasSceneExample extends Scene {
       entities.push(square);
     }
 
-    this.canvas.addEventListener("click", (e) => {
-      const currentOffser = this.render.offset;
+    let isDragging = false;
+    let moveToolActive = false;
 
-      this.render.offset = {
-        x: currentOffser.x + 100,
-        y: currentOffser.y + 100,
-      };
+    document.addEventListener("keydown", (e) => {
+      if (e.code === "Space") {
+        this.canvas.style.cursor = "grab";
+        moveToolActive = true;
+      }
+    });
+
+    document.addEventListener("keyup", (e) => {
+      if (e.code === "Space") {
+        this.canvas.style.cursor = "default";
+        moveToolActive = false;
+      }
+    });
+
+    this.canvas.addEventListener("mousedown", () => {
+      isDragging = true;
+    });
+
+    this.canvas.addEventListener("mousemove", (e) => {
+      if (isDragging && moveToolActive) {
+        this.canvas.style.cursor = "grabbing";
+        this.render.offset = {
+          x: this.render.offset.x + e.movementX,
+          y: this.render.offset.y + e.movementY,
+        };
+      }
+    });
+
+    this.canvas.addEventListener("mouseup", () => {
+      isDragging = false;
+    });
+
+    this.canvas.addEventListener("mouseleave", () => {
+      isDragging = false;
     });
 
     this.canvas.addEventListener("wheel", (e) => {
