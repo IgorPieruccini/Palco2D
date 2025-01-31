@@ -56,7 +56,7 @@ const scenes: Scene[] = [
   serialized,
   infinityCanvas,
 ];
-const initialScene = "Serialized";
+const initialScene = "InfinityCanvas";
 
 const sceneHandler = new SceneHandler(scenes);
 

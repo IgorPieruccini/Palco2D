@@ -102,6 +102,30 @@ export class InvitiyCanvasSceneExample extends Scene {
       color: "blue",
     });
 
+    const square2 = new SquareEntity({
+      position: { x: 200, y: 0 },
+      size: { x: 50, y: 50 },
+      rotation: 0,
+      color: "yellow",
+    });
+
+    square.addChild(square2);
+    square.on("mouseenter", () => {
+      square.color = "red";
+    });
+
+    square.on("mouseleave", () => {
+      square.color = "blue";
+    });
+
+    square2.on("mouseenter", () => {
+      square2.color = "red";
+    });
+
+    square2.on("mouseleave", () => {
+      square2.color = "yellow";
+    });
+
     entities[0].addChild(square);
 
     this.canvas.addEventListener("mousedown", this.mousedownHandler);

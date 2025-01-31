@@ -80,11 +80,15 @@ export class RenderHandler {
 
       this.ctx.save();
 
-      const offset = WorldHandler().getOffset();
-      const zoom = WorldHandler().getZoom();
-      this.ctx.translate(offset.x, offset.y);
-      this.ctx.scale(zoom, zoom);
+      if (!entity.parent) {
+        const offset = WorldHandler().getOffset();
+        this.ctx.translate(offset.x, offset.y);
 
+        const zoom = WorldHandler().getZoom();
+        this.ctx.scale(zoom, zoom);
+      }
+
+      this.ctx.save();
       this.ctx.translate(entity.position.x, entity.position.y);
       this.ctx.rotate(entity.rotation * (Math.PI / 180));
 
@@ -124,6 +128,8 @@ export class RenderHandler {
         this.renderLayers(entity.children.slice());
         this.ctx.restore();
       }
+
+      this.ctx.restore();
     }
   }
 
