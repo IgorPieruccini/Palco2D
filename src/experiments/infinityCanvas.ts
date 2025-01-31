@@ -24,6 +24,14 @@ export class InvitiyCanvasSceneExample extends Scene {
         y += 80;
       }
 
+      square.on("mouseenter", () => {
+        square.color = "#FFC300";
+      });
+
+      square.on("mouseleave", () => {
+        square.color = "#3C1518";
+      });
+
       entities.push(square);
     }
 
@@ -51,10 +59,10 @@ export class InvitiyCanvasSceneExample extends Scene {
     this.canvas.addEventListener("mousemove", (e) => {
       if (isDragging && moveToolActive) {
         this.canvas.style.cursor = "grabbing";
-        this.render.offset = {
-          x: this.render.offset.x + e.movementX,
-          y: this.render.offset.y + e.movementY,
-        };
+        this.world.setOffset({
+          x: this.world.getOffset().x + e.movementX,
+          y: this.world.getOffset().y + e.movementY,
+        });
       }
     });
 
@@ -69,22 +77,28 @@ export class InvitiyCanvasSceneExample extends Scene {
     this.canvas.addEventListener("wheel", (e) => {
       e.preventDefault();
 
-      const worldX = (e.offsetX - this.render.offset.x) / this.render.zoom;
-      const worldY = (e.offsetY - this.render.offset.y) / this.render.zoom;
+      const worldOffset = this.world.getOffset();
+      const worldZoom = this.world.getZoom();
+
+      const worldX = (e.offsetX - worldOffset.x) / worldZoom;
+      const worldY = (e.offsetY - worldOffset.y) / worldZoom;
 
       if (e.deltaY > 0) {
-        this.render.zoom *= ZOOM_SENSITIVITY;
+        this.world.setZoom(worldZoom * ZOOM_SENSITIVITY);
       } else {
-        this.render.zoom /= ZOOM_SENSITIVITY;
+        this.world.setZoom(worldZoom / ZOOM_SENSITIVITY);
       }
 
-      this.render.offset = {
-        x: e.offsetX - worldX * this.render.zoom,
-        y: e.offsetY - worldY * this.render.zoom,
-      };
+      this.world.setOffset({
+        x: e.offsetX - worldX * this.world.getZoom(),
+        y: e.offsetY - worldY * this.world.getZoom(),
+      });
     });
 
     this.render.addEntities(entities);
+    this.mouseHandler.addEntities(entities);
+
     this.render.startRender();
+    this.mouseHandler.start();
   }
 }

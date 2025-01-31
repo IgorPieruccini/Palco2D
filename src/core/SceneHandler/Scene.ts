@@ -1,12 +1,14 @@
 import { BaseEntity } from "../BaseEntity";
 import { MouseHandler } from "../MouseHandler";
 import { RenderHandler } from "../RenderHandler";
+import { WorldHandler } from "../WorldHandler";
 
 export class Scene {
   public canvas: HTMLCanvasElement;
   public ctx: CanvasRenderingContext2D;
   public render: RenderHandler;
   public mouseHandler: MouseHandler;
+  public world: ReturnType<typeof WorldHandler> = WorldHandler();
   private name: string;
 
   constructor(canvas: HTMLCanvasElement, name: string) {

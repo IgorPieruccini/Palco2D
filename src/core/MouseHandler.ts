@@ -21,18 +21,21 @@ export class MouseHandler {
     updateMousePosition: this.updateMousePosition.bind(this),
     onMouseDown: this.onMouseDown.bind(this),
     onMouseUp: this.onMouseUp.bind(this),
-  }
+  };
 
   public start() {
-    this.canvas.addEventListener('mousemove', this.binded.updateMousePosition);
-    this.canvas.addEventListener('mousedown', this.binded.onMouseDown);
-    this.canvas.addEventListener('mouseup', this.binded.onMouseUp);
+    this.canvas.addEventListener("mousemove", this.binded.updateMousePosition);
+    this.canvas.addEventListener("mousedown", this.binded.onMouseDown);
+    this.canvas.addEventListener("mouseup", this.binded.onMouseUp);
   }
 
   public stop() {
-    this.canvas.removeEventListener('mousemove', this.binded.updateMousePosition);
-    this.canvas.removeEventListener('mousedown', this.binded.onMouseDown);
-    this.canvas.removeEventListener('mouseup', this.binded.onMouseUp);
+    this.canvas.removeEventListener(
+      "mousemove",
+      this.binded.updateMousePosition,
+    );
+    this.canvas.removeEventListener("mousedown", this.binded.onMouseDown);
+    this.canvas.removeEventListener("mouseup", this.binded.onMouseUp);
     this.entities = [];
     this.hoveredEntity = null;
   }
@@ -46,7 +49,13 @@ export class MouseHandler {
   }
 
   private updateMousePosition(event: MouseEvent) {
-    this.position = { x: event.clientX - this.domRect.x, y: event.clientY - this.domRect.y };
+    this.position = {
+      x: event.clientX - this.domRect.x,
+      y: event.clientY - this.domRect.y,
+    };
+
+    // apply transformation to position
+
     this.dispatchEventToEntities(this.entities);
   }
 
@@ -65,9 +74,7 @@ export class MouseHandler {
       const entity = entities[x];
 
       if (entity.children.length > 0) {
-        this.dispatchEventToEntities(
-          entity.children,
-        );
+        this.dispatchEventToEntities(entity.children);
       }
 
       const isMouseOver = entity.isPointOverEntity(this.position);
@@ -86,7 +93,6 @@ export class MouseHandler {
 
         entity.onEntityEvent.mousehover?.();
       }
-
     }
   }
 }

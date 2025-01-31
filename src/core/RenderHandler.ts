@@ -1,6 +1,7 @@
 import { BaseEntity } from "./BaseEntity";
 import { FPSHandler } from "./FPSHandler";
 import { Sprite } from "./Sprite";
+import { WorldHandler } from "./WorldHandler";
 import { Vec2 } from "./types";
 import {
   getMatrixPosition,
@@ -17,8 +18,6 @@ export class RenderHandler {
   entities: BaseEntity[];
   private fpsHandler = FPSHandler();
   private running = false;
-  public offset: Vec2 = { x: 0, y: 0 };
-  public zoom = 1;
 
   constructor(canvas: HTMLCanvasElement, entities: BaseEntity[]) {
     this.canvas = canvas;
@@ -81,8 +80,10 @@ export class RenderHandler {
 
       this.ctx.save();
 
-      this.ctx.translate(this.offset.x, this.offset.y);
-      this.ctx.scale(this.zoom, this.zoom);
+      const offset = WorldHandler().getOffset();
+      const zoom = WorldHandler().getZoom();
+      this.ctx.translate(offset.x, offset.y);
+      this.ctx.scale(zoom, zoom);
 
       this.ctx.translate(entity.position.x, entity.position.y);
       this.ctx.rotate(entity.rotation * (Math.PI / 180));
