@@ -1,7 +1,13 @@
 import { BaseEntity } from "./BaseEntity";
 import { FPSHandler } from "./FPSHandler";
 import { Sprite } from "./Sprite";
-import { getMatrixPosition, getMatrixRotation, getMatrixScale, getPositionFromMatrix, getRotationAngleFromMatrix, multiplyMatrices } from "./utils";
+import { Vec2 } from "./types";
+import {
+  getMatrixPosition,
+  getMatrixRotation,
+  getMatrixScale,
+  multiplyMatrices,
+} from "./utils";
 
 const dpr = window.devicePixelRatio;
 
@@ -11,27 +17,32 @@ export class RenderHandler {
   entities: BaseEntity[];
   private fpsHandler = FPSHandler();
   private running = false;
+  public offset: Vec2 = { x: 0, y: 0 };
+  public zoom = 1;
 
   constructor(canvas: HTMLCanvasElement, entities: BaseEntity[]) {
     this.canvas = canvas;
 
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext("2d");
     if (!ctx) {
-      throw new Error('Canvas context not found');
+      throw new Error("Canvas context not found");
     }
     this.ctx = ctx;
 
-
     const sortedLayers = entities.sort((a, b) => a.layer - b.layer);
     this.entities = sortedLayers;
-
   }
 
   public stopRender() {
     this.running = false;
     this.entities = [];
     this.ctx.restore();
-    this.ctx.clearRect(0, 0, this.canvas.clientWidth * dpr, this.canvas.clientHeight * dpr);
+    this.ctx.clearRect(
+      0,
+      0,
+      this.canvas.clientWidth * dpr,
+      this.canvas.clientHeight * dpr,
+    );
   }
 
   public startRender() {
@@ -41,10 +52,10 @@ export class RenderHandler {
     this.ctx.transform(
       dpr, // a
       0, // b
-      0, // c  
+      0, // c
       dpr, // d
       0, // e
-      0 // f
+      0, // f
     );
     this.render.bind(this)();
   }
@@ -65,16 +76,20 @@ export class RenderHandler {
 
       const isInViewPort = entity.isObjectInViewport({
         position: { x: 0, y: 0 },
-        size: { x: this.canvas.clientWidth, y: this.canvas.clientHeight }
+        size: { x: this.canvas.clientWidth, y: this.canvas.clientHeight },
       });
 
       this.ctx.save();
+
+      this.ctx.translate(this.offset.x, this.offset.y);
+      this.ctx.scale(this.zoom, this.zoom);
+
       this.ctx.translate(entity.position.x, entity.position.y);
       this.ctx.rotate(entity.rotation * (Math.PI / 180));
 
       if (isInViewPort && !entity.static) {
         entity.render(this.ctx);
-        this.animateEntity(entity)
+        this.animateEntity(entity);
       }
 
       this.ctx.restore();
@@ -84,19 +99,25 @@ export class RenderHandler {
         const scale = entity.getScale();
         const rad = entity.rotation * (Math.PI / 180);
 
-        const positionM = getMatrixPosition(entity.position.x, entity.position.y);
+        const positionM = getMatrixPosition(
+          entity.position.x,
+          entity.position.y,
+        );
         const rotationM = getMatrixRotation(rad);
         const scaleM = getMatrixScale(scale.x, scale.y);
 
-        const multipliedMatrix = multiplyMatrices(multiplyMatrices(positionM, rotationM), scaleM);
+        const multipliedMatrix = multiplyMatrices(
+          multiplyMatrices(positionM, rotationM),
+          scaleM,
+        );
 
         this.ctx.transform(
           multipliedMatrix[0][0], // a
           multipliedMatrix[1][0], // b
-          multipliedMatrix[0][1], // c  
+          multipliedMatrix[0][1], // c
           multipliedMatrix[1][1], // d
           multipliedMatrix[0][2], // e
-          multipliedMatrix[1][2] // f
+          multipliedMatrix[1][2], // f
         );
 
         this.renderLayers(entity.children.slice());
@@ -116,7 +137,12 @@ export class RenderHandler {
 
   private render() {
     this.fpsHandler.loop();
-    this.ctx.clearRect(0, 0, this.canvas.clientWidth * dpr, this.canvas.clientHeight * dpr);
+    this.ctx.clearRect(
+      0,
+      0,
+      this.canvas.clientWidth * dpr,
+      this.canvas.clientHeight * dpr,
+    );
     const entitiesCopy = this.entities.slice();
     this.renderLayers.bind(this)(entitiesCopy);
 
@@ -124,5 +150,4 @@ export class RenderHandler {
       requestAnimationFrame(this.render.bind(this));
     }
   }
-
 }

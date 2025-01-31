@@ -10,6 +10,7 @@ import { SerializeExample } from "./experiments/serialize";
 import { SpriteExample } from "./experiments/sprite";
 import { TextExample } from "./experiments/text-example";
 import { TileMapExample } from "./experiments/tile-map";
+import { InvitiyCanvasSceneExample } from "./experiments/infinityCanvas";
 
 const dpr = window.devicePixelRatio;
 
@@ -40,6 +41,7 @@ const text = new TextExample(canvas, "TextExample");
 const flippedSprite = new FlipSpriteExample(canvas, "Flip sprite");
 const blendingMode = new BlendingModeExample(canvas, "Blending Mode");
 const serialized = new SerializeExample(canvas, "Serialized");
+const infinityCanvas = new InvitiyCanvasSceneExample(canvas, "InfinityCanvas");
 
 const scenes: Scene[] = [
   tileMap,
@@ -52,8 +54,9 @@ const scenes: Scene[] = [
   flippedSprite,
   blendingMode,
   serialized,
+  infinityCanvas,
 ];
-const initialScene = "Serialized";
+const initialScene = "InfinityCanvas";
 
 const sceneHandler = new SceneHandler(scenes);
 
