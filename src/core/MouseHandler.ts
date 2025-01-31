@@ -1,6 +1,11 @@
 import { BaseEntity } from "./BaseEntity";
+import { WorldHandler } from "./WorldHandler";
 import { Vec2 } from "./types";
-import { getScaleFromMatrix } from "./utils";
+import {
+  applyTransformation,
+  getScaleFromMatrix,
+  inverseTransform,
+} from "./utils";
 
 export class MouseHandler {
   private canvas: HTMLCanvasElement;
@@ -49,12 +54,21 @@ export class MouseHandler {
   }
 
   private updateMousePosition(event: MouseEvent) {
-    this.position = {
+    const position = {
       x: event.clientX - this.domRect.x,
       y: event.clientY - this.domRect.y,
     };
 
-    // apply transformation to position
+    const offset = WorldHandler().getOffset();
+    const scale = WorldHandler().getZoom();
+
+    const transformedPosition = inverseTransform(position, [
+      [scale, 0, offset.x],
+      [0, scale, offset.y],
+      [0, 0, 1],
+    ]);
+
+    this.position = transformedPosition;
 
     this.dispatchEventToEntities(this.entities);
   }
