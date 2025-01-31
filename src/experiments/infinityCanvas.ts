@@ -5,6 +5,66 @@ import { SquareEntity } from "../core/SquareEntity";
 const ZOOM_SENSITIVITY = 1.1;
 
 export class InvitiyCanvasSceneExample extends Scene {
+  private isDragging: boolean = false;
+  private moveToolActive: boolean = false;
+
+  private keydownHandler = (e: KeyboardEvent) => {
+    if (e.code === "Space") {
+      this.canvas.style.cursor = "grab";
+      this.moveToolActive = true;
+    }
+  };
+
+  private keyupHandler = (e: KeyboardEvent) => {
+    if (e.code === "Space") {
+      this.canvas.style.cursor = "default";
+      this.moveToolActive = false;
+    }
+  };
+
+  private mousedownHandler = () => {
+    this.isDragging = true;
+  };
+
+  private mousemoveHandler = (e: MouseEvent) => {
+    if (this.isDragging && this.moveToolActive) {
+      this.canvas.style.cursor = "grabbing";
+      this.world.setOffset({
+        x: this.world.getOffset().x + e.movementX,
+        y: this.world.getOffset().y + e.movementY,
+      });
+    }
+  };
+
+  private mouseupHandler = () => {
+    this.isDragging = false;
+  };
+
+  private mouseleaveHandler = () => {
+    this.isDragging = false;
+  };
+
+  private wheelHandler = (e: WheelEvent) => {
+    e.preventDefault();
+
+    const worldOffset = this.world.getOffset();
+    const worldZoom = this.world.getZoom();
+
+    const worldX = (e.offsetX - worldOffset.x) / worldZoom;
+    const worldY = (e.offsetY - worldOffset.y) / worldZoom;
+
+    if (e.deltaY > 0) {
+      this.world.setZoom(worldZoom * ZOOM_SENSITIVITY);
+    } else {
+      this.world.setZoom(worldZoom / ZOOM_SENSITIVITY);
+    }
+
+    this.world.setOffset({
+      x: e.offsetX - worldX * this.world.getZoom(),
+      y: e.offsetY - worldY * this.world.getZoom(),
+    });
+  };
+
   public async start() {
     const entities: BaseEntity[] = [];
 
@@ -35,70 +95,40 @@ export class InvitiyCanvasSceneExample extends Scene {
       entities.push(square);
     }
 
-    let isDragging = false;
-    let moveToolActive = false;
-
-    document.addEventListener("keydown", (e) => {
-      if (e.code === "Space") {
-        this.canvas.style.cursor = "grab";
-        moveToolActive = true;
-      }
+    const square = new SquareEntity({
+      position: { x: 200, y: 0 },
+      size: { x: 50, y: 50 },
+      rotation: 0,
+      color: "blue",
     });
 
-    document.addEventListener("keyup", (e) => {
-      if (e.code === "Space") {
-        this.canvas.style.cursor = "default";
-        moveToolActive = false;
-      }
-    });
+    entities[0].addChild(square);
 
-    this.canvas.addEventListener("mousedown", () => {
-      isDragging = true;
-    });
-
-    this.canvas.addEventListener("mousemove", (e) => {
-      if (isDragging && moveToolActive) {
-        this.canvas.style.cursor = "grabbing";
-        this.world.setOffset({
-          x: this.world.getOffset().x + e.movementX,
-          y: this.world.getOffset().y + e.movementY,
-        });
-      }
-    });
-
-    this.canvas.addEventListener("mouseup", () => {
-      isDragging = false;
-    });
-
-    this.canvas.addEventListener("mouseleave", () => {
-      isDragging = false;
-    });
-
-    this.canvas.addEventListener("wheel", (e) => {
-      e.preventDefault();
-
-      const worldOffset = this.world.getOffset();
-      const worldZoom = this.world.getZoom();
-
-      const worldX = (e.offsetX - worldOffset.x) / worldZoom;
-      const worldY = (e.offsetY - worldOffset.y) / worldZoom;
-
-      if (e.deltaY > 0) {
-        this.world.setZoom(worldZoom * ZOOM_SENSITIVITY);
-      } else {
-        this.world.setZoom(worldZoom / ZOOM_SENSITIVITY);
-      }
-
-      this.world.setOffset({
-        x: e.offsetX - worldX * this.world.getZoom(),
-        y: e.offsetY - worldY * this.world.getZoom(),
-      });
-    });
+    this.canvas.addEventListener("mousedown", this.mousedownHandler);
+    this.canvas.addEventListener("mousemove", this.mousemoveHandler);
+    this.canvas.addEventListener("mouseup", this.mouseupHandler);
+    this.canvas.addEventListener("mouseleave", this.mouseleaveHandler);
+    this.canvas.addEventListener("wheel", this.wheelHandler);
+    window.addEventListener("keydown", this.keydownHandler);
+    window.addEventListener("keyup", this.keyupHandler);
 
     this.render.addEntities(entities);
     this.mouseHandler.addEntities(entities);
 
     this.render.startRender();
     this.mouseHandler.start();
+  }
+
+  public stop() {
+    super.stop();
+    this.canvas.removeEventListener("mousedown", this.mousedownHandler);
+    this.canvas.removeEventListener("mousemove", this.mousemoveHandler);
+    this.canvas.removeEventListener("mouseup", this.mouseupHandler);
+    this.canvas.removeEventListener("mouseleave", this.mouseleaveHandler);
+    this.canvas.removeEventListener("wheel", this.wheelHandler);
+    window.removeEventListener("keydown", this.keydownHandler);
+    window.removeEventListener("keyup", this.keyupHandler);
+    this.world.setZoom(1);
+    this.world.setOffset({ x: 0, y: 0 });
   }
 }
