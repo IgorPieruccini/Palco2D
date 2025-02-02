@@ -1,3 +1,4 @@
+import { EntityPlugin } from "./EntityPlugin";
 import {
   EntityEvents,
   EventsType,
@@ -31,6 +32,7 @@ export class BaseEntity {
   globalCompositeOperation: GlobalCompositeOperation = "source-over";
 
   private initialSize: Vec2;
+  private plugins: EntityPlugin[] = [];
 
   constructor(props: BaseEntityProps) {
     this.id = props.id || generateUUID();
@@ -69,7 +71,11 @@ export class BaseEntity {
     };
   }
 
-  render(ctx: CanvasRenderingContext2D) { }
+  render(ctx: CanvasRenderingContext2D) {
+    this.plugins.forEach((plugin) => {
+      plugin.render(ctx);
+    });
+  }
 
   private getAllParents() {
     let parent = this.parent;
@@ -230,5 +236,17 @@ export class BaseEntity {
       layer: this.layer,
       children: this.children.map((child) => child.serialize()),
     };
+  }
+
+  public addPlugin(plugin: EntityPlugin) {
+    this.plugins.push(plugin);
+  }
+
+  public getPluginByKey(key: string) {
+    return this.plugins.find((plugin) => plugin.key === key);
+  }
+
+  public removePluginByKey(key: string) {
+    this.plugins = this.plugins.filter((plugin) => plugin.key !== key);
   }
 }
