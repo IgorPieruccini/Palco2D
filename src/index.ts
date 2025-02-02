@@ -80,6 +80,8 @@ const createSceneDropdown = () => {
 
   select.addEventListener("change", (event) => {
     sceneHandler.setCurrentScene((event.target as HTMLSelectElement).value);
+    select.blur();
+    canvas.focus();
   });
 
   document.body.appendChild(select);

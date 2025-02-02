@@ -1,8 +1,8 @@
 import { BaseEntity } from "./BaseEntity";
 import { FPSHandler } from "./FPSHandler";
+import { ScenePlugin } from "./ScenePlugin";
 import { Sprite } from "./Sprite";
 import { WorldHandler } from "./WorldHandler";
-import { Vec2 } from "./types";
 import {
   getMatrixPosition,
   getMatrixRotation,
@@ -18,6 +18,7 @@ export class RenderHandler {
   entities: BaseEntity[];
   private fpsHandler = FPSHandler();
   private running = false;
+  private plugins: Array<ScenePlugin> = [];
 
   constructor(canvas: HTMLCanvasElement, entities: BaseEntity[]) {
     this.canvas = canvas;
@@ -154,7 +155,17 @@ export class RenderHandler {
     this.renderLayers.bind(this)(entitiesCopy);
 
     if (this.running) {
+      this.plugins.forEach((plugin) => {
+        if (plugin.running) {
+          plugin.render(this.ctx);
+        }
+      });
+
       requestAnimationFrame(this.render.bind(this));
     }
+  }
+
+  public setPlugins(plugins: Array<ScenePlugin>) {
+    this.plugins = plugins;
   }
 }
