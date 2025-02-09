@@ -11,6 +11,7 @@ import { SpriteExample } from "./experiments/sprite";
 import { TextExample } from "./experiments/text-example";
 import { TileMapExample } from "./experiments/tile-map";
 import { InvitiyCanvasSceneExample } from "./experiments/infinityCanvas";
+import { AddRemoveEntityExample } from "./experiments/add-remove-entity";
 
 const dpr = window.devicePixelRatio;
 
@@ -42,6 +43,7 @@ const flippedSprite = new FlipSpriteExample(canvas, "Flip sprite");
 const blendingMode = new BlendingModeExample(canvas, "Blending Mode");
 const serialized = new SerializeExample(canvas, "Serialized");
 const infinityCanvas = new InvitiyCanvasSceneExample(canvas, "InfinityCanvas");
+const addRemoveEntity = new AddRemoveEntityExample(canvas, "AddRemoveEntity");
 
 const scenes: Scene[] = [
   tileMap,
@@ -55,8 +57,9 @@ const scenes: Scene[] = [
   blendingMode,
   serialized,
   infinityCanvas,
+  addRemoveEntity,
 ];
-const initialScene = "InfinityCanvas";
+const initialScene = "AddRemoveEntity";
 
 const sceneHandler = new SceneHandler(scenes);
 

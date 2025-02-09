@@ -30,6 +30,9 @@ export class BaseEntity {
   static: boolean = false;
   globalCompositeOperation: GlobalCompositeOperation = "source-over";
 
+  private renderIndex: number | null = null;
+  private interactionIndex: number | null = null;
+
   private initialSize: Vec2;
 
   constructor(props: BaseEntityProps) {
@@ -171,6 +174,12 @@ export class BaseEntity {
     child.setParent(this);
   }
 
+  removeChild(index: number) {
+    this.children.splice(index, 1);
+    this.renderIndex = null;
+    this.interactionIndex = null;
+  }
+
   isPointOverEntity(point: Vec2) {
     const relativePosition = this.getRelativePostion(point);
 
@@ -230,5 +239,21 @@ export class BaseEntity {
       layer: this.layer,
       children: this.children.map((child) => child.serialize()),
     };
+  }
+
+  public setRenderIndex(index: number) {
+    this.renderIndex = index;
+  }
+
+  public setInteractionIndex(index: number) {
+    this.interactionIndex = index;
+  }
+
+  public getRenderIndex() {
+    return this.renderIndex;
+  }
+
+  public getInteractionIndex() {
+    return this.interactionIndex;
   }
 }
