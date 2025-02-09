@@ -1,17 +1,13 @@
 import { BaseEntity } from "./BaseEntity";
 import { WorldHandler } from "./WorldHandler";
 import { Vec2 } from "./types";
-import {
-  applyTransformation,
-  getScaleFromMatrix,
-  inverseTransform,
-} from "./utils";
+import { inverseTransform } from "./utils";
 
 export class MouseHandler {
+  public position: Vec2;
+  public hoveredEntity: BaseEntity | null;
   private canvas: HTMLCanvasElement;
-  private position: Vec2;
   private entities: BaseEntity[];
-  private hoveredEntity: BaseEntity | null;
   private domRect: DOMRect;
 
   constructor(canvas: HTMLCanvasElement, entities: BaseEntity[]) {
@@ -22,7 +18,7 @@ export class MouseHandler {
     this.hoveredEntity = null;
   }
 
-  binded = {
+  private binded = {
     updateMousePosition: this.updateMousePosition.bind(this),
     onMouseDown: this.onMouseDown.bind(this),
     onMouseUp: this.onMouseUp.bind(this),
@@ -53,7 +49,25 @@ export class MouseHandler {
     this.entities = [...this.entities, ...entities];
   }
 
+  public removeEntity(entity: BaseEntity) {
+    const index = entity.getInteractionIndex();
+
+    if (index === null) return;
+
+    if (this.hoveredEntity?.id === entity.id) {
+      this.hoveredEntity = null;
+    }
+
+    if (entity.parent) {
+      entity.parent.removeChild(index);
+      return;
+    }
+
+    this.entities.splice(index, 1);
+  }
+
   private updateMousePosition(event: MouseEvent) {
+    event.stopPropagation();
     const position = {
       x: event.clientX - this.domRect.x,
       y: event.clientY - this.domRect.y,
@@ -73,12 +87,14 @@ export class MouseHandler {
     this.dispatchEventToEntities(this.entities);
   }
 
-  private onMouseDown() {
+  private onMouseDown(ev: MouseEvent) {
+    ev.stopPropagation();
     if (!this.hoveredEntity) return;
     this.hoveredEntity.onEntityEvent.mousedown?.();
   }
 
-  private onMouseUp() {
+  private onMouseUp(ev: MouseEvent) {
+    ev.stopPropagation();
     if (!this.hoveredEntity) return;
     this.hoveredEntity.onEntityEvent.mouseup?.();
   }
@@ -86,6 +102,8 @@ export class MouseHandler {
   private dispatchEventToEntities(entities: BaseEntity[]) {
     for (let x = entities.length - 1; x >= 0; x--) {
       const entity = entities[x];
+
+      entity.setInteractionIndex(x);
 
       if (entity.children.length > 0) {
         this.dispatchEventToEntities(entity.children);

@@ -70,9 +70,24 @@ export class RenderHandler {
     this.entities = concatedEntities.sort((a, b) => a.layer - b.layer);
   }
 
+  public removeEntity(entity: BaseEntity) {
+    const index = entity.getRenderIndex();
+
+    if (index === null) return;
+
+    if (entity.parent) {
+      entity.parent.removeChild(index);
+      return;
+    }
+
+    this.entities.splice(index, 1);
+  }
+
   private renderLayers(entities: BaseEntity[]) {
     for (let x = 0; x < entities.length; x++) {
       const entity = entities[x];
+
+      entity.setRenderIndex(x);
 
       const isInViewPort = entity.isObjectInViewport({
         position: { x: 0, y: 0 },

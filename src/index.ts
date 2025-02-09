@@ -12,6 +12,7 @@ import { TextExample } from "./experiments/text-example";
 import { TileMapExample } from "./experiments/tile-map";
 import { InvitiyCanvasSceneExample } from "./experiments/infinityCanvas";
 import { EntityPluginExample } from "./experiments/enityPluginExample";
+import { AddRemoveEntityExample } from "./experiments/add-remove-entity";
 
 const dpr = window.devicePixelRatio;
 
@@ -47,6 +48,7 @@ const entityPluginExample = new EntityPluginExample(
   canvas,
   "EntityPluginExample",
 );
+const addRemoveEntity = new AddRemoveEntityExample(canvas, "AddRemoveEntity");
 
 const scenes: Scene[] = [
   tileMap,
@@ -61,6 +63,7 @@ const scenes: Scene[] = [
   serialized,
   infinityCanvas,
   entityPluginExample,
+  addRemoveEntity,
 ];
 const initialScene = "EntityPluginExample";
 
