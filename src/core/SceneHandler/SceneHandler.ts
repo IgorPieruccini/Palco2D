@@ -2,7 +2,7 @@ import { Scene } from "./Scene";
 
 export class SceneHandler {
   private scenes: Scene[] = [];
-  private currentScene: Scene | null = null;
+  public static currentScene: Scene | null = null;
 
   constructor(scenes: Scene[]) {
     this.scenes = scenes;
@@ -15,15 +15,14 @@ export class SceneHandler {
       throw new Error(`Scene ${name} not found`);
     }
 
-    if (this.currentScene) {
-      this.currentScene.stop();
+    if (SceneHandler.currentScene) {
+      SceneHandler.currentScene.stop();
+      SceneHandler.currentScene = scene;
+      SceneHandler.currentScene.start();
     }
-
-    this.currentScene = scene;
-    this.currentScene.start();
   }
 
-  public getCurrentScene() {
+  public static getCurrentScene() {
     return this.currentScene;
   }
 
@@ -40,7 +39,7 @@ export class SceneHandler {
     if (!scene) {
       throw new Error(`Scene ${name} not found`);
     }
-    this.currentScene = scene;
+    SceneHandler.currentScene = scene;
     scene.start();
   }
 
@@ -51,5 +50,4 @@ export class SceneHandler {
     }
     scene.stop();
   }
-
 }

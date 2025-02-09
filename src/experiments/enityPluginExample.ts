@@ -32,6 +32,8 @@ export class EntityPluginExample extends Scene {
     this.render.addEntity(frog);
     this.render.addEntity(rect);
     this.render.startRender();
+
+    this.mouseHandler.start();
     this.startAllPlugins();
   }
 }
