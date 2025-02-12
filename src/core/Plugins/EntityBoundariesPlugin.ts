@@ -2,74 +2,65 @@ import { BaseEntity } from "../BaseEntity";
 import { EntityPlugin } from "../EntityPlugin";
 import { SceneHandler } from "../SceneHandler/SceneHandler";
 import { WorldHandler } from "../WorldHandler";
-import { BoundController, ControllerType } from "./BoundController";
+import { TransformController } from "./TransformController/TransformController";
+import { ControllerType } from "./TransformController/type";
+import { transformControllerUtils } from "./TransformController/utils";
 
 const controllers: Array<ControllerType> = ["ml", "mt", "mb", "mr"];
+const CONTROLLER_SIZE_MAP: Record<ControllerType, { x: number; y: number }> = {
+  ml: { x: 10, y: 50 },
+  mt: { x: 50, y: 10 },
+  mb: { x: 50, y: 10 },
+  mr: { x: 10, y: 50 },
+};
 
 export class EnityBoundariesPlugin extends EntityPlugin {
+  controllers: Record<ControllerType, TransformController | undefined> = {
+    ml: undefined,
+    mt: undefined,
+    mb: undefined,
+    mr: undefined,
+  };
+
   constructor(entity: BaseEntity, key: string) {
     super(entity, key);
     this.addControllers();
   }
 
-  private getPositionByType(type: ControllerType) {
-    switch (type) {
-      case "ml":
-        return {
-          x: this.entity.position.x - this.entity.size.x / 2,
-          y: this.entity.position.y,
-        };
-      case "mt":
-        return {
-          x: this.entity.position.x,
-          y: this.entity.position.y - this.entity.size.y / 2,
-        };
-      case "mb":
-        return {
-          x: this.entity.position.x,
-          y: this.entity.position.y + this.entity.size.y / 2,
-        };
-      case "mr":
-        return {
-          x: this.entity.position.x + this.entity.size.x / 2,
-          y: this.entity.position.y,
-        };
-    }
-  }
-
-  private getSizeByType(type: ControllerType) {
-    switch (type) {
-      case "ml":
-      case "mr":
-        return {
-          x: 10,
-          y: 50,
-        };
-      case "mt":
-      case "mb":
-        return {
-          x: 50,
-          y: 10,
-        };
-    }
+  private onControllerUpdate() {
+    Object.entries(this.controllers).forEach(([key, controller]) => {
+      if (!controller) return;
+      controller.position =
+        transformControllerUtils.getControllerPositionBasedOnBounds(
+          controller.connectedEntity,
+          key as ControllerType,
+        );
+    });
   }
 
   private addControllers() {
     controllers.forEach((type) => {
-      const position = this.getPositionByType(type);
-      const size = this.getSizeByType(type);
+      const position =
+        transformControllerUtils.getControllerPositionBasedOnBounds(
+          this.entity,
+          type,
+        );
 
-      const controller = new BoundController({
+      const size = CONTROLLER_SIZE_MAP[type];
+
+      const controller = new TransformController({
         position: position,
         size: size,
         rotation: 0,
         type,
         connectedEntity: this.entity,
+        onUpdatePosition: this.onControllerUpdate.bind(this),
         layer: 999,
       });
 
       SceneHandler.currentScene?.render.addEntity(controller);
       SceneHandler.currentScene?.mouseHandler.addEntity(controller);
+      this.controllers[type] = controller;
     });
   }
 
