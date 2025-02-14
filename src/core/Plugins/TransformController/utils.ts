@@ -125,6 +125,11 @@ function onMouseDown(this: TransformController, callback?: () => void) {
     "mousemove",
     onDrag.bind(this),
   );
+
+  SceneHandler.currentScene?.canvas.addEventListener(
+    "mouseup",
+    onMouseUp.bind(this),
+  );
   callback?.();
 }
 
@@ -132,6 +137,11 @@ function onMouseUp(this: TransformController) {
   SceneHandler.currentScene?.canvas.removeEventListener(
     "mousemove",
     onDrag.bind(this),
+  );
+
+  SceneHandler.currentScene?.canvas.removeEventListener(
+    "mouseup",
+    onMouseUp.bind(this),
   );
   this.isDragging = false;
 }
