@@ -100,8 +100,30 @@ export class MouseHandler {
   }
 
   private dispatchEventToEntities(entities: BaseEntity[]) {
+    const offset = WorldHandler().getOffset();
+    const zoom = WorldHandler().getZoom();
+
     for (let x = entities.length - 1; x >= 0; x--) {
       const entity = entities[x];
+
+      const viewportPosition = {
+        x: -offset.x / zoom,
+        y: -offset.y / zoom,
+      };
+
+      const viewportSize = {
+        x: this.canvas.clientWidth / zoom,
+        y: this.canvas.clientHeight / zoom,
+      };
+
+      const isInViewPort = entity.isObjectInViewport({
+        position: viewportPosition,
+        size: viewportSize,
+      });
+
+      if (!isInViewPort) {
+        continue;
+      }
 
       entity.setInteractionIndex(x);
 

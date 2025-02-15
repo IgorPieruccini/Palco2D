@@ -84,14 +84,27 @@ export class RenderHandler {
   }
 
   private renderLayers(entities: BaseEntity[]) {
+    const offset = WorldHandler().getOffset();
+    const zoom = WorldHandler().getZoom();
+
     for (let x = 0; x < entities.length; x++) {
       const entity = entities[x];
 
       entity.setRenderIndex(x);
 
+      const viewportPosition = {
+        x: -offset.x / zoom,
+        y: -offset.y / zoom,
+      };
+
+      const viewportSize = {
+        x: this.canvas.clientWidth / zoom,
+        y: this.canvas.clientHeight / zoom,
+      };
+
       const isInViewPort = entity.isObjectInViewport({
-        position: { x: 0, y: 0 },
-        size: { x: this.canvas.clientWidth, y: this.canvas.clientHeight },
+        position: viewportPosition,
+        size: viewportSize,
       });
 
       this.ctx.save();
