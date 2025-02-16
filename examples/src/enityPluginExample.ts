@@ -14,7 +14,7 @@ export class EntityPluginExample extends Scene {
   activeObject: BaseEntity | null = null;
 
   public async start() {
-    this.canvas.addEventListener("mousedown", () => {
+    this.mouseHandler.onCanvas("mousedown", () => {
       if (this.activeObject) {
         this.activeObject.removeAllPlugins();
         this.activeObject = null;
@@ -31,8 +31,11 @@ export class EntityPluginExample extends Scene {
 
     frog.size = { x: 64, y: 64 };
     frog.on("mousedown", () => {
-      frog.addPlugin(new TransformerEntityController(frog, "boundaries"));
-      this.activeObject = frog;
+      if (this.activeObject?.id !== frog.id) {
+        this.activeObject?.removeAllPlugins();
+        frog.addPlugin(new TransformerEntityController(frog, "boundaries"));
+        this.activeObject = frog;
+      }
     });
 
     const rect = new SquareEntity({
@@ -42,8 +45,11 @@ export class EntityPluginExample extends Scene {
     });
 
     rect.on("mousedown", () => {
-      rect.addPlugin(new TransformerEntityController(rect, "boundaries"));
-      this.activeObject = rect;
+      if (this.activeObject?.id !== rect.id) {
+        this.activeObject?.removeAllPlugins();
+        rect.addPlugin(new TransformerEntityController(rect, "boundaries"));
+        this.activeObject = rect;
+      }
     });
 
     this.addPlugin(new InfinityCanvasPlugin(this), "infinityCanvas");

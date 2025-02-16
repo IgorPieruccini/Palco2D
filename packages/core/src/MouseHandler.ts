@@ -9,6 +9,8 @@ export class MouseHandler {
   private canvas: HTMLCanvasElement;
   private entities: BaseEntity[];
   private domRect: DOMRect;
+  private canvasEventSubscribers: Map<"mouseup" | "mousedown", Function[]> =
+    new Map();
 
   constructor(canvas: HTMLCanvasElement, entities: BaseEntity[]) {
     this.canvas = canvas;
@@ -102,13 +104,23 @@ export class MouseHandler {
 
   private onMouseDown(ev: MouseEvent) {
     ev.stopPropagation();
-    if (!this.hoveredEntity) return;
+    if (!this.hoveredEntity) {
+      this.canvasEventSubscribers.get("mousedown")?.forEach((callback) => {
+        callback();
+      });
+      return;
+    }
     this.hoveredEntity.onEntityEvent.mousedown?.();
   }
 
   private onMouseUp(ev: MouseEvent) {
     ev.stopPropagation();
-    if (!this.hoveredEntity) return;
+    if (!this.hoveredEntity) {
+      this.canvasEventSubscribers.get("mouseup")?.forEach((callback) => {
+        callback();
+      });
+      return;
+    }
     this.hoveredEntity.onEntityEvent.mouseup?.();
   }
 
@@ -161,5 +173,10 @@ export class MouseHandler {
         entity.onEntityEvent.mousehover?.();
       }
     }
+  }
+
+  public onCanvas(event: "mouseup" | "mousedown", callback: Function) {
+    const events = this.canvasEventSubscribers.get(event) || [];
+    this.canvasEventSubscribers.set(event, [...events, callback]);
   }
 }
