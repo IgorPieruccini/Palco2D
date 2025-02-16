@@ -5,7 +5,10 @@
   "type": "module",
   "main": "index.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "examples:start": "npm run start --workspace=examples",
+    "core:build": "npm run build --workspace=packages/core",
+    "plugins:build": "npm run build --workspace=packages/plugins"
   },
   "keywords": [
     "canvas2D"
