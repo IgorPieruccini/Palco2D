@@ -181,9 +181,28 @@ export class BaseEntity {
   }
 
   removeChild(index: number) {
-    this.children.splice(index, 1);
+    const deletedEntity = this.children.splice(index, 1);
+    deletedEntity[0].destroy(true);
     this.renderIndex = null;
     this.interactionIndex = null;
+  }
+
+  destroy(plugins?: boolean) {
+    if (plugins) {
+      this.plugins.forEach((plugin) => {
+        plugin.destroy();
+      });
+    }
+
+    this.children.forEach((child) => {
+      child.destroy(plugins);
+    });
+
+    if (this.parent) {
+      this.parent.removeChild(
+        this.parent.children.findIndex((child) => child.id === this.id),
+      );
+    }
   }
 
   isPointOverEntity(point: Vec2) {
@@ -256,7 +275,17 @@ export class BaseEntity {
   }
 
   public removePluginByKey(key: string) {
-    this.plugins = this.plugins.filter((plugin) => plugin.key !== key);
+    const pluginIndex = this.plugins.findIndex((plugin) => plugin.key === key);
+    this.plugins[pluginIndex].destroy();
+    this.plugins.splice(pluginIndex, 1);
+  }
+
+  public removeAllPlugins() {
+    for (const plugin of this.plugins) {
+      plugin.destroy();
+    }
+
+    this.plugins = [];
   }
 
   public setRenderIndex(index: number) {

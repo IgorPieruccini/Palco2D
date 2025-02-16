@@ -49,10 +49,14 @@ export class MouseHandler {
     this.entities = [...this.entities, ...entities];
   }
 
-  public removeEntity(entity: BaseEntity) {
-    const index = entity.getInteractionIndex();
+  public removeEntity(entity: BaseEntity, shiftIndex?: number) {
+    let index = entity.getInteractionIndex();
 
     if (index === null) return;
+
+    if (shiftIndex) {
+      index -= shiftIndex;
+    }
 
     if (this.hoveredEntity?.id === entity.id) {
       this.hoveredEntity = null;
@@ -64,6 +68,15 @@ export class MouseHandler {
     }
 
     this.entities.splice(index, 1);
+  }
+
+  public removeEntities(entities: BaseEntity[]) {
+    let removedIndex = 0;
+
+    for (let x = 0; x < entities.length; x++) {
+      this.removeEntity(entities[x], removedIndex);
+      removedIndex++;
+    }
   }
 
   private updateMousePosition(event: MouseEvent) {

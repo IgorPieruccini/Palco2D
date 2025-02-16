@@ -70,10 +70,14 @@ export class RenderHandler {
     this.entities = concatedEntities.sort((a, b) => a.layer - b.layer);
   }
 
-  public removeEntity(entity: BaseEntity) {
-    const index = entity.getRenderIndex();
+  public removeEntity(entity: BaseEntity, shiftIndex?: number) {
+    let index = entity.getRenderIndex();
 
     if (index === null) return;
+
+    if (shiftIndex) {
+      index -= shiftIndex;
+    }
 
     if (entity.parent) {
       entity.parent.removeChild(index);
@@ -81,6 +85,15 @@ export class RenderHandler {
     }
 
     this.entities.splice(index, 1);
+  }
+
+  public removeEntities(entities: BaseEntity[]) {
+    let removedIndex = 0;
+
+    for (let x = 0; x < entities.length; x++) {
+      this.removeEntity(entities[x], removedIndex);
+      removedIndex++;
+    }
   }
 
   private renderLayers(entities: BaseEntity[]) {

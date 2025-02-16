@@ -16,13 +16,8 @@ const CONTROLLER_SIZE_MAP: Record<ControllerType, { x: number; y: number }> = {
   mr: { x: 10, y: 50 },
 };
 
-export class EnityBoundariesPlugin extends EntityPlugin {
-  controllers: Record<ControllerType, TransformController | undefined> = {
-    ml: undefined,
-    mt: undefined,
-    mb: undefined,
-    mr: undefined,
-  };
+export class TransformerEntityController extends EntityPlugin {
+  controllers: Partial<Record<ControllerType, TransformController>> = {};
 
   constructor(entity: BaseEntity, key: string) {
     super(entity, key);
@@ -74,5 +69,13 @@ export class EnityBoundariesPlugin extends EntityPlugin {
     ctx.strokeStyle = "#91AEC1";
     ctx.lineWidth = 2 / zoom;
     ctx.strokeRect(-size.x / 2, -size.y / 2, size.x, size.y);
+  }
+
+  destroy() {
+    const entityControllers = Object.values(this.controllers);
+
+    SceneHandler.currentScene?.render.removeEntities(entityControllers);
+    SceneHandler.currentScene?.mouseHandler.removeEntities(entityControllers);
+    this.controllers = {};
   }
 }

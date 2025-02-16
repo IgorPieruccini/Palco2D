@@ -10,4 +10,6 @@ export class EntityPlugin {
   }
 
   public render(ctx: CanvasRenderingContext2D) { }
+
+  public destroy() { }
 }
