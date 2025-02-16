@@ -5,7 +5,7 @@ import {
   Vec2,
   BaseEntityProps,
   SerializedBaseEntityProps,
-} from "./types";
+} from "../types";
 import {
   generateUUID,
   getMatrixPosition,

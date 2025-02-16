@@ -1,4 +1,4 @@
-import { Vec2 } from "./types";
+import { Vec2 } from "../types";
 import { generateUUID } from "./utils";
 
 type Listener = { id: string; callback: (zoom: number) => void };

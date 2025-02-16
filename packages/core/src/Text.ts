@@ -1,5 +1,5 @@
 import { BaseEntity } from "./BaseEntity";
-import { BaseEntityProps, Vec2 } from "./types";
+import { BaseEntityProps, Vec2 } from "../types";
 
 type Shadow = {
   shadowColor: string;

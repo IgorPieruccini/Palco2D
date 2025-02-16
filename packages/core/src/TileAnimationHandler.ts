@@ -1,5 +1,5 @@
 import { Sprite } from "./Sprite";
-import { TileMapType } from "./types";
+import { TileMapType } from "../types";
 
 export class TileAnimationHandler {
   private entity: Sprite;
@@ -10,13 +10,14 @@ export class TileAnimationHandler {
   private elapsedTime: number = 0;
 
   constructor(entity: Sprite) {
-    this.entity = entity
+    this.entity = entity;
     this.frame = 0;
     this.isPlaying = false;
 
     const tileMap = entity.getTileMap();
-    if (tileMap === undefined) throw new Error("Sprite can't be animated without a tileMap.");
-    this.tileMap = tileMap
+    if (tileMap === undefined)
+      throw new Error("Sprite can't be animated without a tileMap.");
+    this.tileMap = tileMap;
   }
 
   public animate(deltaTime: number) {
@@ -44,5 +45,4 @@ export class TileAnimationHandler {
   public setSpeed(speed: number) {
     this.speed = 100 / speed;
   }
-
 }

@@ -1,4 +1,4 @@
-import { SupportedAssetsType, TileMapType } from "./types";
+import { SupportedAssetsType, TileMapType } from "../types";
 
 export const AssetHandler = (() => {
   const assets: { [key: string]: SupportedAssetsType } = {};

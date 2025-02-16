@@ -1,7 +1,7 @@
 import { AssetHandler } from "./AssetHandler";
 import { BaseEntity } from "./BaseEntity";
 import { TileAnimationHandler } from "./TileAnimationHandler";
-import { BaseEntityProps, BaseTile, TileMapType } from "./types";
+import { BaseEntityProps, BaseTile, TileMapType } from "../types";
 
 type SpriteProps = Omit<BaseEntityProps, "size"> & {
   texture: string;

@@ -1,6 +1,6 @@
 import { BaseEntity } from "./BaseEntity";
 import { WorldHandler } from "./WorldHandler";
-import { Vec2 } from "./types";
+import { Vec2 } from "../types";
 import { inverseTransform } from "./utils";
 
 export class MouseHandler {

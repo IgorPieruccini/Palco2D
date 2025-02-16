@@ -1,5 +1,5 @@
 import { BaseEntity } from "./BaseEntity";
-import { BaseEntityProps, SerializedBaseEntityProps } from "./types";
+import { BaseEntityProps, SerializedBaseEntityProps } from "../types";
 
 export class SquareEntity extends BaseEntity {
   public color: string = "#eab676";
