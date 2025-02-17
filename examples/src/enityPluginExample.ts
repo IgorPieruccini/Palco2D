@@ -30,7 +30,8 @@ export class EntityPluginExample extends Scene {
     });
 
     frog.size = { x: 64, y: 64 };
-    frog.on("mousedown", () => {
+    frog.on("mousedown", (stopPropragation) => {
+      stopPropragation();
       if (this.activeObject?.id !== frog.id) {
         this.activeObject?.removeAllPlugins();
         frog.addPlugin(new TransformerEntityController(frog, "boundaries"));
@@ -44,7 +45,8 @@ export class EntityPluginExample extends Scene {
       rotation: 0,
     });
 
-    rect.on("mousedown", () => {
+    rect.on("mousedown", (stopPropragation) => {
+      stopPropragation();
       if (this.activeObject?.id !== rect.id) {
         this.activeObject?.removeAllPlugins();
         rect.addPlugin(new TransformerEntityController(rect, "boundaries"));

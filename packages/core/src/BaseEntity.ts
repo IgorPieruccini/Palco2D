@@ -53,7 +53,10 @@ export class BaseEntity {
       props.globalCompositeOperation || "source-over";
   }
 
-  public on(event: EventsType, callback: () => void) {
+  public on(
+    event: EventsType,
+    callback: (stopPropragation: () => void) => void,
+  ) {
     this.onEntityEvent = {
       ...this.onEntityEvent,
       [event]: callback,

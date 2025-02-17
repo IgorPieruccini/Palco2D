@@ -35,7 +35,7 @@ export class AddRemoveEntityExample extends Scene {
     }
 
     this.canvas.addEventListener("mousedown", (e: MouseEvent) => {
-      if (this.mouseHandler.hoveredEntity) return;
+      if (this.mouseHandler.hoveredEntities.length > 0) return;
       const frog = createFrog(e.clientX, e.clientY);
       this.render.addEntity(frog);
       this.mouseHandler.addEntity(frog);
