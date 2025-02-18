@@ -24,14 +24,14 @@ export class EntityPluginExample extends Scene {
     await AssetHandler().loadPng("assets/ninja-frog-jump.png");
 
     const frog = new Sprite({
+      id: "frog",
       texture: "assets/ninja-frog-jump.png",
       position: { x: 100, y: 100 },
       rotation: 0,
     });
 
     frog.size = { x: 64, y: 64 };
-    frog.on("mousedown", (stopPropragation) => {
-      stopPropragation();
+    frog.on("mousedown", () => {
       if (this.activeObject?.id !== frog.id) {
         this.activeObject?.removeAllPlugins();
         frog.addPlugin(new TransformerEntityController(frog, "boundaries"));
@@ -40,13 +40,13 @@ export class EntityPluginExample extends Scene {
     });
 
     const rect = new SquareEntity({
+      id: "rect",
       position: { x: 600, y: 200 },
       size: { x: 60, y: 60 },
       rotation: 0,
     });
 
-    rect.on("mousedown", (stopPropragation) => {
-      stopPropragation();
+    rect.on("mousedown", () => {
       if (this.activeObject?.id !== rect.id) {
         this.activeObject?.removeAllPlugins();
         rect.addPlugin(new TransformerEntityController(rect, "boundaries"));

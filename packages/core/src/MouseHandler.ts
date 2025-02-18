@@ -11,7 +11,6 @@ export class MouseHandler {
   private domRect: DOMRect;
   private canvasEventSubscribers: Map<"mouseup" | "mousedown", Function[]> =
     new Map();
-  private shouldStopPropagation = false;
 
   constructor(canvas: HTMLCanvasElement, entities: BaseEntity[]) {
     this.canvas = canvas;
@@ -105,7 +104,15 @@ export class MouseHandler {
 
     this.position = transformedPosition;
 
-    this.dispatchEventToEntities(this.entities);
+    this.dispatchEventToEntities.bind(this)(this.entities);
+  }
+
+  private getTopLayerHoveredEntity() {
+    return this.hoveredEntities.reduce((prev, current) => {
+      const prevRenderIndex = prev.getRenderIndex() || 0;
+      const currentRenderIndex = current.getRenderIndex() || 0;
+      return currentRenderIndex < prevRenderIndex ? prev : current;
+    }, this.hoveredEntities[0]);
   }
 
   private onMouseDown(ev: MouseEvent) {
@@ -117,10 +124,7 @@ export class MouseHandler {
       return;
     }
 
-    this.hoveredEntities.reverse().forEach((entity) => {
-      if (this.shouldStopPropagation) return;
-      entity.onEntityEvent.mousedown?.(this.stopPropagation.bind(this));
-    });
+    this.getTopLayerHoveredEntity().onEntityEvent.mousedown?.();
   }
 
   private onMouseUp(ev: MouseEvent) {
@@ -132,25 +136,14 @@ export class MouseHandler {
       return;
     }
 
-    this.hoveredEntities.reverse().forEach((entity) => {
-      if (this.shouldStopPropagation) return;
-      entity.onEntityEvent.mouseup?.(this.stopPropagation.bind(this));
-    });
-  }
-
-  private stopPropagation() {
-    this.shouldStopPropagation = true;
+    this.getTopLayerHoveredEntity().onEntityEvent.mouseup?.();
   }
 
   private dispatchEventToEntities(entities: BaseEntity[]) {
-    this.shouldStopPropagation = false;
     const offset = WorldHandler().getOffset();
     const zoom = WorldHandler().getZoom();
 
-    for (let x = 0; x <= this.entities.length - 1; x++) {
-      if (this.shouldStopPropagation) {
-        break;
-      }
+    for (let x = entities.length - 1; x >= 0; x--) {
       const entity = entities[x];
 
       const viewportPosition = {
@@ -182,7 +175,7 @@ export class MouseHandler {
       const wasMouseOver = this.hoveredEntities.find((e) => e.id === entity.id);
 
       if (!isMouseOver && wasMouseOver) {
-        entity?.onEntityEvent.mouseleave?.(this.stopPropagation.bind(this));
+        entity?.onEntityEvent.mouseleave?.();
 
         this.hoveredEntities = this.hoveredEntities.filter(
           (e) => e.id !== entity.id,
@@ -191,11 +184,11 @@ export class MouseHandler {
 
       if (isMouseOver) {
         if (!wasMouseOver) {
-          entity.onEntityEvent.mouseenter?.(this.stopPropagation.bind(this));
+          entity.onEntityEvent.mouseenter?.();
           this.hoveredEntities.push(entity);
         }
 
-        entity.onEntityEvent.mousehover?.(this.stopPropagation.bind(this));
+        entity.onEntityEvent.mousehover?.();
       }
     }
   }

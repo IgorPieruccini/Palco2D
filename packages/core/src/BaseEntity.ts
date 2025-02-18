@@ -53,10 +53,7 @@ export class BaseEntity {
       props.globalCompositeOperation || "source-over";
   }
 
-  public on(
-    event: EventsType,
-    callback: (stopPropragation: () => void) => void,
-  ) {
+  public on(event: EventsType, callback: () => void) {
     this.onEntityEvent = {
       ...this.onEntityEvent,
       [event]: callback,
@@ -185,6 +182,7 @@ export class BaseEntity {
 
   removeChild(index: number) {
     const deletedEntity = this.children.splice(index, 1);
+    if (!deletedEntity.length) return;
     deletedEntity[0].destroy(true);
     this.renderIndex = null;
     this.interactionIndex = null;
@@ -202,9 +200,12 @@ export class BaseEntity {
     });
 
     if (this.parent) {
-      this.parent.removeChild(
-        this.parent.children.findIndex((child) => child.id === this.id),
+      const childrenIndex = this.parent.children.findIndex(
+        (child) => child.id === this.id,
       );
+      if (childrenIndex !== -1) {
+        this.parent.removeChild(childrenIndex);
+      }
     }
   }
 
