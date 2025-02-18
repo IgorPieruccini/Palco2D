@@ -18,6 +18,7 @@ export class RenderHandler {
   entities: BaseEntity[];
   private fpsHandler = FPSHandler();
   private running = false;
+  private paused: boolean = false;
   private plugins: Array<ScenePlugin> = [];
 
   constructor(canvas: HTMLCanvasElement, entities: BaseEntity[]) {
@@ -58,6 +59,15 @@ export class RenderHandler {
       0, // f
     );
     this.render.bind(this)();
+  }
+
+  public pauseRender() {
+    this.paused = true;
+  }
+
+  public resumeRender() {
+    this.paused = false;
+    this.render();
   }
 
   public addEntity(entity: BaseEntity) {
@@ -185,6 +195,9 @@ export class RenderHandler {
   }
 
   private render() {
+    if (this.paused) {
+      return;
+    }
     this.fpsHandler.loop();
     this.ctx.clearRect(
       0,
