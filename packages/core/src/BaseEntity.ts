@@ -17,6 +17,8 @@ import {
   identityMatrix,
   multiplyMatrices,
 } from "./utils";
+import { EntityQuadrant } from "./QuadrantsHandler/EntityQuadrant";
+import { SceneHandler } from "./SceneHandler/SceneHandler";
 
 export class BaseEntity {
   id: string;
@@ -30,6 +32,7 @@ export class BaseEntity {
   parent: BaseEntity | null;
   static: boolean = false;
   globalCompositeOperation: GlobalCompositeOperation = "source-over";
+  public quadrant: EntityQuadrant;
 
   private renderIndex: number | null = null;
   private interactionIndex: number | null = null;
@@ -51,6 +54,8 @@ export class BaseEntity {
     this.static = props.static || false;
     this.globalCompositeOperation =
       props.globalCompositeOperation || "source-over";
+    this.quadrant = new EntityQuadrant(this);
+    SceneHandler.currentScene.quadrantHandler.updateQuadrants(this);
   }
 
   public on(event: EventsType, callback: () => void) {
@@ -75,6 +80,10 @@ export class BaseEntity {
   }
 
   render(ctx: CanvasRenderingContext2D) {
+    if (this.quadrant.needToUpdateQuadrant()) {
+      SceneHandler.currentScene.quadrantHandler.updateQuadrants(this);
+    }
+
     this.plugins.forEach((plugin) => {
       plugin.render(ctx);
     });

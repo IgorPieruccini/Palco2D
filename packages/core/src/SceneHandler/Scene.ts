@@ -3,6 +3,7 @@ import { MouseHandler } from "../MouseHandler";
 import { ScenePlugin } from "../ScenePlugin";
 import { RenderHandler } from "../RenderHandler";
 import { WorldHandler } from "../WorldHandler";
+import { QuadrantsHandler } from "../QuadrantsHandler/QuadrantsHandler";
 
 export class Scene {
   public canvas: HTMLCanvasElement;
@@ -12,6 +13,7 @@ export class Scene {
   public world: ReturnType<typeof WorldHandler> = WorldHandler();
   private name: string;
   private plugins: Record<string, ScenePlugin> = {};
+  public quadrantHandler: QuadrantsHandler;
 
   constructor(canvas: HTMLCanvasElement, name: string) {
     this.canvas = canvas;
@@ -25,6 +27,7 @@ export class Scene {
     this.name = name;
     this.render = new RenderHandler(canvas, []);
     this.mouseHandler = new MouseHandler(canvas, []);
+    this.quadrantHandler = new QuadrantsHandler();
   }
 
   public getName() {

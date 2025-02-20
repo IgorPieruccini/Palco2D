@@ -2,7 +2,7 @@ import { Scene } from "./Scene";
 
 export class SceneHandler {
   private scenes: Scene[] = [];
-  public static currentScene: Scene | null = null;
+  public static currentScene: Scene;
 
   constructor(scenes: Scene[]) {
     this.scenes = scenes;
