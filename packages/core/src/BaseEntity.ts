@@ -99,7 +99,7 @@ export class BaseEntity {
     return parents;
   }
 
-  getWorldMatrix() {
+  public getWorldMatrix() {
     const parents = this.getAllParents();
 
     let matrix = identityMatrix;
@@ -113,6 +113,18 @@ export class BaseEntity {
 
       matrix = transformedMatrix;
     }
+    return matrix;
+  }
+
+  public getMatrix() {
+    let matrix: number[][] = [];
+    const scale = this.getScale();
+    const mPosition = getMatrixPosition(this.position.x, this.position.y);
+    const mScale = getMatrixScale(scale.x, scale.y);
+    const mRotation = getMatrixRotation(this.rotation * (Math.PI / 180));
+
+    matrix = multiplyMatrices(mPosition, mRotation);
+    matrix = multiplyMatrices(matrix, mScale);
     return matrix;
   }
 
@@ -303,17 +315,5 @@ export class BaseEntity {
 
   public getInteractionIndex() {
     return this.interactionIndex;
-  }
-
-  public getMatrix() {
-    let matrix: number[][] = [];
-    const scale = this.getScale();
-    const mPosition = getMatrixPosition(this.position.x, this.position.y);
-    const mScale = getMatrixScale(scale.x, scale.y);
-    const mRotation = getMatrixRotation(this.rotation * (Math.PI / 180));
-
-    matrix = multiplyMatrices(mPosition, mRotation);
-    matrix = multiplyMatrices(matrix, mScale);
-    return matrix;
   }
 }
