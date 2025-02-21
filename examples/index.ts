@@ -14,6 +14,7 @@ import { TileMapExample } from "./src/tile-map";
 import { InvitiyCanvasSceneExample } from "./src/infinityCanvas";
 import { EntityPluginExample } from "./src/enityPluginExample";
 import { AddRemoveEntityExample } from "./src/add-remove-entity";
+import { QuadrantExamples } from "./src/quadrants-example";
 
 const dpr = window.devicePixelRatio;
 
@@ -50,6 +51,7 @@ const entityPluginExample = new EntityPluginExample(
   "EntityPluginExample",
 );
 const addRemoveEntity = new AddRemoveEntityExample(canvas, "AddRemoveEntity");
+const quadrantsExample = new QuadrantExamples(canvas, "QuadrantsExample");
 
 const scenes: Scene[] = [
   tileMap,
@@ -65,8 +67,9 @@ const scenes: Scene[] = [
   infinityCanvas,
   entityPluginExample,
   addRemoveEntity,
+  quadrantsExample,
 ];
-const initialScene = "EntityPluginExample";
+const initialScene = "QuadrantsExample";
 
 const sceneHandler = new SceneHandler(scenes);
 
