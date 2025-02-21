@@ -26,7 +26,7 @@ export class EntityPluginExample extends Scene {
     const frog = new Sprite({
       id: "frog",
       texture: "assets/ninja-frog-jump.png",
-      position: { x: 100, y: 100 },
+      position: { x: 0, y: 0 },
       rotation: 0,
     });
 
@@ -39,27 +39,27 @@ export class EntityPluginExample extends Scene {
       }
     });
 
-    const rect = new SquareEntity({
-      id: "rect",
-      position: { x: 600, y: 200 },
-      size: { x: 60, y: 60 },
-      rotation: 0,
-    });
-
-    rect.on("mousedown", () => {
-      if (this.activeObject?.id !== rect.id) {
-        this.activeObject?.removeAllPlugins();
-        rect.addPlugin(new TransformerEntityController(rect, "boundaries"));
-        this.activeObject = rect;
-      }
-    });
+    // const rect = new SquareEntity({
+    //   id: "rect",
+    //   position: { x: 600, y: 200 },
+    //   size: { x: 60, y: 60 },
+    //   rotation: 0,
+    // });
+    //
+    // rect.on("mousedown", () => {
+    //   if (this.activeObject?.id !== rect.id) {
+    //     this.activeObject?.removeAllPlugins();
+    //     rect.addPlugin(new TransformerEntityController(rect, "boundaries"));
+    //     this.activeObject = rect;
+    //   }
+    // });
 
     this.addPlugin(new InfinityCanvasPlugin(this), "infinityCanvas");
 
     this.render.addEntity(frog);
-    this.render.addEntity(rect);
+    // this.render.addEntity(rect);
     this.mouseHandler.addEntity(frog);
-    this.mouseHandler.addEntity(rect);
+    // this.mouseHandler.addEntity(rect);
     this.render.startRender();
 
     this.mouseHandler.start();

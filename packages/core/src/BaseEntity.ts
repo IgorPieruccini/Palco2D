@@ -99,27 +99,15 @@ export class BaseEntity {
     return parents;
   }
 
-  getMatrix() {
+  getWorldMatrix() {
     const parents = this.getAllParents();
 
     let matrix = identityMatrix;
 
     for (let i = parents.length - 1; i >= 0; i--) {
       const parent = parents[i];
-      const position = parent.position;
-      const angle = parent.rotation;
 
-      const rad = angle * (Math.PI / 180);
-
-      const positionM = getMatrixPosition(position.x, position.y);
-      const rotationM = getMatrixRotation(rad);
-      const scale = parent.getScale();
-      const scaleM = getMatrixScale(scale.x, scale.y);
-
-      const matrixResult = multiplyMatrices(
-        multiplyMatrices(positionM, rotationM),
-        scaleM,
-      );
+      const matrixResult = parent.getMatrix();
 
       const transformedMatrix = multiplyMatrices(matrix, matrixResult);
 
@@ -129,7 +117,7 @@ export class BaseEntity {
   }
 
   getRelativePostion(mousePosition: Vec2, relativeToParent?: boolean) {
-    const matrix = this.getMatrix();
+    const matrix = this.getWorldMatrix();
 
     // parent
     const globalRotation = getRotationAngleFromMatrix(matrix);
@@ -221,7 +209,7 @@ export class BaseEntity {
   isPointOverEntity(point: Vec2) {
     const relativePosition = this.getRelativePostion(point);
 
-    const matrix = this.getMatrix();
+    const matrix = this.getWorldMatrix();
     const globalScale = getScaleFromMatrix(matrix);
 
     const mousePos = {
@@ -238,7 +226,7 @@ export class BaseEntity {
   }
 
   isObjectInViewport(viewport: { position: Vec2; size: Vec2 }) {
-    const globalMatrix = this.getMatrix();
+    const globalMatrix = this.getWorldMatrix();
     const positionM = getMatrixPosition(this.position.x, this.position.y);
     const rotationM = getMatrixRotation(this.rotation * (Math.PI / 180));
     const scaleM = getMatrixScale(this.size.x, this.size.y);
@@ -315,5 +303,17 @@ export class BaseEntity {
 
   public getInteractionIndex() {
     return this.interactionIndex;
+  }
+
+  public getMatrix() {
+    let matrix: number[][] = [];
+    const scale = this.getScale();
+    const mPosition = getMatrixPosition(this.position.x, this.position.y);
+    const mScale = getMatrixScale(scale.x, scale.y);
+    const mRotation = getMatrixRotation(this.rotation * (Math.PI / 180));
+
+    matrix = multiplyMatrices(mPosition, mRotation);
+    matrix = multiplyMatrices(matrix, mScale);
+    return matrix;
   }
 }

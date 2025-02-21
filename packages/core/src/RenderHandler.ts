@@ -153,28 +153,14 @@ export class RenderHandler {
 
       if (entity.children.length > 0) {
         this.ctx.save();
-        const scale = entity.getScale();
-        const rad = entity.rotation * (Math.PI / 180);
-
-        const positionM = getMatrixPosition(
-          entity.position.x,
-          entity.position.y,
-        );
-        const rotationM = getMatrixRotation(rad);
-        const scaleM = getMatrixScale(scale.x, scale.y);
-
-        const multipliedMatrix = multiplyMatrices(
-          multiplyMatrices(positionM, rotationM),
-          scaleM,
-        );
-
+        const entityMatrix = entity.getMatrix();
         this.ctx.transform(
-          multipliedMatrix[0][0], // a
-          multipliedMatrix[1][0], // b
-          multipliedMatrix[0][1], // c
-          multipliedMatrix[1][1], // d
-          multipliedMatrix[0][2], // e
-          multipliedMatrix[1][2], // f
+          entityMatrix[0][0], // a
+          entityMatrix[1][0], // b
+          entityMatrix[0][1], // c
+          entityMatrix[1][1], // d
+          entityMatrix[0][2], // e
+          entityMatrix[1][2], // f
         );
 
         this.renderLayers(entity.children.slice());
