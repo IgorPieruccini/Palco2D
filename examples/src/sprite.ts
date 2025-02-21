@@ -1,4 +1,5 @@
 import { Scene, AssetHandler, Sprite } from "@palco-2d/core";
+import { InfinityCanvasPlugin } from "@palco-2d/plugins";
 
 export class SpriteExample extends Scene {
   public async start() {
@@ -6,7 +7,7 @@ export class SpriteExample extends Scene {
     await AssetHandler().loadTileMap("assets/ninja-frog-run.tilemap.json");
 
     const createFrogs = () => {
-      for (let x = 0; x < 300; x++) {
+      for (let x = 0; x < 3000; x++) {
         const frog = new Sprite({
           texture: "assets/ninja-frog-jump.png",
           position: {
@@ -33,7 +34,9 @@ export class SpriteExample extends Scene {
 
     createFrogs();
 
+    this.addPlugin(new InfinityCanvasPlugin(this), "infinityCanvasPlugin");
     this.mouseHandler.start();
     this.render.startRender();
+    this.startAllPlugins();
   }
 }

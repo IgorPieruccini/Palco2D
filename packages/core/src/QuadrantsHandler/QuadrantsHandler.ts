@@ -1,3 +1,4 @@
+import { Vec2 } from "../../types";
 import { BaseEntity } from "../BaseEntity";
 
 const DEFAULT_QUADRANT_SIZE = 300;
@@ -17,37 +18,10 @@ export class QuadrantsHandler {
       this.quadrants.get(quad)?.delete(entity.id);
     });
 
-    // check if entity is in quadrant
+    const coords = entity.getCoords();
 
-    // Wont work for rotated entities
-    // Wont work for entities that are bigger than the quadrant size
-    const halfWidth = entity.size.x / 2;
-    const halfHeight = entity.size.y / 2;
-
-    const topLeft = {
-      x: Math.floor((entity.position.x - halfWidth) / DEFAULT_QUADRANT_SIZE),
-      y: Math.floor((entity.position.y - halfHeight) / DEFAULT_QUADRANT_SIZE),
-    };
-
-    const topRight = {
-      x: Math.floor((entity.position.x + halfWidth) / DEFAULT_QUADRANT_SIZE),
-      y: Math.floor((entity.position.y - halfHeight) / DEFAULT_QUADRANT_SIZE),
-    };
-
-    const bottomLeft = {
-      x: Math.floor((entity.position.x - halfWidth) / DEFAULT_QUADRANT_SIZE),
-      y: Math.floor((entity.position.y + halfHeight) / DEFAULT_QUADRANT_SIZE),
-    };
-
-    const bottomRight = {
-      x: Math.floor((entity.position.x + halfWidth) / DEFAULT_QUADRANT_SIZE),
-      y: Math.floor((entity.position.y + halfHeight) / DEFAULT_QUADRANT_SIZE),
-    };
-
-    const points = [topLeft, topRight, bottomLeft, bottomRight];
-
-    for (const quad of points) {
-      const key = `${quad.x},${quad.y}`;
+    for (const quad of coords) {
+      const key = `${Math.floor(quad.x / DEFAULT_QUADRANT_SIZE)},${Math.floor(quad.y / DEFAULT_QUADRANT_SIZE)}`;
       entity.quadrant.updateQuadrant(key);
 
       if (!this.quadrants.has(key)) {
@@ -56,5 +30,18 @@ export class QuadrantsHandler {
 
       this.quadrants.get(key)?.set(entity.id, entity);
     }
+  }
+
+  public getPointQuadrant(point: Vec2) {
+    return {
+      x: Math.floor(point.x / DEFAULT_QUADRANT_SIZE),
+      y: Math.floor(point.y / DEFAULT_QUADRANT_SIZE),
+    };
+  }
+
+  public getEntitiesFromQuadrant(point: Vec2) {
+    const key = `${point.x},${point.y}`;
+    const quadrant = this.quadrants.get(key);
+    return Array.from(quadrant?.values() || []);
   }
 }

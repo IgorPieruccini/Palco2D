@@ -2,6 +2,7 @@ import { BaseEntity } from "./BaseEntity";
 import { WorldHandler } from "./WorldHandler";
 import { Vec2 } from "../types";
 import { inverseTransform } from "./utils";
+import { SceneHandler } from "./SceneHandler/SceneHandler";
 
 export class MouseHandler {
   public position: Vec2;
@@ -104,7 +105,19 @@ export class MouseHandler {
 
     this.position = transformedPosition;
 
-    this.dispatchEventToEntities.bind(this)(this.entities);
+    const mouseQuadrant =
+      SceneHandler.currentScene.quadrantHandler.getPointQuadrant(
+        transformedPosition,
+      );
+
+    const quadrant =
+      SceneHandler.currentScene.quadrantHandler.getEntitiesFromQuadrant(
+        mouseQuadrant,
+      );
+
+    if (quadrant.length === 0) return;
+
+    this.dispatchEventToEntities.bind(this)(quadrant);
   }
 
   private getTopLayerHoveredEntity() {

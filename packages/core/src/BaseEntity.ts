@@ -128,6 +128,32 @@ export class BaseEntity {
     return matrix;
   }
 
+  public getCoords() {
+    const worldMatrix = this.getWorldMatrix();
+    const position = getPositionFromMatrix(worldMatrix);
+    const corners = [
+      { x: -this.size.x / 2, y: -this.size.y / 2 },
+      { x: this.size.x / 2, y: -this.size.y / 2 },
+      { x: -this.size.x / 2, y: this.size.y / 2 },
+      { x: this.size.x / 2, y: this.size.y / 2 },
+    ];
+
+    const rad = this.rotation * (Math.PI / 180);
+    const scale = this.getScale();
+    const cos = Math.cos(rad) * scale.x;
+    const sin = Math.sin(rad) * scale.y;
+
+    return corners.map((corner) => {
+      const x = corner.x * cos - corner.y * sin;
+      const y = corner.x * sin + corner.y * cos;
+
+      return {
+        x: x + position.x + this.position.x,
+        y: y + position.y + this.position.y,
+      };
+    });
+  }
+
   getRelativePostion(mousePosition: Vec2, relativeToParent?: boolean) {
     const matrix = this.getWorldMatrix();
 
