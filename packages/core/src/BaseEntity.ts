@@ -15,6 +15,7 @@ import {
   getRotationAngleFromMatrix,
   getScaleFromMatrix,
   identityMatrix,
+  invertMatrix,
   multiplyMatrices,
 } from "./utils";
 import { EntityQuadrant } from "./QuadrantsHandler/EntityQuadrant";
@@ -129,8 +130,13 @@ export class BaseEntity {
   }
 
   public getCoords() {
-    const worldMatrix = this.getWorldMatrix();
-    const position = getPositionFromMatrix(worldMatrix);
+    const parentMatrix = this.getWorldMatrix();
+    const parentRotation = getRotationAngleFromMatrix(parentMatrix);
+    const matrix = this.getMatrix();
+
+    const finalMatrix = multiplyMatrices(parentMatrix, matrix);
+    const position = getPositionFromMatrix(finalMatrix);
+
     const corners = [
       { x: -this.size.x / 2, y: -this.size.y / 2 },
       { x: this.size.x / 2, y: -this.size.y / 2 },
@@ -138,7 +144,10 @@ export class BaseEntity {
       { x: this.size.x / 2, y: this.size.y / 2 },
     ];
 
-    const rad = this.rotation * (Math.PI / 180);
+    const angle = parentRotation * (180 / Math.PI);
+    const finalAngle = this.rotation + angle;
+    const rad = finalAngle * (Math.PI / 180);
+
     const scale = this.getScale();
     const cos = Math.cos(rad) * scale.x;
     const sin = Math.sin(rad) * scale.y;
@@ -148,8 +157,8 @@ export class BaseEntity {
       const y = corner.x * sin + corner.y * cos;
 
       return {
-        x: x + position.x + this.position.x,
-        y: y + position.y + this.position.y,
+        x: x + position.x,
+        y: y + position.y,
       };
     });
   }

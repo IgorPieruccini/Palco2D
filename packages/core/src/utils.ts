@@ -147,3 +147,54 @@ export const generateUUID = () => {
     return v.toString(16);
   });
 };
+
+export const invertMatrix = (matrix: number[][]) => {
+  const det = matrixDeterminant(matrix);
+  if (det === 0) {
+    throw new Error("Matrix is not invertible");
+  }
+  const cofactors = cofactorMatrix3x3(matrix);
+  const adjugate = transpose3x3(cofactors);
+
+  return adjugate.map((row) => row.map((value) => value / det));
+};
+
+function matrixDeterminant(matrix: number[][]) {
+  return (
+    matrix[0][0] * (matrix[1][1] * matrix[2][2] - matrix[1][2] * matrix[2][1]) -
+    matrix[0][1] * (matrix[1][0] * matrix[2][2] - matrix[1][2] * matrix[2][0]) +
+    matrix[0][2] * (matrix[1][0] * matrix[2][1] - matrix[1][1] * matrix[2][0])
+  );
+}
+
+function det2x2(a: number, b: number, c: number, d: number) {
+  return a * d - b * c;
+}
+
+function cofactorMatrix3x3(m: number[][]) {
+  return [
+    [
+      det2x2(m[1][1], m[1][2], m[2][1], m[2][2]),
+      -det2x2(m[1][0], m[1][2], m[2][0], m[2][2]),
+      det2x2(m[1][0], m[1][1], m[2][0], m[2][1]),
+    ],
+    [
+      -det2x2(m[0][1], m[0][2], m[2][1], m[2][2]),
+      det2x2(m[0][0], m[0][2], m[2][0], m[2][2]),
+      -det2x2(m[0][0], m[0][1], m[2][0], m[2][1]),
+    ],
+    [
+      det2x2(m[0][1], m[0][2], m[1][1], m[1][2]),
+      -det2x2(m[0][0], m[0][2], m[1][0], m[1][2]),
+      det2x2(m[0][0], m[0][1], m[1][0], m[1][1]),
+    ],
+  ];
+}
+
+function transpose3x3(m: number[][]) {
+  return [
+    [m[0][0], m[1][0], m[2][0]],
+    [m[0][1], m[1][1], m[2][1]],
+    [m[0][2], m[1][2], m[2][2]],
+  ];
+}

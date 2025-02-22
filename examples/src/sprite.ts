@@ -7,7 +7,7 @@ export class SpriteExample extends Scene {
     await AssetHandler().loadTileMap("assets/ninja-frog-run.tilemap.json");
 
     const createFrogs = () => {
-      for (let x = 0; x < 3000; x++) {
+      for (let x = 0; x < 7000; x++) {
         const frog = new Sprite({
           texture: "assets/ninja-frog-jump.png",
           position: {

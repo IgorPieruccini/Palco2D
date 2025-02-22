@@ -180,9 +180,9 @@ export class MouseHandler {
 
       entity.setInteractionIndex(x);
 
-      if (entity.children.length > 0) {
-        this.dispatchEventToEntities(entity.children);
-      }
+      // if (entity.children.length > 0) {
+      //   this.dispatchEventToEntities(entity.children);
+      // }
 
       const isMouseOver = entity.isPointOverEntity(this.position);
       const wasMouseOver = this.hoveredEntities.find((e) => e.id === entity.id);
