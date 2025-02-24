@@ -29,6 +29,7 @@ export class SerializeExample extends Scene {
             static: false,
             globalCompositeOperation: "source-over",
             color: "red",
+            address: "2/1",
           },
           {
             type: "spriteEntity",
@@ -40,6 +41,7 @@ export class SerializeExample extends Scene {
             static: false,
             globalCompositeOperation: "source-over",
             texture: "assets/ninja-frog-jump.png",
+            address: "3/1",
           },
           {
             type: "textEntity",
@@ -54,6 +56,7 @@ export class SerializeExample extends Scene {
             font: "Arial",
             fontSize: 24,
             color: "black",
+            address: "4/1",
           },
           {
             type: "spriteEntity",
@@ -66,6 +69,7 @@ export class SerializeExample extends Scene {
             globalCompositeOperation: "source-over",
             texture: "assets/ninja-frog-run.png",
             tileMap: "assets/ninja-frog-run.tilemap.json",
+            address: "5/1",
           },
         ],
       },
@@ -80,32 +84,32 @@ export class SerializeExample extends Scene {
         globalCompositeOperation: "source-over",
         texture: "assets/ninja-frog-jump.png",
         hoverSize: { x: 120, y: 120 },
+        address: "6",
       },
     ];
 
     const entities = await serializer.createFromJson(json);
 
-    const animatedSprite = this.getEntityById("5", entities);
+    entities.push(...entities);
+
+    this.mouseHandler.addEntities(entities);
+    this.render.addEntities(entities);
+
+    const animatedSprite = this.getEntityByAddress("5/1");
     if (animatedSprite instanceof Sprite) {
       animatedSprite.animation?.setSpeed(2);
       animatedSprite.animation?.start();
     }
 
-    const firstEnity = this.getEntityById("1", entities);
-
+    const firstEnity = this.getEntityByAddress("1");
     firstEnity?.on("mousedown", () => {
       window.alert(JSON.stringify(entities[0].serialize()));
     });
 
-    const customEntity = this.getEntityById("6", entities);
+    const customEntity = this.getEntityByAddress("6");
     customEntity?.on("mousedown", () => {
       window.alert(JSON.stringify(entities[1].serialize()));
     });
-
-    entities.push(...entities);
-
-    this.mouseHandler.addEntities(entities);
-    this.render.addEntities(entities);
 
     this.render.startRender();
     this.mouseHandler.start();

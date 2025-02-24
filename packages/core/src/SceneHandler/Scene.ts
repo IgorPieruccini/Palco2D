@@ -3,7 +3,6 @@ import { MouseHandler } from "../MouseHandler";
 import { ScenePlugin } from "../ScenePlugin";
 import { RenderHandler } from "../RenderHandler";
 import { WorldHandler } from "../WorldHandler";
-import { QuadrantsHandler } from "../QuadrantsHandler/QuadrantsHandler";
 
 export class Scene {
   public canvas: HTMLCanvasElement;
@@ -13,7 +12,6 @@ export class Scene {
   public world: ReturnType<typeof WorldHandler> = WorldHandler();
   private name: string;
   private plugins: Record<string, ScenePlugin> = {};
-  public quadrantHandler: QuadrantsHandler;
 
   constructor(canvas: HTMLCanvasElement, name: string) {
     this.canvas = canvas;
@@ -27,7 +25,6 @@ export class Scene {
     this.name = name;
     this.render = new RenderHandler(canvas, []);
     this.mouseHandler = new MouseHandler(canvas, []);
-    this.quadrantHandler = new QuadrantsHandler();
   }
 
   public getName() {
@@ -48,22 +45,21 @@ export class Scene {
     this.render.setPlugins([]);
   }
 
-  public getEntityById(id: string, entities?: BaseEntity[]): BaseEntity | null {
-    const searchableEntities = entities || this.render.entities;
-    for (const entity of searchableEntities) {
-      if (entity.id === id) {
-        return entity;
-      }
-
-      if (entity.children?.length > 0) {
-        const foundEntity = this.getEntityById(id, entity.children);
-        if (foundEntity) {
-          return foundEntity;
-        }
-      }
+  // TODO: implement
+  public getEntityByAddress(address: string): BaseEntity | undefined {
+    const ids = address.split("/");
+    let entity = this.render.entities.get(ids[ids.length - 1]);
+    if (!entity) {
+      throw new Error(`Entity with id ${ids[ids.length - 1]} not found`);
     }
 
-    return null;
+    for (let i = ids.length - 2; i >= 0; i--) {
+      entity = entity.children.get(ids[i]);
+      if (!entity) {
+        throw new Error(`Entity with id ${ids[i]} not found`);
+      }
+    }
+    return entity;
   }
 
   public addPlugin(plugin: ScenePlugin, key: string) {

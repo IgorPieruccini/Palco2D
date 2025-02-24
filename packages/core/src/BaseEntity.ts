@@ -15,7 +15,6 @@ import {
   getRotationAngleFromMatrix,
   getScaleFromMatrix,
   identityMatrix,
-  invertMatrix,
   multiplyMatrices,
 } from "./utils";
 import { EntityQuadrant } from "./QuadrantsHandler/EntityQuadrant";
@@ -28,15 +27,14 @@ export class BaseEntity {
   rotation: number;
   isMouseHover: boolean;
   layer: number;
-  children: BaseEntity[];
+  children: Map<string, BaseEntity>;
   onEntityEvent: EntityEvents;
   parent: BaseEntity | null;
   static: boolean = false;
   globalCompositeOperation: GlobalCompositeOperation = "source-over";
   public quadrant: EntityQuadrant;
 
-  private renderIndex: number | null = null;
-  private interactionIndex: number | null = null;
+  private index: number | null = null;
 
   private initialSize: Vec2;
   private plugins: EntityPlugin[] = [];
@@ -49,14 +47,14 @@ export class BaseEntity {
     this.rotation = props.rotation;
     this.isMouseHover = false;
     this.layer = props.layer || 0;
-    this.children = [];
+    this.children = new Map();
     this.onEntityEvent = {};
     this.parent = null;
     this.static = props.static || false;
     this.globalCompositeOperation =
       props.globalCompositeOperation || "source-over";
     this.quadrant = new EntityQuadrant(this);
-    SceneHandler.currentScene.quadrantHandler.updateQuadrants(this);
+    SceneHandler.currentScene.mouseHandler.quadrant.updateQuadrants(this);
   }
 
   public on(event: EventsType, callback: () => void) {
@@ -82,7 +80,8 @@ export class BaseEntity {
 
   render(ctx: CanvasRenderingContext2D) {
     if (this.quadrant.needToUpdateQuadrant()) {
-      SceneHandler.currentScene.quadrantHandler.updateQuadrants(this);
+      SceneHandler.currentScene.mouseHandler.quadrant.updateQuadrants(this);
+      this.quadrant.shouldUpdate = false;
     }
 
     this.plugins.forEach((plugin) => {
@@ -220,16 +219,12 @@ export class BaseEntity {
   }
 
   addChild(child: BaseEntity) {
-    this.children.push(child);
+    this.children.set(child.id, child);
     child.setParent(this);
   }
 
-  removeChild(index: number) {
-    const deletedEntity = this.children.splice(index, 1);
-    if (!deletedEntity.length) return;
-    deletedEntity[0].destroy(true);
-    this.renderIndex = null;
-    this.interactionIndex = null;
+  removeChild(id: string) {
+    this.children.delete(id);
   }
 
   destroy(plugins?: boolean) {
@@ -244,12 +239,7 @@ export class BaseEntity {
     });
 
     if (this.parent) {
-      const childrenIndex = this.parent.children.findIndex(
-        (child) => child.id === this.id,
-      );
-      if (childrenIndex !== -1) {
-        this.parent.removeChild(childrenIndex);
-      }
+      this.parent.removeChild(this.id);
     }
   }
 
@@ -303,6 +293,15 @@ export class BaseEntity {
   }
 
   public serialize(): SerializedBaseEntityProps {
+    const childrenSerialized = new Map<string, SerializedBaseEntityProps>();
+    const iterator = this.children.entries();
+    let iteratorResult = iterator.next();
+    while (!iteratorResult.done) {
+      const [key, child] = iteratorResult.value;
+      childrenSerialized.set(key, child.serialize());
+      iteratorResult = iterator.next();
+    }
+
     return {
       type: "baseEntity",
       id: this.id,
@@ -310,7 +309,8 @@ export class BaseEntity {
       size: this.size,
       rotation: this.rotation,
       layer: this.layer,
-      children: this.children.map((child) => child.serialize()),
+      children: childrenSerialized,
+      address: this.getIdAdress(),
     };
   }
 
@@ -336,19 +336,21 @@ export class BaseEntity {
     this.plugins = [];
   }
 
-  public setRenderIndex(index: number) {
-    this.renderIndex = index;
+  public setIndex(index: number) {
+    this.index = index;
   }
 
-  public setInteractionIndex(index: number) {
-    this.interactionIndex = index;
+  public getIndex() {
+    return this.index;
   }
 
-  public getRenderIndex() {
-    return this.renderIndex;
-  }
-
-  public getInteractionIndex() {
-    return this.interactionIndex;
+  public getIdAdress() {
+    let address = this.id;
+    let parent = this.parent;
+    while (parent) {
+      address = `${parent.id}/${address}`;
+      parent = parent.parent;
+    }
+    return address;
   }
 }

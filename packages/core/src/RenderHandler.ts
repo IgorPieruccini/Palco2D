@@ -3,19 +3,13 @@ import { FPSHandler } from "./FPSHandler";
 import { ScenePlugin } from "./ScenePlugin";
 import { Sprite } from "./Sprite";
 import { WorldHandler } from "./WorldHandler";
-import {
-  getMatrixPosition,
-  getMatrixRotation,
-  getMatrixScale,
-  multiplyMatrices,
-} from "./utils";
 
 const dpr = window.devicePixelRatio;
 
 export class RenderHandler {
   canvas: HTMLCanvasElement;
   ctx: CanvasRenderingContext2D;
-  entities: BaseEntity[];
+  entities: Map<string, BaseEntity> = new Map();
   private fpsHandler = FPSHandler();
   private running = false;
   private paused: boolean = false;
@@ -31,12 +25,11 @@ export class RenderHandler {
     this.ctx = ctx;
 
     const sortedLayers = entities.sort((a, b) => a.layer - b.layer);
-    this.entities = sortedLayers;
+    this.addEntities(sortedLayers);
   }
 
   public stopRender() {
     this.running = false;
-    this.entities = [];
     this.ctx.restore();
     this.ctx.clearRect(
       0,
@@ -71,49 +64,34 @@ export class RenderHandler {
   }
 
   public addEntity(entity: BaseEntity) {
-    const entities = [...this.entities, entity];
-    this.entities = entities.sort((a, b) => a.layer - b.layer);
+    this.entities.set(entity.id, entity);
   }
 
   public addEntities(entities: BaseEntity[]) {
-    const concatedEntities = [...this.entities, ...entities];
-    this.entities = concatedEntities.sort((a, b) => a.layer - b.layer);
+    for (let x = 0; x < entities.length; x++) {
+      this.entities.set(entities[x].id, entities[x]);
+    }
   }
 
-  public removeEntity(entity: BaseEntity, shiftIndex?: number) {
-    let index = entity.getRenderIndex();
-
-    if (index === null) return;
-
-    if (shiftIndex) {
-      index -= shiftIndex;
-    }
-
-    if (entity.parent) {
-      entity.parent.removeChild(index);
-      return;
-    }
-
-    this.entities.splice(index, 1);
+  public removeEntity(entity: BaseEntity) {
+    this.entities.delete(entity.id);
   }
 
   public removeEntities(entities: BaseEntity[]) {
-    let removedIndex = 0;
-
     for (let x = 0; x < entities.length; x++) {
-      this.removeEntity(entities[x], removedIndex);
-      removedIndex++;
+      this.entities.delete(entities[x].id);
     }
   }
 
-  private renderLayers(entities: BaseEntity[]) {
+  private renderLayers(entities: Map<string, BaseEntity>) {
     const offset = WorldHandler().getOffset();
     const zoom = WorldHandler().getZoom();
 
-    for (let x = 0; x < entities.length; x++) {
-      const entity = entities[x];
+    const iterator = entities.entries();
+    let iteratorResult = iterator.next();
 
-      entity.setRenderIndex(x);
+    while (!iteratorResult.done) {
+      const [_, entity] = iteratorResult.value;
 
       const viewportPosition = {
         x: -offset.x / zoom,
@@ -151,7 +129,10 @@ export class RenderHandler {
 
       this.ctx.restore();
 
-      if (entity.children.length > 0) {
+      const childrenIterator = entity.children.entries();
+      let childrenIteratorResult = childrenIterator.next();
+
+      while (!childrenIteratorResult.done) {
         this.ctx.save();
         const entityMatrix = entity.getMatrix();
         this.ctx.transform(
@@ -163,11 +144,14 @@ export class RenderHandler {
           entityMatrix[1][2], // f
         );
 
-        this.renderLayers(entity.children.slice());
+        this.renderLayers(entity.children);
+
         this.ctx.restore();
+        childrenIteratorResult = childrenIterator.next();
       }
 
       this.ctx.restore();
+      iteratorResult = iterator.next();
     }
   }
 
@@ -191,8 +175,8 @@ export class RenderHandler {
       this.canvas.clientWidth * dpr,
       this.canvas.clientHeight * dpr,
     );
-    const entitiesCopy = this.entities.slice();
-    this.renderLayers.bind(this)(entitiesCopy);
+
+    this.renderLayers(this.entities);
 
     if (this.running) {
       this.plugins.forEach((plugin) => {

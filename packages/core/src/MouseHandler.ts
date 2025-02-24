@@ -2,11 +2,12 @@ import { BaseEntity } from "./BaseEntity";
 import { WorldHandler } from "./WorldHandler";
 import { Vec2 } from "../types";
 import { inverseTransform } from "./utils";
-import { SceneHandler } from "./SceneHandler/SceneHandler";
+import { QuadrantsHandler } from "./QuadrantsHandler/QuadrantsHandler";
 
 export class MouseHandler {
   public position: Vec2;
   public hoveredEntities: BaseEntity[];
+  public quadrant: QuadrantsHandler;
   private canvas: HTMLCanvasElement;
   private entities: BaseEntity[];
   private domRect: DOMRect;
@@ -17,8 +18,9 @@ export class MouseHandler {
     this.canvas = canvas;
     this.domRect = canvas.getBoundingClientRect();
     this.position = { x: 0, y: 0 };
-    this.entities = entities;
     this.hoveredEntities = [];
+    this.entities = entities;
+    this.quadrant = new QuadrantsHandler();
   }
 
   private binded = {
@@ -52,38 +54,16 @@ export class MouseHandler {
     this.entities = [...this.entities, ...entities];
   }
 
-  public removeEntity(entity: BaseEntity, shiftIndex?: number) {
-    let index = entity.getInteractionIndex();
+  public removeEntity(entity: BaseEntity) {
+    const currentEntityQuadrant = entity.quadrant.getQuadrant();
 
-    if (index === null) return;
+    const iterator = currentEntityQuadrant.entries();
+    let iteratorResult = iterator.next();
 
-    if (shiftIndex) {
-      index -= shiftIndex;
-    }
-
-    const entityIsHovered = this.hoveredEntities.find(
-      (e) => e.id === entity.id,
-    );
-    if (entityIsHovered) {
-      this.hoveredEntities = this.hoveredEntities.filter(
-        (e) => e.id !== entity.id,
-      );
-    }
-
-    if (entity.parent) {
-      entity.parent.removeChild(index);
-      return;
-    }
-
-    this.entities.splice(index, 1);
-  }
-
-  public removeEntities(entities: BaseEntity[]) {
-    let removedIndex = 0;
-
-    for (let x = 0; x < entities.length; x++) {
-      this.removeEntity(entities[x], removedIndex);
-      removedIndex++;
+    while (!iteratorResult.done) {
+      const [_, quad] = iteratorResult.value;
+      this.quadrant.quadrants.get(quad)?.delete(entity.id);
+      iteratorResult = iterator.next();
     }
   }
 
@@ -105,25 +85,13 @@ export class MouseHandler {
 
     this.position = transformedPosition;
 
-    const mouseQuadrant =
-      SceneHandler.currentScene.quadrantHandler.getPointQuadrant(
-        transformedPosition,
-      );
-
-    const quadrant =
-      SceneHandler.currentScene.quadrantHandler.getEntitiesFromQuadrant(
-        mouseQuadrant,
-      );
-
-    if (quadrant.length === 0) return;
-
-    this.dispatchEventToEntities.bind(this)(quadrant);
+    this.dispatchEventToEntities();
   }
 
   private getTopLayerHoveredEntity() {
     return this.hoveredEntities.reduce((prev, current) => {
-      const prevRenderIndex = prev.getRenderIndex() || 0;
-      const currentRenderIndex = current.getRenderIndex() || 0;
+      const prevRenderIndex = prev.getIndex() || 0;
+      const currentRenderIndex = current.getIndex() || 0;
       return currentRenderIndex < prevRenderIndex ? prev : current;
     }, this.hoveredEntities[0]);
   }
@@ -152,12 +120,23 @@ export class MouseHandler {
     this.getTopLayerHoveredEntity().onEntityEvent.mouseup?.();
   }
 
-  private dispatchEventToEntities(entities: BaseEntity[]) {
+  private dispatchEventToEntities() {
     const offset = WorldHandler().getOffset();
     const zoom = WorldHandler().getZoom();
 
-    for (let x = entities.length - 1; x >= 0; x--) {
-      const entity = entities[x];
+    const mouseQuadrant = this.quadrant.getPointQuadrant(this.position);
+    const quadrantKey = `${mouseQuadrant.x},${mouseQuadrant.y}`;
+    const currentQuadrant = this.quadrant.quadrants.get(quadrantKey);
+
+    if (!currentQuadrant) {
+      return;
+    }
+
+    const iterator = currentQuadrant.entries();
+    let iteratorResult = iterator.next();
+
+    while (!iteratorResult.done) {
+      const [_, entity] = iteratorResult.value;
 
       const viewportPosition = {
         x: -offset.x / zoom,
@@ -175,14 +154,9 @@ export class MouseHandler {
       });
 
       if (!isInViewPort) {
-        continue;
+        iteratorResult = iterator.next();
+        return;
       }
-
-      entity.setInteractionIndex(x);
-
-      // if (entity.children.length > 0) {
-      //   this.dispatchEventToEntities(entity.children);
-      // }
 
       const isMouseOver = entity.isPointOverEntity(this.position);
       const wasMouseOver = this.hoveredEntities.find((e) => e.id === entity.id);
@@ -203,6 +177,8 @@ export class MouseHandler {
 
         entity.onEntityEvent.mousehover?.();
       }
+
+      iteratorResult = iterator.next();
     }
   }
 

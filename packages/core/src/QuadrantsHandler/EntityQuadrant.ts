@@ -5,6 +5,7 @@ export class EntityQuadrant {
   protected entity: BaseEntity;
 
   protected matrix: number[][];
+  public shouldUpdate: boolean = true;
 
   constructor(entity: BaseEntity) {
     this.matrix = entity.getWorldMatrix();
@@ -21,7 +22,14 @@ export class EntityQuadrant {
   }
 
   public needToUpdateQuadrant() {
-    const entityMatrix = this.entity.getWorldMatrix();
+    if (this.shouldUpdate) {
+      this.entity.children.forEach((child) => {
+        child.quadrant.shouldUpdate = true;
+      });
+      return true;
+    }
+    const entityMatrix = this.entity.getMatrix();
+
     const needToUpdate = entityMatrix.some((row, i) => {
       return row.some((cell, j) => {
         return cell !== this.matrix[i][j];
@@ -30,6 +38,9 @@ export class EntityQuadrant {
 
     if (needToUpdate) {
       this.matrix = entityMatrix;
+      this.entity.children.forEach((child) => {
+        child.quadrant.shouldUpdate = true;
+      });
     }
 
     return needToUpdate;

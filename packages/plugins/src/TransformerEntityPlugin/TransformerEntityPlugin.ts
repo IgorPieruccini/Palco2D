@@ -75,7 +75,10 @@ export class TransformerEntityController extends EntityPlugin {
     const entityControllers = Object.values(this.controllers);
 
     SceneHandler.currentScene?.render.removeEntities(entityControllers);
-    SceneHandler.currentScene?.mouseHandler.removeEntities(entityControllers);
+
+    for (const controler of entityControllers) {
+      SceneHandler.currentScene.mouseHandler.removeEntity(controler);
+    }
 
     this.controllers = {};
   }

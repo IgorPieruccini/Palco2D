@@ -39,9 +39,9 @@ export class QuadrantsHandler {
     };
   }
 
-  public getEntitiesFromQuadrant(point: Vec2) {
-    const key = `${point.x},${point.y}`;
-    const quadrant = this.quadrants.get(key);
-    return Array.from(quadrant?.values() || []);
-  }
+  // public getEntitiesFromQuadrant(point: Vec2) {
+  //   const key = `${point.x},${point.y}`;
+  //   const quadrant = this.quadrants.get(key);
+  //   return Array.from(quadrant?.values() || []);
+  // }
 }

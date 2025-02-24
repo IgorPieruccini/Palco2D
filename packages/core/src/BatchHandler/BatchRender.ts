@@ -3,37 +3,41 @@ import { BaseEntity } from "../BaseEntity";
 export class BatchRender {
   canvas: HTMLCanvasElement;
   ctx: CanvasRenderingContext2D;
-  entities: BaseEntity[];
+  entities: Map<string, BaseEntity> = new Map();
 
   constructor(canvas: HTMLCanvasElement, entities: BaseEntity[]) {
     this.canvas = canvas;
 
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext("2d");
     if (!ctx) {
-      throw new Error('Canvas context not found');
+      throw new Error("Canvas context not found");
     }
     this.ctx = ctx;
 
-
     const sortedLayers = entities.sort((a, b) => a.layer - b.layer);
-    this.entities = sortedLayers;
+    for (const entity of sortedLayers) {
+      this.entities.set(entity.id, entity);
+    }
 
-    this.render.bind(this)();
+    this.render();
 
     // Set the canvas to the correct size
     this.ctx.transform(
       1, // a
       0, // b
-      0, // c  
+      0, // c
       1, // d
       0, // e
-      0 // f
+      0, // f
     );
   }
 
-  private renderLayers(entities: BaseEntity[]) {
-    for (let x = 0; x < entities.length; x++) {
-      const entity = entities[x];
+  private renderLayers(entities: Map<string, BaseEntity>) {
+    const iterator = entities.entries();
+    let iteratorResult = iterator.next();
+
+    while (!iteratorResult.done) {
+      const [_, entity] = iteratorResult.value;
 
       this.ctx.save();
       this.ctx.translate(entity.position.x, entity.position.y);
@@ -43,7 +47,10 @@ export class BatchRender {
 
       this.ctx.restore();
 
-      if (entity.children.length > 0) {
+      const childrenIterator = entity.children.entries();
+      let childrenIteratorResult = childrenIterator.next();
+
+      while (!childrenIteratorResult.done) {
         this.ctx.save();
         const scale = entity.getScale();
 
@@ -51,10 +58,10 @@ export class BatchRender {
         this.ctx.transform(
           scale.x, // a
           0, // b
-          0, // c  
+          0, // c
           scale.y, // d
           entity.position.x, // e
-          entity.position.y // f
+          entity.position.y, // f
         );
 
         const rad = entity.rotation * (Math.PI / 180);
@@ -63,21 +70,22 @@ export class BatchRender {
         this.ctx.transform(
           Math.cos(rad), // a
           Math.sin(rad), // b
-          -Math.sin(rad), // c  
+          -Math.sin(rad), // c
           Math.cos(rad), // d
           1,
-          1
+          1,
         );
 
-        this.renderLayers(entity.children.slice());
+        this.renderLayers(entity.children);
+
         this.ctx.restore();
+        childrenIteratorResult = childrenIterator.next();
       }
+      iteratorResult = iterator.next();
     }
   }
 
   private render() {
-    const entitiesCopy = this.entities.slice();
-    this.renderLayers.bind(this)(entitiesCopy);
+    this.renderLayers(this.entities);
   }
-
 }
