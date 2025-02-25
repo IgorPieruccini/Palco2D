@@ -53,6 +53,6 @@ export type SerializedBaseEntityProps<
   T extends BaseEntityProps = BaseEntityProps,
 > = T & {
   type: string;
-  children: Map<string, SerializedBaseEntityProps<T>>;
+  children: SerializedBaseEntityProps[];
   address: string;
 };

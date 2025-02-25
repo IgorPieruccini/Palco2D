@@ -59,7 +59,6 @@ export class BatchExample extends Scene {
       });
 
       this.render.addEntities([...staticEntities, mainFrog]);
-      this.mouseHandler.addEntities([mainFrog]);
       this.render.startRender();
       this.mouseHandler.start();
     };

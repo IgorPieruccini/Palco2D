@@ -83,7 +83,7 @@ export class SerializerHandler {
       for (const child of data.children) {
         const childEntity = await this.serializeEntity(child.type, child);
         childEntity.parent = entity;
-        entity.children.set(childEntity.id, childEntity);
+        entity.addChild(childEntity);
       }
     }
 

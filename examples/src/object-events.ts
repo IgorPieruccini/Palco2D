@@ -35,7 +35,6 @@ export class ObjectEventsExample extends Scene {
       createInteractiveSquare();
     }
 
-    this.mouseHandler.addEntities(entities);
     this.render.addEntities(entities);
     this.render.startRender();
     this.mouseHandler.start();

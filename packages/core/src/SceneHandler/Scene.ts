@@ -24,7 +24,7 @@ export class Scene {
     this.ctx = ctx;
     this.name = name;
     this.render = new RenderHandler(canvas, []);
-    this.mouseHandler = new MouseHandler(canvas, []);
+    this.mouseHandler = new MouseHandler(canvas);
   }
 
   public getName() {
@@ -43,23 +43,6 @@ export class Scene {
 
     this.plugins = {};
     this.render.setPlugins([]);
-  }
-
-  // TODO: implement
-  public getEntityByAddress(address: string): BaseEntity | undefined {
-    const ids = address.split("/");
-    let entity = this.render.entities.get(ids[ids.length - 1]);
-    if (!entity) {
-      throw new Error(`Entity with id ${ids[ids.length - 1]} not found`);
-    }
-
-    for (let i = ids.length - 2; i >= 0; i--) {
-      entity = entity.children.get(ids[i]);
-      if (!entity) {
-        throw new Error(`Entity with id ${ids[i]} not found`);
-      }
-    }
-    return entity;
   }
 
   public addPlugin(plugin: ScenePlugin, key: string) {

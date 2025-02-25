@@ -11,6 +11,7 @@ export class QuadrantsHandler {
 
   constructor() { }
 
+  // TODO: Static entity / Entity larger than quadrant / dispatch event if current entity quadrant is not in scope
   public updateQuadrants(entity: BaseEntity) {
     const currentEntityQuadrant = entity.quadrant.getQuadrant();
 
@@ -38,10 +39,4 @@ export class QuadrantsHandler {
       y: Math.floor(point.y / DEFAULT_QUADRANT_SIZE),
     };
   }
-
-  // public getEntitiesFromQuadrant(point: Vec2) {
-  //   const key = `${point.x},${point.y}`;
-  //   const quadrant = this.quadrants.get(key);
-  //   return Array.from(quadrant?.values() || []);
-  // }
 }

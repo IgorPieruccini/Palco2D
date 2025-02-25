@@ -68,7 +68,6 @@ export class InvitiyCanvasSceneExample extends Scene {
     this.addPlugin(new InfinityCanvasPlugin(this), "infinityCanvas");
     this.addPlugin(new FPSViewPlugin(this), "fpsView");
     this.render.addEntities(entities);
-    this.mouseHandler.addEntities(entities);
 
     this.startAllPlugins();
     this.render.startRender();

@@ -76,7 +76,12 @@ export class BatchRender {
           1,
         );
 
-        this.renderLayers(entity.children);
+        for (let i = 0; i < 5; i++) {
+          const layer = entity.children.get(i);
+          if (layer) {
+            this.renderLayers(layer);
+          }
+        }
 
         this.ctx.restore();
         childrenIteratorResult = childrenIterator.next();

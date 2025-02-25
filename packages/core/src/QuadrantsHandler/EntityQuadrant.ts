@@ -23,8 +23,10 @@ export class EntityQuadrant {
 
   public needToUpdateQuadrant() {
     if (this.shouldUpdate) {
-      this.entity.children.forEach((child) => {
-        child.quadrant.shouldUpdate = true;
+      this.entity.children.forEach((layer) => {
+        layer.forEach((child) => {
+          child.quadrant.shouldUpdate = true;
+        });
       });
       return true;
     }
@@ -38,8 +40,10 @@ export class EntityQuadrant {
 
     if (needToUpdate) {
       this.matrix = entityMatrix;
-      this.entity.children.forEach((child) => {
-        child.quadrant.shouldUpdate = true;
+      this.entity.children.forEach((layer) => {
+        layer.forEach((child) => {
+          child.quadrant.shouldUpdate = true;
+        });
       });
     }
 

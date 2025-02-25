@@ -27,7 +27,6 @@ export class SpriteExample extends Scene {
           frog.size = { x: frog.size.x - 10, y: frog.size.y - 10 };
         });
 
-        this.mouseHandler.addEntity(frog);
         this.render.addEntity(frog);
       }
     };

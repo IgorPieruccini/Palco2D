@@ -27,10 +27,10 @@ export class BaseEntity {
   rotation: number;
   isMouseHover: boolean;
   layer: number;
-  children: Map<string, BaseEntity>;
+  children: Map<number, Map<string, BaseEntity>>;
   onEntityEvent: EntityEvents;
   parent: BaseEntity | null;
-  static: boolean = false;
+  private static: boolean = false;
   globalCompositeOperation: GlobalCompositeOperation = "source-over";
   public quadrant: EntityQuadrant;
 
@@ -54,7 +54,9 @@ export class BaseEntity {
     this.globalCompositeOperation =
       props.globalCompositeOperation || "source-over";
     this.quadrant = new EntityQuadrant(this);
-    SceneHandler.currentScene.mouseHandler.quadrant.updateQuadrants(this);
+    if (!this.static) {
+      SceneHandler.currentScene.mouseHandler.quadrant.updateQuadrants(this);
+    }
   }
 
   public on(event: EventsType, callback: () => void) {
@@ -79,7 +81,7 @@ export class BaseEntity {
   }
 
   render(ctx: CanvasRenderingContext2D) {
-    if (this.quadrant.needToUpdateQuadrant()) {
+    if (!this.static && this.quadrant.needToUpdateQuadrant()) {
       SceneHandler.currentScene.mouseHandler.quadrant.updateQuadrants(this);
       this.quadrant.shouldUpdate = false;
     }
@@ -219,12 +221,23 @@ export class BaseEntity {
   }
 
   addChild(child: BaseEntity) {
-    this.children.set(child.id, child);
+    const layer = child.layer;
+
+    let layerMap = this.children.get(layer);
+
+    if (!layerMap) {
+      const map = new Map();
+      this.children.set(layer, map);
+      layerMap = map;
+    }
+
+    layerMap.set(child.id, child);
     child.setParent(this);
   }
 
-  removeChild(id: string) {
-    this.children.delete(id);
+  removeChild(address: string) {
+    const [layer, id] = address.split(":");
+    this.children.get(parseInt(layer))?.delete(id);
   }
 
   destroy(plugins?: boolean) {
@@ -234,12 +247,14 @@ export class BaseEntity {
       });
     }
 
-    this.children.forEach((child) => {
-      child.destroy(plugins);
+    this.children.forEach((childMap) => {
+      childMap.forEach((child) => {
+        child.destroy();
+      });
     });
 
     if (this.parent) {
-      this.parent.removeChild(this.id);
+      this.parent.removeChild(this.getOwnAddress());
     }
   }
 
@@ -293,13 +308,14 @@ export class BaseEntity {
   }
 
   public serialize(): SerializedBaseEntityProps {
-    const childrenSerialized = new Map<string, SerializedBaseEntityProps>();
-    const iterator = this.children.entries();
-    let iteratorResult = iterator.next();
-    while (!iteratorResult.done) {
-      const [key, child] = iteratorResult.value;
-      childrenSerialized.set(key, child.serialize());
-      iteratorResult = iterator.next();
+    let serializedChildren: SerializedBaseEntityProps["children"] = [];
+
+    const layers = Array.from(this.children.entries());
+    for (const [_, entities] of layers) {
+      const entitiesArray = Array.from(entities.entries());
+      for (const [_, entity] of entitiesArray) {
+        serializedChildren.push(entity.serialize());
+      }
     }
 
     return {
@@ -309,7 +325,7 @@ export class BaseEntity {
       size: this.size,
       rotation: this.rotation,
       layer: this.layer,
-      children: childrenSerialized,
+      children: serializedChildren,
       address: this.getIdAdress(),
     };
   }
@@ -345,12 +361,25 @@ export class BaseEntity {
   }
 
   public getIdAdress() {
-    let address = this.id;
-    let parent = this.parent;
-    while (parent) {
-      address = `${parent.id}/${address}`;
-      parent = parent.parent;
-    }
+    const parents = this.getAllParents();
+
+    const address = parents.reduce((acc, parent) => {
+      return `${acc}/${parent.layer}:${parent.id}`;
+    }, `${this.layer}:${this.id}`);
+
     return address;
+  }
+
+  private getOwnAddress() {
+    return `${this.layer}:${this.id}`;
+  }
+
+  public setStatic(staticValue: boolean) {
+    SceneHandler.currentScene.mouseHandler.quadrant.updateQuadrants(this);
+    this.static = staticValue;
+  }
+
+  public getStatic() {
+    return this.static;
   }
 }

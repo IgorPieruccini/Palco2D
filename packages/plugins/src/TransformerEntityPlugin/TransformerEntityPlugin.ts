@@ -56,7 +56,6 @@ export class TransformerEntityController extends EntityPlugin {
       });
 
       SceneHandler.currentScene?.render.addEntity(controller);
-      SceneHandler.currentScene?.mouseHandler.addEntity(controller);
       this.controllers[type] = controller;
     });
   }
@@ -74,9 +73,10 @@ export class TransformerEntityController extends EntityPlugin {
   destroy() {
     const entityControllers = Object.values(this.controllers);
 
-    SceneHandler.currentScene?.render.removeEntities(entityControllers);
-
     for (const controler of entityControllers) {
+      SceneHandler.currentScene?.render.removeEntityByAdress(
+        controler.getIdAdress(),
+      );
       SceneHandler.currentScene.mouseHandler.removeEntity(controler);
     }
 

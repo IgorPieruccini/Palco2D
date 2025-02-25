@@ -6,7 +6,7 @@ const dpr = window.devicePixelRatio;
 type BatchType = {
   draw: (ctx: CanvasRenderingContext2D) => void;
   layer: number;
-}
+};
 
 export class BatchHandler {
   private batches: Record<string, BatchType> = {};
@@ -34,7 +34,6 @@ export class BatchHandler {
   }
 
   batch(key: string, canvas: HTMLCanvasElement, layer: number) {
-
     if (this.batches[key]) {
       return;
     }
@@ -43,8 +42,8 @@ export class BatchHandler {
       draw: (ctx: CanvasRenderingContext2D) => {
         ctx.drawImage(canvas, 0, 0);
       },
-      layer
-    }
+      layer,
+    };
   }
 
   /**
@@ -58,32 +57,38 @@ export class BatchHandler {
   }
 
   getAllStaticBatches() {
-    const staticBatches = Object.keys(this.batches).filter((key) => key.startsWith('STATIC'));
-    const sortedByLayer = staticBatches.sort((a, b) => parseInt(a.replace('STATIC', '')) - parseInt(b.replace('STATIC', '')));
+    const staticBatches = Object.keys(this.batches).filter((key) =>
+      key.startsWith("STATIC"),
+    );
+    const sortedByLayer = staticBatches.sort(
+      (a, b) =>
+        parseInt(a.replace("STATIC", "")) - parseInt(b.replace("STATIC", "")),
+    );
     return sortedByLayer.map((key) => this.batches[key]);
   }
 
   batchStaticObjects(entities: BaseEntity[]) {
-    const staticEntities = entities.filter((entity) => entity.static);
+    const staticEntities = entities.filter((entity) => entity.getStatic());
 
     // Group all static entities in a batch divided by layers
-    const staticLayers: Record<number, BaseEntity[]> = staticEntities.reduce((acc, entity) => {
-      const layer = entity.layer || 0;
-      if (!acc[layer]) {
-        acc[layer] = [];
-      }
-      acc[layer].push(entity);
-      return acc;
-    }, {} as Record<number, BaseEntity[]>);
+    const staticLayers: Record<number, BaseEntity[]> = staticEntities.reduce(
+      (acc, entity) => {
+        const layer = entity.layer || 0;
+        if (!acc[layer]) {
+          acc[layer] = [];
+        }
+        acc[layer].push(entity);
+        return acc;
+      },
+      {} as Record<number, BaseEntity[]>,
+    );
 
     Object.keys(staticLayers).forEach((layer) => {
       const canvas = this.createCanvas();
       const layerInt = parseInt(layer);
       const layerEntities = staticLayers[layerInt];
       new BatchRender(canvas, layerEntities);
-      this.batch('STATIC' + layer, canvas, layerInt);
+      this.batch("STATIC" + layer, canvas, layerInt);
     });
   }
-
 }
-

@@ -92,21 +92,20 @@ export class SerializeExample extends Scene {
 
     entities.push(...entities);
 
-    this.mouseHandler.addEntities(entities);
     this.render.addEntities(entities);
 
-    const animatedSprite = this.getEntityByAddress("5/1");
+    const animatedSprite = this.render.getEntityByAddress("5/1");
     if (animatedSprite instanceof Sprite) {
       animatedSprite.animation?.setSpeed(2);
       animatedSprite.animation?.start();
     }
 
-    const firstEnity = this.getEntityByAddress("1");
+    const firstEnity = this.render.getEntityByAddress("1");
     firstEnity?.on("mousedown", () => {
       window.alert(JSON.stringify(entities[0].serialize()));
     });
 
-    const customEntity = this.getEntityByAddress("6");
+    const customEntity = this.render.getEntityByAddress("6");
     customEntity?.on("mousedown", () => {
       window.alert(JSON.stringify(entities[1].serialize()));
     });

@@ -31,14 +31,12 @@ export class AddRemoveEntityExample extends Scene {
       frog.addChild(createFrog(0, 100));
 
       this.render.addEntity(frog);
-      this.mouseHandler.addEntity(frog);
     }
 
     this.canvas.addEventListener("mousedown", (e: MouseEvent) => {
       if (this.mouseHandler.hoveredEntities.length > 0) return;
       const frog = createFrog(e.clientX, e.clientY);
       this.render.addEntity(frog);
-      this.mouseHandler.addEntity(frog);
     });
 
     this.render.startRender();

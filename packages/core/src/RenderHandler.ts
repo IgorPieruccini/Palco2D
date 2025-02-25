@@ -5,11 +5,13 @@ import { Sprite } from "./Sprite";
 import { WorldHandler } from "./WorldHandler";
 
 const dpr = window.devicePixelRatio;
+const MAX_LAYERS = 10;
+const MAX_CHILDER_LAYERS = 5;
 
 export class RenderHandler {
   canvas: HTMLCanvasElement;
   ctx: CanvasRenderingContext2D;
-  entities: Map<string, BaseEntity> = new Map();
+  entities: Map<number, Map<string, BaseEntity>> = new Map();
   private fpsHandler = FPSHandler();
   private running = false;
   private paused: boolean = false;
@@ -63,23 +65,59 @@ export class RenderHandler {
     this.render();
   }
 
+  // TODO: use binary search to find the correct position to insert the entity
   public addEntity(entity: BaseEntity) {
-    this.entities.set(entity.id, entity);
+    let layer = this.entities.get(entity.layer);
+    if (!layer) {
+      layer = new Map();
+      this.entities.set(entity.layer, layer);
+    }
+    layer.set(entity.id, entity);
   }
 
   public addEntities(entities: BaseEntity[]) {
     for (let x = 0; x < entities.length; x++) {
-      this.entities.set(entities[x].id, entities[x]);
+      const entity = entities[x];
+      this.addEntity(entity);
     }
   }
 
   public removeEntity(entity: BaseEntity) {
-    this.entities.delete(entity.id);
+    const address = entity.getIdAdress();
+    this.removeEntityByAdress(address);
   }
 
-  public removeEntities(entities: BaseEntity[]) {
-    for (let x = 0; x < entities.length; x++) {
-      this.entities.delete(entities[x].id);
+  public getEntityByAddress(address: string): BaseEntity | undefined {
+    const location = address.split("/");
+
+    let currentEntity: BaseEntity | undefined = undefined;
+
+    for (let i = 0; i < location.length; i++) {
+      const [layer, id] = location[i].split(":");
+      if (!currentEntity) {
+        currentEntity = this.entities.get(parseInt(layer))?.get(id);
+        continue;
+      }
+
+      currentEntity = currentEntity?.children.get(parseInt(layer))?.get(id);
+    }
+
+    return currentEntity;
+  }
+
+  public removeEntityByAdress(address: string) {
+    const location = address.split("/");
+
+    const entity = this.getEntityByAddress(address);
+    if (!entity) {
+      throw new Error(`Entity with address ${address} not found`);
+    }
+
+    entity.destroy();
+
+    if (location.length === 1) {
+      const [layer, id] = location[0].split(":");
+      this.entities.get(parseInt(layer))?.delete(id);
     }
   }
 
@@ -87,11 +125,11 @@ export class RenderHandler {
     const offset = WorldHandler().getOffset();
     const zoom = WorldHandler().getZoom();
 
-    const iterator = entities.entries();
-    let iteratorResult = iterator.next();
+    const layerIterator = entities.entries();
+    let layerIteratorResult = layerIterator.next();
 
-    while (!iteratorResult.done) {
-      const [_, entity] = iteratorResult.value;
+    while (!layerIteratorResult.done) {
+      const [_, entity] = layerIteratorResult.value;
 
       const viewportPosition = {
         x: -offset.x / zoom,
@@ -122,7 +160,7 @@ export class RenderHandler {
       this.ctx.translate(entity.position.x, entity.position.y);
       this.ctx.rotate(entity.rotation * (Math.PI / 180));
 
-      if (isInViewPort && !entity.static) {
+      if (isInViewPort && !entity.getStatic()) {
         entity.render(this.ctx);
         this.animateEntity(entity);
       }
@@ -144,14 +182,19 @@ export class RenderHandler {
           entityMatrix[1][2], // f
         );
 
-        this.renderLayers(entity.children);
+        for (let i = 0; i < MAX_CHILDER_LAYERS; i++) {
+          const layer = entity.children.get(i);
+          if (layer) {
+            this.renderLayers(layer);
+          }
+        }
 
         this.ctx.restore();
         childrenIteratorResult = childrenIterator.next();
       }
 
       this.ctx.restore();
-      iteratorResult = iterator.next();
+      layerIteratorResult = layerIterator.next();
     }
   }
 
@@ -176,7 +219,12 @@ export class RenderHandler {
       this.canvas.clientHeight * dpr,
     );
 
-    this.renderLayers(this.entities);
+    for (let i = 0; i < MAX_LAYERS; i++) {
+      const layer = this.entities.get(i);
+      if (layer) {
+        this.renderLayers(layer);
+      }
+    }
 
     if (this.running) {
       this.plugins.forEach((plugin) => {

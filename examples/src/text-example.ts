@@ -63,7 +63,6 @@ export class TextExample extends Scene {
     this.render.addEntities([parentText]);
     this.render.startRender();
 
-    this.mouseHandler.addEntities([parentText, childText]);
     this.mouseHandler.start();
   }
 }

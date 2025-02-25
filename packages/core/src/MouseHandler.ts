@@ -9,17 +9,15 @@ export class MouseHandler {
   public hoveredEntities: BaseEntity[];
   public quadrant: QuadrantsHandler;
   private canvas: HTMLCanvasElement;
-  private entities: BaseEntity[];
   private domRect: DOMRect;
   private canvasEventSubscribers: Map<"mouseup" | "mousedown", Function[]> =
     new Map();
 
-  constructor(canvas: HTMLCanvasElement, entities: BaseEntity[]) {
+  constructor(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
     this.domRect = canvas.getBoundingClientRect();
     this.position = { x: 0, y: 0 };
     this.hoveredEntities = [];
-    this.entities = entities;
     this.quadrant = new QuadrantsHandler();
   }
 
@@ -42,16 +40,7 @@ export class MouseHandler {
     );
     this.canvas.removeEventListener("mousedown", this.binded.onMouseDown);
     this.canvas.removeEventListener("mouseup", this.binded.onMouseUp);
-    this.entities = [];
     this.hoveredEntities = [];
-  }
-
-  public addEntity(entity: BaseEntity) {
-    this.entities.push(entity);
-  }
-
-  public addEntities(entities: BaseEntity[]) {
-    this.entities = [...this.entities, ...entities];
   }
 
   public removeEntity(entity: BaseEntity) {
@@ -65,6 +54,8 @@ export class MouseHandler {
       this.quadrant.quadrants.get(quad)?.delete(entity.id);
       iteratorResult = iterator.next();
     }
+
+    this.hoveredEntities = [];
   }
 
   private updateMousePosition(event: MouseEvent) {
