@@ -31,6 +31,11 @@ export class RenderHandler {
   }
 
   public stopRender() {
+    this.pauseRender();
+    this.entities.clear();
+  }
+
+  public pauseRender() {
     this.running = false;
     this.ctx.restore();
     this.ctx.clearRect(
@@ -54,10 +59,6 @@ export class RenderHandler {
       0, // f
     );
     this.render.bind(this)();
-  }
-
-  public pauseRender() {
-    this.paused = true;
   }
 
   public resumeRender() {

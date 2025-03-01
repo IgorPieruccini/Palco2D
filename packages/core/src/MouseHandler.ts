@@ -34,6 +34,11 @@ export class MouseHandler {
   }
 
   public stop() {
+    this.puase();
+    this.quadrant.quadrants.clear();
+  }
+
+  public puase() {
     this.canvas.removeEventListener(
       "mousemove",
       this.binded.updateMousePosition,

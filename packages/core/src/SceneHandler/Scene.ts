@@ -45,6 +45,18 @@ export class Scene {
     this.render.setPlugins([]);
   }
 
+  public pause() {
+    this.mouseHandler.puase();
+    this.render.pauseRender();
+
+    for (const plugin of Object.values(this.plugins)) {
+      plugin.stop();
+    }
+
+    this.plugins = {};
+    this.render.setPlugins([]);
+  }
+
   public addPlugin(plugin: ScenePlugin, key: string) {
     if (this.plugins[key]) {
       throw new Error(`Plugin with key ${key} already exists`);

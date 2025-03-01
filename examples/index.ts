@@ -73,7 +73,6 @@ const initialScene = "QuadrantsExample";
 
 const sceneHandler = new SceneHandler(scenes);
 
-let currentSceneName = initialScene;
 const createSceneDropdown = () => {
   const select = document.getElementById("select-example") as HTMLSelectElement;
 
@@ -93,11 +92,9 @@ const createSceneDropdown = () => {
   });
 
   select.addEventListener("change", (event) => {
-    sceneHandler.stopScene(currentSceneName);
     sceneHandler.setCurrentScene((event.target as HTMLSelectElement).value);
     select.blur();
     canvas.focus();
-    currentSceneName = (event.target as HTMLSelectElement).value;
   });
 
   document.body.appendChild(select);
