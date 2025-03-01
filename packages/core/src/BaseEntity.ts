@@ -54,9 +54,9 @@ export class BaseEntity {
     this.globalCompositeOperation =
       props.globalCompositeOperation || "source-over";
     this.quadrant = new EntityQuadrant(this);
-    if (!this.static) {
-      SceneHandler.currentScene.mouseHandler.quadrant.updateQuadrants(this);
-    }
+    // if (!this.static) {
+    //   SceneHandler.currentScene.mouseHandler.quadrant.updateQuadrants(this);
+    // }
   }
 
   public on(event: EventsType, callback: () => void) {
