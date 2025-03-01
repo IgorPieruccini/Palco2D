@@ -135,8 +135,8 @@ export class MouseHandler {
       };
 
       const viewportSize = {
-        x: this.canvas.clientWidth / zoom,
-        y: this.canvas.clientHeight / zoom,
+        x: this.canvas.width / zoom,
+        y: this.canvas.height / zoom,
       };
 
       const isInViewPort = entity.isObjectInViewport({
