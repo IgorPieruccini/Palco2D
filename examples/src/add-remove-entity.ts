@@ -23,9 +23,10 @@ export class AddRemoveEntityExample extends Scene {
     return frog;
   }
 
-  protected onMouseDown(e: MouseEvent) {
+  protected onMouseDown() {
+    const { x, y } = this.mouseHandler.position;
     if (this.mouseHandler.hoveredEntities.length > 0) return;
-    const frog = this.createFrog(e.clientX, e.clientY);
+    const frog = this.createFrog(x, y);
     this.render.addEntity(frog);
   }
 
@@ -39,14 +40,9 @@ export class AddRemoveEntityExample extends Scene {
       this.render.addEntity(frog);
     }
 
-    this.canvas.addEventListener("mousedown", this.onMouseDown.bind(this));
+    this.mouseHandler.onCanvas("mousedown", this.onMouseDown.bind(this));
 
     this.render.startRender();
     this.mouseHandler.start();
-  }
-
-  stop() {
-    super.stop();
-    this.canvas.removeEventListener("mousedown", this.onMouseDown);
   }
 }
