@@ -54,9 +54,6 @@ export class BaseEntity {
     this.globalCompositeOperation =
       props.globalCompositeOperation || "source-over";
     this.quadrant = new EntityQuadrant(this);
-    // if (!this.static) {
-    //   SceneHandler.currentScene.mouseHandler.quadrant.updateQuadrants(this);
-    // }
   }
 
   public on(event: EventsType, callback: () => void) {
@@ -141,8 +138,8 @@ export class BaseEntity {
     const corners = [
       { x: -this.size.x / 2, y: -this.size.y / 2 },
       { x: this.size.x / 2, y: -this.size.y / 2 },
-      { x: -this.size.x / 2, y: this.size.y / 2 },
       { x: this.size.x / 2, y: this.size.y / 2 },
+      { x: -this.size.x / 2, y: this.size.y / 2 },
     ];
 
     const angle = parentRotation * (180 / Math.PI);

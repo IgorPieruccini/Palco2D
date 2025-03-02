@@ -31,7 +31,7 @@ export class QuadrantExamples extends Scene {
 
     const square = new SquareEntity({
       id: "square",
-      position: { x: 400, y: 400 },
+      position: { x: 500, y: 700 },
       size: { x: 100, y: 100 },
       rotation: 45,
     });
@@ -54,6 +54,15 @@ export class QuadrantExamples extends Scene {
     addEvents(childSquare);
     addEvents(secondChildSquare);
 
+    const rect1 = new SquareEntity({
+      id: "rect1",
+      position: { x: 305, y: 305 },
+      size: { x: 610, y: 610 },
+      rotation: 45,
+    });
+
+    addEvents(rect1);
+
     this.canvas.addEventListener("mousemove", (event) => {
       const mousePosition: Vec2 = { x: event.clientX, y: event.clientY };
       if (this.draggingEntity) {
@@ -73,6 +82,7 @@ export class QuadrantExamples extends Scene {
     this.addPlugin(new InfinityCanvasPlugin(this), "infinityCanvasPlugin");
 
     this.render.addEntity(square);
+    this.render.addEntity(rect1);
 
     this.render.startRender();
     this.mouseHandler.start();

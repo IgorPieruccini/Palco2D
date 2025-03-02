@@ -116,12 +116,25 @@ export class MouseHandler {
     this.getTopLayerHoveredEntity().onEntityEvent.mouseup?.();
   }
 
-  private dispatchEventToEntities() {
+  private dispatchEventToEntities(lastActiveQuadrant: string | null = null) {
     const offset = WorldHandler().getOffset();
     const zoom = WorldHandler().getZoom();
 
-    const mouseQuadrant = this.quadrant.getPointQuadrant(this.position);
-    const quadrantKey = `${mouseQuadrant.x},${mouseQuadrant.y}`;
+    const mouseQuadrant = lastActiveQuadrant
+      ? { x: 0, y: 0 }
+      : this.quadrant.getPointQuadrant(this.position);
+
+    const quadrantKey =
+      lastActiveQuadrant || `${mouseQuadrant.x},${mouseQuadrant.y}`;
+
+    if (
+      this.quadrant.lastMouseQuadrant !== quadrantKey &&
+      !lastActiveQuadrant
+    ) {
+      const t = this.quadrant.lastMouseQuadrant;
+      this.quadrant.lastMouseQuadrant = quadrantKey;
+      this.dispatchEventToEntities(t);
+    }
     const currentQuadrant = this.quadrant.quadrants.get(quadrantKey);
 
     if (!currentQuadrant) {
