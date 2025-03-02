@@ -252,6 +252,10 @@ export class BaseEntity {
 
     if (this.parent) {
       this.parent.removeChild(this.getOwnAddress());
+    } else {
+      SceneHandler.currentScene.render.entities
+        .get(this.layer)
+        ?.delete(this.id);
     }
   }
 

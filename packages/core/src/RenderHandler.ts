@@ -11,7 +11,7 @@ const MAX_CHILDER_LAYERS = 5;
 export class RenderHandler {
   canvas: HTMLCanvasElement;
   ctx: CanvasRenderingContext2D;
-  entities: Map<number, Map<string, BaseEntity>> = new Map();
+  public entities: Map<number, Map<string, BaseEntity>> = new Map();
   private fpsHandler = FPSHandler();
   private running = false;
   private paused: boolean = false;
