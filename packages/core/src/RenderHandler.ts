@@ -38,12 +38,7 @@ export class RenderHandler {
   public pauseRender() {
     this.running = false;
     this.ctx.restore();
-    this.ctx.clearRect(
-      0,
-      0,
-      this.canvas.clientWidth * dpr,
-      this.canvas.clientHeight * dpr,
-    );
+    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
   }
 
   public startRender() {
@@ -138,8 +133,8 @@ export class RenderHandler {
       };
 
       const viewportSize = {
-        x: this.canvas.clientWidth / zoom,
-        y: this.canvas.clientHeight / zoom,
+        x: this.canvas.width / zoom,
+        y: this.canvas.height / zoom,
       };
 
       const isInViewPort = entity.isObjectInViewport({
@@ -212,13 +207,22 @@ export class RenderHandler {
     if (this.paused) {
       return;
     }
-    this.fpsHandler.loop();
-    this.ctx.clearRect(
-      0,
-      0,
-      this.canvas.clientWidth * dpr,
-      this.canvas.clientHeight * dpr,
+
+    // MOVE TO ON WINDOW RESIZE
+    this.canvas.setAttribute("width", `${this.canvas.clientWidth * dpr}`);
+    this.canvas.setAttribute("height", `${this.canvas.clientHeight * dpr}`);
+
+    this.ctx.transform(
+      dpr, // a
+      0, // b
+      0, // c
+      dpr, // d
+      0, // e
+      0, // f
     );
+
+    this.fpsHandler.loop();
+    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
     for (let i = 0; i < MAX_LAYERS; i++) {
       const layer = this.entities.get(i);

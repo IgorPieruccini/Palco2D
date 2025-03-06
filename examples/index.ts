@@ -28,12 +28,12 @@ if (!(canvas instanceof HTMLCanvasElement)) {
   throw new Error("Element is not a canvas");
 }
 
-const width = canvas.clientWidth;
-const height = canvas.clientHeight;
-
-canvas.setAttribute("width", (width * dpr).toString());
-
-canvas.setAttribute("height", (height * dpr).toString());
+// const width = canvas.clientWidth;
+// const height = canvas.clientHeight;
+//
+// canvas.setAttribute("width", (width * dpr).toString());
+//
+// canvas.setAttribute("height", (height * dpr).toString());
 
 const tileMap = new TileMapExample(canvas, "TileMap");
 const sprite = new SpriteExample(canvas, "Sprite");
