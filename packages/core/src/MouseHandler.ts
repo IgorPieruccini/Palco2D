@@ -79,7 +79,10 @@ export class MouseHandler {
       [0, 0, 1],
     ]);
 
-    this.position = transformedPosition;
+    this.position = {
+      x: transformedPosition.x + window.scrollX,
+      y: transformedPosition.y + window.scrollY,
+    };
 
     this.dispatchEventToEntities();
   }
