@@ -30,8 +30,27 @@ export class RenderHandler {
     this.addEntities(sortedLayers);
   }
 
+  private setIdentityMatrix() {
+    this.ctx.transform(
+      dpr, // a
+      0, // b
+      0, // c
+      dpr, // d
+      0, // e
+      0, // f
+    );
+  }
+
+  private setCanvasSize() {
+    this.canvas.setAttribute("width", `${this.canvas.clientWidth * dpr}`);
+    this.canvas.setAttribute("height", `${this.canvas.clientHeight * dpr}`);
+    console.log("resize");
+    this.setIdentityMatrix();
+  }
+
   public stopRender() {
     this.pauseRender();
+    window.removeEventListener("resize", this.setCanvasSize.bind(this));
     this.entities.clear();
   }
 
@@ -45,14 +64,8 @@ export class RenderHandler {
     this.running = true;
     this.ctx.save();
     // Set the canvas to the correct size
-    this.ctx.transform(
-      dpr, // a
-      0, // b
-      0, // c
-      dpr, // d
-      0, // e
-      0, // f
-    );
+    window.addEventListener("resize", this.setCanvasSize.bind(this));
+    this.setCanvasSize();
     this.render.bind(this)();
   }
 
@@ -207,19 +220,6 @@ export class RenderHandler {
     if (this.paused) {
       return;
     }
-
-    // MOVE TO ON WINDOW RESIZE
-    this.canvas.setAttribute("width", `${this.canvas.clientWidth * dpr}`);
-    this.canvas.setAttribute("height", `${this.canvas.clientHeight * dpr}`);
-
-    this.ctx.transform(
-      dpr, // a
-      0, // b
-      0, // c
-      dpr, // d
-      0, // e
-      0, // f
-    );
 
     this.fpsHandler.loop();
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
