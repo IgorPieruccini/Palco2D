@@ -8,7 +8,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "examples:start": "npm run start --workspace=examples",
     "core:build": "npm run build --workspace=packages/core",
-    "plugins:build": "npm run build --workspace=packages/plugins"
+    "plugins:build": "npm run build --workspace=packages/plugins",
+    "doc:core": "typedoc --entryPointStrategy expand packages/core/src --plugin typedoc-github-theme"
   },
   "keywords": [
     "canvas2D"
@@ -18,8 +19,10 @@
   "devDependencies": {
     "html-webpack-plugin": "5.6.0",
     "ts-loader": "9.5.1",
+    "typedoc": "^0.27.9",
+    "typedoc-github-theme": "^0.2.1",
     "typescript": "5.4.5",
-    "webpack": "5.92.0",
+    "webpack": "^5.98.0",
     "webpack-cli": "5.1.4",
     "webpack-dev-server": "5.0.4"
   },
