@@ -1,11 +1,22 @@
 import { Scene } from "./Scene";
 
 export class SceneHandler {
-  private scenes: Scene[] = [];
+  private scenes: Map<string, Scene> = new Map();
   public static currentScene: Scene;
+  public static canvas: HTMLCanvasElement;
 
-  constructor(scenes: Scene[]) {
-    this.scenes = scenes;
+  constructor() {
+    const canvas = document.getElementById(
+      "palco-2d-canvas",
+    ) as HTMLCanvasElement;
+
+    if (!canvas) {
+      throw new Error(
+        "Could not find 'palco-2d-canvas': Make sure to have a canvas element with the id 'palco-2d-canvas'",
+      );
+    }
+
+    SceneHandler.canvas = canvas;
   }
 
   public setCurrentScene(name: string) {
@@ -19,6 +30,7 @@ export class SceneHandler {
       SceneHandler.currentScene.stop();
       SceneHandler.currentScene = scene;
       SceneHandler.currentScene.start();
+      SceneHandler.canvas.focus();
     }
   }
 
@@ -26,12 +38,12 @@ export class SceneHandler {
     return this.currentScene;
   }
 
-  public addScene(scene: Scene) {
-    this.scenes.push(scene);
+  public addScene<T extends Scene>(scene: T, name: string) {
+    this.scenes.set(name, scene);
   }
 
   public getScene(name: string) {
-    return this.scenes.find((scene) => scene.getName() === name);
+    return this.scenes.get(name);
   }
 
   public startScene(name: string) {
@@ -49,5 +61,9 @@ export class SceneHandler {
       throw new Error(`Scene ${name} not found`);
     }
     scene.stop();
+  }
+
+  public getSceneNames() {
+    return Array.from(this.scenes.keys());
   }
 }

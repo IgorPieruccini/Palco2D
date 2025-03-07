@@ -1,8 +1,8 @@
-import { BaseEntity } from "../BaseEntity";
 import { MouseHandler } from "../MouseHandler";
 import { ScenePlugin } from "../ScenePlugin";
 import { RenderHandler } from "../RenderHandler";
 import { WorldHandler } from "../WorldHandler";
+import { SceneHandler } from "./SceneHandler";
 
 export class Scene {
   public canvas: HTMLCanvasElement;
@@ -10,25 +10,19 @@ export class Scene {
   public render: RenderHandler;
   public mouseHandler: MouseHandler;
   public world: ReturnType<typeof WorldHandler> = WorldHandler();
-  private name: string;
   private plugins: Record<string, ScenePlugin> = {};
 
-  constructor(canvas: HTMLCanvasElement, name: string) {
-    this.canvas = canvas;
+  constructor() {
+    this.canvas = SceneHandler.canvas;
 
-    const ctx = canvas.getContext("2d");
+    const ctx = this.canvas.getContext("2d");
     if (!ctx) {
       throw new Error("Canvas context not found");
     }
 
     this.ctx = ctx;
-    this.name = name;
-    this.render = new RenderHandler(canvas, []);
-    this.mouseHandler = new MouseHandler(canvas);
-  }
-
-  public getName() {
-    return this.name;
+    this.render = new RenderHandler(this.canvas, []);
+    this.mouseHandler = new MouseHandler(this.canvas);
   }
 
   public async start() { }

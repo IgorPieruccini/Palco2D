@@ -44,7 +44,6 @@ export class RenderHandler {
   private setCanvasSize() {
     this.canvas.setAttribute("width", `${this.canvas.clientWidth * dpr}`);
     this.canvas.setAttribute("height", `${this.canvas.clientHeight * dpr}`);
-    console.log("resize");
     this.setIdentityMatrix();
   }
 

@@ -5,8 +5,8 @@ import { InfinityCanvasPlugin } from "@palco-2d/plugins";
 export class QuadrantExamples extends Scene {
   private draggingEntity: BaseEntity | null;
 
-  constructor(canvas: HTMLCanvasElement, name: string) {
-    super(canvas, name);
+  constructor() {
+    super();
     this.draggingEntity = null;
   }
 
