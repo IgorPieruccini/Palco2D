@@ -16,8 +16,6 @@ import { EntityPluginExample } from "./src/enityPluginExample";
 import { AddRemoveEntityExample } from "./src/add-remove-entity";
 import { QuadrantExamples } from "./src/quadrants-example";
 
-const dpr = window.devicePixelRatio;
-
 const canvas = document.getElementById("canvas") as HTMLCanvasElement;
 
 if (!canvas) {
@@ -27,13 +25,6 @@ if (!canvas) {
 if (!(canvas instanceof HTMLCanvasElement)) {
   throw new Error("Element is not a canvas");
 }
-
-// const width = canvas.clientWidth;
-// const height = canvas.clientHeight;
-//
-// canvas.setAttribute("width", (width * dpr).toString());
-//
-// canvas.setAttribute("height", (height * dpr).toString());
 
 const tileMap = new TileMapExample(canvas, "TileMap");
 const sprite = new SpriteExample(canvas, "Sprite");
