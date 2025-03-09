@@ -9,7 +9,12 @@
     "examples:start": "npm run start --workspace=examples",
     "core:build": "npm run build --workspace=packages/core",
     "plugins:build": "npm run build --workspace=packages/plugins",
-    "doc:core": "typedoc --entryPointStrategy expand packages/core/src --plugin typedoc-github-theme"
+    "doc:core": "typedoc --entryPointStrategy expand packages/core/src --plugin typedoc-github-theme",
+    "website:start": "npm run start --workspace=website",
+    "website:build": "npm run build --workspace=website",
+    "website:serve": "npm run serve --workspace=website",
+    "website:deploy": "npm run deploy --workspace=website",
+    "website:clear": "npm run clear --workspace=website"
   },
   "keywords": [
     "canvas2D"
@@ -28,6 +33,7 @@
   },
   "workspaces": [
     "examples",
+    "website",
     "packages/core",
     "packages/plugins"
   ]
