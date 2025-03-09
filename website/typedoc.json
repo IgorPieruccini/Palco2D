@@ -1,0 +1,19 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "plugin": [
+    "typedoc-plugin-markdown"
+  ],
+  "entryPoints": [
+    "../packages/core/index.ts"
+  ],
+  "hidePageHeader": true,
+  "hideGroupHeadings": true,
+  "outputFileStrategy": "members",
+  "out": "./docs/API Reference/core/",
+  "exclude": [
+    "**/node_modules/**/*",
+    "**/*.tsx",
+    "**/*.test.ts",
+    "**/*.spec.ts"
+  ]
+}

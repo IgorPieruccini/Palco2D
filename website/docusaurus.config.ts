@@ -58,8 +58,14 @@ const config: Config = {
           type: "docSidebar",
           sidebarId: "tutorialSidebar",
           position: "left",
-          label: "Tutorial",
+          label: "Documentation",
         },
+        // {
+        //   to: "api",
+        //   activeBasePath: "api",
+        //   label: "API Reference",
+        //   position: "left",
+        // },
       ],
     },
     footer: {
