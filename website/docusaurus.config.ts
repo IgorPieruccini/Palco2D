@@ -75,8 +75,8 @@ const config: Config = {
           title: "Docs",
           items: [
             {
-              label: "Tutorial",
-              to: "/docs/intro",
+              label: "API Reference Core",
+              to: "/docs/API%20Reference/core/",
             },
           ],
         },
