@@ -20,7 +20,7 @@ export class TransformController extends BaseEntity {
     this.addEvents();
 
     // update the size of controller according to zoom
-    WorldHandler().subscribeToZoomUpdate((zoom: number) => {
+    WorldHandler.subscribeToZoomUpdate((zoom: number) => {
       this.size = {
         x: rest.size.x / zoom,
         y: rest.size.y / zoom,
@@ -36,7 +36,7 @@ export class TransformController extends BaseEntity {
   }
 
   render(ctx: CanvasRenderingContext2D): void {
-    const zoom = WorldHandler().getZoom();
+    const zoom = WorldHandler.getZoom();
     ctx.fillStyle = "#91AEC1";
     ctx.beginPath();
     ctx.roundRect(

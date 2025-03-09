@@ -130,8 +130,8 @@ export class RenderHandler {
   }
 
   private renderLayers(entities: Map<string, BaseEntity>) {
-    const offset = WorldHandler().getOffset();
-    const zoom = WorldHandler().getZoom();
+    const offset = WorldHandler.getOffset();
+    const zoom = WorldHandler.getZoom();
 
     const layerIterator = entities.entries();
     let layerIteratorResult = layerIterator.next();
@@ -157,10 +157,10 @@ export class RenderHandler {
       this.ctx.save();
 
       if (!entity.parent) {
-        const offset = WorldHandler().getOffset();
+        const offset = WorldHandler.getOffset();
         this.ctx.translate(offset.x, offset.y);
 
-        const zoom = WorldHandler().getZoom();
+        const zoom = WorldHandler.getZoom();
         this.ctx.scale(zoom, zoom);
       }
 

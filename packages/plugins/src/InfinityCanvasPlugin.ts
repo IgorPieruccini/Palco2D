@@ -1,4 +1,4 @@
-import { Scene, ScenePlugin } from "@palco-2d/core";
+import { Scene, ScenePlugin, WorldHandler } from "@palco-2d/core";
 
 const ZOOM_SENSITIVITY = 1.1;
 
@@ -31,9 +31,10 @@ export class InfinityCanvasPlugin extends ScenePlugin {
   private mousemoveHandler = (e: MouseEvent) => {
     if (this.isDragging && this.moveToolActive) {
       this.scene.canvas.style.cursor = "grabbing";
-      this.scene.world.setOffset({
-        x: this.scene.world.getOffset().x + e.movementX,
-        y: this.scene.world.getOffset().y + e.movementY,
+      const offset = WorldHandler.getOffset();
+      WorldHandler.setOffset({
+        x: offset.x + e.movementX,
+        y: offset.y + e.movementY,
       });
     }
   };
@@ -49,21 +50,22 @@ export class InfinityCanvasPlugin extends ScenePlugin {
   private wheelHandler = (e: WheelEvent) => {
     e.preventDefault();
 
-    const worldOffset = this.scene.world.getOffset();
-    const worldZoom = this.scene.world.getZoom();
+    const worldOffset = WorldHandler.getOffset();
+    const worldZoom = WorldHandler.getZoom();
 
     const worldX = (e.offsetX - worldOffset.x) / worldZoom;
     const worldY = (e.offsetY - worldOffset.y) / worldZoom;
 
     if (e.deltaY > 0) {
-      this.scene.world.setZoom(worldZoom * ZOOM_SENSITIVITY);
+      WorldHandler.setZoom(worldZoom * ZOOM_SENSITIVITY);
     } else {
-      this.scene.world.setZoom(worldZoom / ZOOM_SENSITIVITY);
+      WorldHandler.setZoom(worldZoom / ZOOM_SENSITIVITY);
     }
 
-    this.scene.world.setOffset({
-      x: e.offsetX - worldX * this.scene.world.getZoom(),
-      y: e.offsetY - worldY * this.scene.world.getZoom(),
+    const zoom = WorldHandler.getZoom();
+    WorldHandler.setOffset({
+      x: e.offsetX - worldX * zoom,
+      y: e.offsetY - worldY * zoom,
     });
   };
 
@@ -87,8 +89,8 @@ export class InfinityCanvasPlugin extends ScenePlugin {
     this.scene.canvas.removeEventListener("wheel", this.wheelHandler);
     window.removeEventListener("keydown", this.keydownHandler);
     window.removeEventListener("keyup", this.keyupHandler);
-    this.scene.world.setZoom(1);
-    this.scene.world.setOffset({ x: 0, y: 0 });
+    WorldHandler.setZoom(1);
+    WorldHandler.setOffset({ x: 0, y: 0 });
   }
 
   render() {

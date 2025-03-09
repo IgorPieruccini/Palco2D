@@ -70,8 +70,8 @@ export class MouseHandler {
       y: event.clientY - this.domRect.y,
     };
 
-    const offset = WorldHandler().getOffset();
-    const scale = WorldHandler().getZoom();
+    const offset = WorldHandler.getOffset();
+    const scale = WorldHandler.getZoom();
 
     const transformedPosition = inverseTransform(position, [
       [scale, 0, offset.x],
@@ -120,8 +120,8 @@ export class MouseHandler {
   }
 
   private dispatchEventToEntities(lastActiveQuadrant: string | null = null) {
-    const offset = WorldHandler().getOffset();
-    const zoom = WorldHandler().getZoom();
+    const offset = WorldHandler.getOffset();
+    const zoom = WorldHandler.getZoom();
 
     const mouseQuadrant = lastActiveQuadrant
       ? { x: 0, y: 0 }

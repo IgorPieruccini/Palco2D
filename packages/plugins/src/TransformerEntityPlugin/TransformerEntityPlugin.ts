@@ -63,7 +63,7 @@ export class TransformerEntityController extends EntityPlugin {
   public render(ctx: CanvasRenderingContext2D) {
     const { size } = this.entity;
 
-    const zoom = WorldHandler().getZoom();
+    const zoom = WorldHandler.getZoom();
 
     ctx.strokeStyle = "#91AEC1";
     ctx.lineWidth = 2 / zoom;

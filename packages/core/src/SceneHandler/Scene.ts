@@ -1,8 +1,8 @@
 import { MouseHandler } from "../MouseHandler";
 import { ScenePlugin } from "../ScenePlugin";
 import { RenderHandler } from "../RenderHandler";
-import { WorldHandler } from "../WorldHandler";
 import { SceneHandler } from "./SceneHandler";
+import { WorldHandler } from "../WorldHandler";
 
 /**
  *The Scene class serves as the core component of Palco 2D, providing the foundation for creating and managing 2D scenes.
@@ -28,11 +28,6 @@ export class Scene {
    * detecting when the cursor hovers over an entity and dispatching relevant mouse events to subscribed entities.
    */
   public mouseHandler: MouseHandler;
-  /**
-   * Store worlds transformations that are used by render and mouse handler,
-   * it provides a way to manipulate the world's zoom and offset.
-   */
-  public world: ReturnType<typeof WorldHandler> = WorldHandler();
   /**
    * A record of all the plugins added to the scene.
    * Plugins are used to add custom functionality to the scene.
@@ -113,6 +108,8 @@ export class Scene {
     this.plugins[key].stop();
     delete this.plugins[key];
     this.render.setPlugins(Object.values(this.plugins));
+    WorldHandler.setZoom(1);
+    WorldHandler.setOffset({ x: 0, y: 0 });
   }
 
   /**
