@@ -57,7 +57,7 @@ export class Scene {
    * It's the perfect place to create all the entities and plugins you need and add them
    * to the scene.
    */
-  public async start() {}
+  public async start() { }
 
   /**
    * Stops render and mouse handler from running.
@@ -115,31 +115,21 @@ export class Scene {
     this.render.setPlugins(Object.values(this.plugins));
   }
 
+  /**
+   * Returns the plugin with the given key.
+   * @param key - The key of the plugin to retrieve.
+   */
   public getPlugin(key: string) {
     return this.plugins[key];
   }
 
+  /**
+   * Starts the plugins added to the scene.
+   * All Scene plugins start method will be called.
+   */
   public startAllPlugins() {
     Object.values(this.plugins).forEach((plugin) => {
       plugin.start();
-    });
-  }
-
-  public stopAllPlugins() {
-    Object.values(this.plugins).forEach((plugin) => {
-      plugin.stop();
-    });
-  }
-
-  public startSomePlugins(keys: string[]) {
-    keys.forEach((key) => {
-      this.plugins[key].start();
-    });
-  }
-
-  public stopSomePlugins(keys: string[]) {
-    keys.forEach((key) => {
-      this.plugins[key].stop();
     });
   }
 }
