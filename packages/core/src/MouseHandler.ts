@@ -88,11 +88,7 @@ export class MouseHandler {
   }
 
   private getTopLayerHoveredEntity() {
-    return this.hoveredEntities.reduce((prev, current) => {
-      const prevRenderIndex = prev.getIndex() || 0;
-      const currentRenderIndex = current.getIndex() || 0;
-      return currentRenderIndex < prevRenderIndex ? prev : current;
-    }, this.hoveredEntities[0]);
+    return this.hoveredEntities.sort((a, b) => b.layer - a.layer)[0];
   }
 
   private onMouseDown(ev: MouseEvent) {

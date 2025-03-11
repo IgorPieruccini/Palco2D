@@ -111,11 +111,6 @@ export class BaseEntity {
   public quadrant: EntityQuadrant;
 
   /**
-   *@deprecated DO NOT USE
-   */
-  private index: number | null = null;
-
-  /**
    * Used to keep track of the entity scale
    * @private
    */
@@ -440,14 +435,6 @@ export class BaseEntity {
     }
 
     this.plugins = [];
-  }
-
-  public setIndex(index: number) {
-    this.index = index;
-  }
-
-  public getIndex() {
-    return this.index;
   }
 
   public getIdAdress() {
