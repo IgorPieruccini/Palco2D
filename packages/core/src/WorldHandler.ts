@@ -5,7 +5,6 @@ type Listener = { id: string; callback: (zoom: number) => void };
 
 /**
  * Handles the zoom and offset of the canvas, ensuring all drawn objects are properly scaled and positioned.
- * @static
  */
 export class WorldHandler {
   private static zoom: number = 1;

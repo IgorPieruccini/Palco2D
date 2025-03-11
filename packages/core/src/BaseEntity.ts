@@ -20,23 +20,112 @@ import {
 import { EntityQuadrant } from "./QuadrantsHandler/EntityQuadrant";
 import { SceneHandler } from "./SceneHandler/SceneHandler";
 
+/**
+ *
+ * BaseEntity serves as the foundational class for all entities managed by the rendering and mouse handling systems.
+ * It encapsulates the essential properties and methods shared across all entities, ensuring seamless integration with rendering and interactive functionalities.
+ * Any custom entity should extend this class to be properly managed by the engine, maintaining consistency in interactivity and rendering behavior
+ */
 export class BaseEntity {
-  id: string;
-  position: Vec2;
-  size: Vec2;
-  rotation: number;
-  isMouseHover: boolean;
-  layer: number;
-  children: Map<number, Map<string, BaseEntity>>;
+  /**
+   * The unique id of the entity.
+   */
+  public id: string;
+
+  /**
+   * The position of the entity in the canvas, relative to the top-left corner.
+   * if the entity is a child, the position is relative to the parent.
+   */
+  public position: Vec2;
+
+  /**
+   * The size of the entity in the canvas.
+   * if the entity is a child, the size is relative to the parent.
+   */
+  public size: Vec2;
+
+  /**
+   * The rotation of the entity in degrees.
+   * if the entity is a child, the rotation is relative to the parent.
+   */
+  public rotation: number;
+
+  /**
+   * If the mouse is hovering the entity it returns true, otherwise false.
+   */
+  public isMouseHover: boolean;
+
+  /**
+   * The layer of the entity represents the order the render handler will render the entity.
+   * 0 is the first layer, and the entities with higher layers will be rendered on top of the entities with lower layers.
+   * The layer is relative to the parent, so if the entity is a child, the layer is relative to the parent.
+   * If the entity has a layer equal to 0, and the parent has a layer equal to 10,
+   * any entity with layer less than 10, that's not a child of a parent, will be rendered before.
+   */
+  public layer: number;
+
+  /**
+   * A map representing the children organized by layers.
+   * ```
+   * [
+   *  [layer]: [
+   *    [id]: BaseEntity
+   *  ]
+   * ]
+   * ```
+   */
+  public children: Map<number, Map<string, BaseEntity>>;
+
+  /**
+   * A record of events that the entity has subscribed to.
+   * Mouse handler will trigger these events depending on the interaction with the entity.
+   * if the entity is static, the mouse handler will not trigger any event.
+   */
   onEntityEvent: EntityEvents;
+
+  /**
+   * The parent of the entity, if the entity is not a child, the parent is null.
+   */
   parent: BaseEntity | null;
+
+  /**
+   * If the entity is static, the mouse handler will not trigger any event.
+   */
   private static: boolean = false;
+
+  /**
+   * The globalCompositeOperation property sets the type of compositing operation to apply when drawing the render method.
+   * The default value is source-over.
+   */
   globalCompositeOperation: GlobalCompositeOperation = "source-over";
+
+  /**
+   *  The canvas is divided into quadrants, and each entity is assigned to a quadrant.
+   *  these quadrants are used to optimize the mouse detection over the entities, preventing
+   *  the mouse checking for all entities in the canvas, it will only check for the ones within the
+   *  same quadrant as the mouse.
+   *  quadrant represents all the quadrants the entity is assigned, depending on the transformation of the entity, it can
+   *  have assigned multiple quadrants.
+   *  The quadrant updated when the entity matrix changes.
+   */
   public quadrant: EntityQuadrant;
 
+  /**
+   *@deprecated DO NOT USE
+   */
   private index: number | null = null;
 
+  /**
+   * Used to keep track of the entity scale
+   * @private
+   */
   private initialSize: Vec2;
+
+  /**
+   * Array of EntityPlugins that are attached to the entity,
+   * used to extend the entity functionality and rendering.
+   * @private
+   */
   private plugins: EntityPlugin[] = [];
 
   constructor(props: BaseEntityProps) {
