@@ -29,10 +29,16 @@ export type TileMapType = {
   sequence: string[];
 };
 
+export type CachedSVGCoordinates = string[];
+
 export type SupportedAssetsExtention = "png" | "json";
 
 export type JsonType = { [key: string]: string | number | JsonType };
-export type SupportedAssetsType = HTMLImageElement | JSON | TileMapType;
+export type SupportedAssetsType =
+  | HTMLImageElement
+  | JSON
+  | TileMapType
+  | CachedSVGCoordinates;
 
 export interface BaseEntityProps {
   position: Vec2;

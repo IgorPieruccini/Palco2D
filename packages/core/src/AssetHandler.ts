@@ -1,4 +1,8 @@
-import { SupportedAssetsType, TileMapType } from "../types";
+import {
+  CachedSVGCoordinates,
+  SupportedAssetsType,
+  TileMapType,
+} from "../types";
 
 /**
  * AssetHandler is a singleton class that handles loading and storing assets.
@@ -25,6 +29,31 @@ export class AssetHandler {
         resolve(png);
       };
       png.onerror = (err) => reject(err);
+    });
+  };
+
+  /**
+   * Load a svg image from the given path.
+   * it scans the svg for path elements then store the stringfied coordinates in an array,
+   * to be accessed later by the SVGImage  entity.
+   * @param {string} path - Path to the svg image.
+   */
+  public static loadSVG = async (path: string) => {
+    return new Promise<CachedSVGCoordinates>((resolve, reject) => {
+      fetch(path)
+        .then((res) => res.text())
+        .then((data) => {
+          const parser = new DOMParser();
+          const svg = parser.parseFromString(data, "image/svg+xml");
+          const paths = svg.getElementsByTagName("path");
+          const coordinates: string[] = [];
+          for (let i = 0; i < paths.length; i++) {
+            coordinates.push(paths[i].getAttribute("d") as string);
+          }
+          this.assets[path] = coordinates;
+          resolve(coordinates);
+        })
+        .catch((err) => reject(err));
     });
   };
 
