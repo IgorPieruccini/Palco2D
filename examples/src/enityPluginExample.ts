@@ -21,7 +21,7 @@ export class EntityPluginExample extends Scene {
       }
     });
 
-    await AssetHandler().loadPng("assets/ninja-frog-jump.png");
+    await AssetHandler.loadPng("assets/ninja-frog-jump.png");
 
     const frog = new Sprite({
       id: "frog",

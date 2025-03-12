@@ -3,7 +3,7 @@ import { AssetHandler, Scene, Sprite, SquareEntity } from "@palco-2d/core";
 export class BlendingModeExample extends Scene {
   public async start() {
     const init = async () => {
-      await AssetHandler().loadPng("assets/ninja-frog-jump.png");
+      await AssetHandler.loadPng("assets/ninja-frog-jump.png");
 
       const mainFrog = new Sprite({
         texture: "assets/ninja-frog-jump.png",

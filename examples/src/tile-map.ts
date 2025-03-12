@@ -2,8 +2,8 @@ import { Scene, AssetHandler, Sprite } from "@palco-2d/core";
 
 export class TileMapExample extends Scene {
   public async start() {
-    await AssetHandler().loadPng("assets/ninja-frog-run.png");
-    await AssetHandler().loadTileMap("assets/ninja-frog-run.tilemap.json");
+    await AssetHandler.loadPng("assets/ninja-frog-run.png");
+    await AssetHandler.loadTileMap("assets/ninja-frog-run.tilemap.json");
 
     const createFrogs = () => {
       for (let x = 0; x < 500; x++) {

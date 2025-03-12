@@ -16,7 +16,7 @@ export class Sprite extends BaseEntity {
 
   constructor(props: SpriteProps) {
     const { texture, ...rest } = props;
-    const loadedTexture = AssetHandler().getAsset<HTMLImageElement>(texture);
+    const loadedTexture = AssetHandler.getAsset<HTMLImageElement>(texture);
 
     const size = { x: loadedTexture.width, y: loadedTexture.height };
 
@@ -25,7 +25,7 @@ export class Sprite extends BaseEntity {
     this.texture = loadedTexture;
 
     if (props.tileMap) {
-      const tileMap = AssetHandler().getAsset<TileMapType>(props.tileMap);
+      const tileMap = AssetHandler.getAsset<TileMapType>(props.tileMap);
       if (!tileMap) {
         throw new Error(`TileMap with key ${props.tileMap} not found`);
       }

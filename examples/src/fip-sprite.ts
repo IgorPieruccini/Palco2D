@@ -2,7 +2,7 @@ import { AssetHandler, Scene, Sprite } from "@palco-2d/core";
 
 export class FlipSpriteExample extends Scene {
   public async start() {
-    await AssetHandler().loadPng("assets/ninja-frog-jump.png");
+    await AssetHandler.loadPng("assets/ninja-frog-jump.png");
 
     const frog = new Sprite({
       texture: "assets/ninja-frog-jump.png",

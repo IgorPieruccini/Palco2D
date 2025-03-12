@@ -3,8 +3,8 @@ import { InfinityCanvasPlugin } from "@palco-2d/plugins";
 
 export class SpriteExample extends Scene {
   public async start() {
-    await AssetHandler().loadPng("assets/ninja-frog-jump.png");
-    await AssetHandler().loadTileMap("assets/ninja-frog-run.tilemap.json");
+    await AssetHandler.loadPng("assets/ninja-frog-jump.png");
+    await AssetHandler.loadTileMap("assets/ninja-frog-run.tilemap.json");
 
     const createFrogs = () => {
       for (let x = 0; x < 7000; x++) {

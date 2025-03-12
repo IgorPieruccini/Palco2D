@@ -2,11 +2,11 @@ import { AssetHandler, Scene, Text } from "@palco-2d/core";
 
 export class TextExample extends Scene {
   public async start() {
-    await AssetHandler().loadFont(
+    await AssetHandler.loadFont(
       "PixelifySans",
       "assets/PixelifySans-Regular.ttf",
     );
-    await AssetHandler().loadFont("BebasNeue", "assets/BebasNeue-Regular.ttf");
+    await AssetHandler.loadFont("BebasNeue", "assets/BebasNeue-Regular.ttf");
 
     const addEventsToText = (text: Text) => {
       text.on("mouseenter", () => {

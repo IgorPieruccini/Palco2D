@@ -31,7 +31,7 @@ export class AddRemoveEntityExample extends Scene {
   }
 
   public async start() {
-    await AssetHandler().loadPng("assets/ninja-frog-jump.png");
+    await AssetHandler.loadPng("assets/ninja-frog-jump.png");
 
     for (let x = 0; x < 20; x++) {
       const frog = this.createFrog(200 + x * 50, 100);

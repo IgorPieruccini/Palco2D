@@ -11,7 +11,7 @@ export class BatchExample extends Scene {
     const bacthHandler = new BatchHandler();
 
     const init = async () => {
-      await AssetHandler().loadPng("assets/ninja-frog-jump.png");
+      await AssetHandler.loadPng("assets/ninja-frog-jump.png");
 
       const mainFrog = new Sprite({
         texture: "assets/ninja-frog-jump.png",

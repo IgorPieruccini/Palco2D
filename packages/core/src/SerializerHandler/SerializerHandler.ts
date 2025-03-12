@@ -54,10 +54,10 @@ export class SerializerHandler {
     for (const asset of assets) {
       switch (asset.key) {
         case "texture":
-          await AssetHandler().loadPng(asset.url);
+          await AssetHandler.loadPng(asset.url);
           break;
         case "tileMap":
-          await AssetHandler().loadTileMap(asset.url);
+          await AssetHandler.loadTileMap(asset.url);
           break;
       }
     }
