@@ -15,6 +15,7 @@ import { InvitiyCanvasSceneExample } from "./src/infinityCanvas";
 import { EntityPluginExample } from "./src/enityPluginExample";
 import { AddRemoveEntityExample } from "./src/add-remove-entity";
 import { QuadrantExamples } from "./src/quadrants-example";
+import { SvgImageScene } from "./src/svgImage";
 
 const sceneHandler = new SceneHandler();
 
@@ -32,8 +33,9 @@ sceneHandler.addScene(new InvitiyCanvasSceneExample(), "InfinityCanvas");
 sceneHandler.addScene(new EntityPluginExample(), "EntityPluginExample");
 sceneHandler.addScene(new AddRemoveEntityExample(), "AddRemoveEntity");
 sceneHandler.addScene(new QuadrantExamples(), "QuadrantsExample");
+sceneHandler.addScene(new SvgImageScene(), "SvgImage");
 
-const initialScene = "QuadrantsExample";
+const initialScene = "SvgImage";
 
 const createSceneDropdown = () => {
   const select = document.getElementById("select-example") as HTMLSelectElement;
