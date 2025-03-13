@@ -29,7 +29,19 @@ export type TileMapType = {
   sequence: string[];
 };
 
-export type CachedSVGCoordinates = string[];
+export type CachedSVGAsset = {
+  coordinates: string;
+  fill: string;
+  fillRule: string;
+  opacity: string;
+  stroke: string;
+  strokeDasharray: string;
+  strokeDashoffset: string;
+  strokeLinecap: string;
+  strokeLinejoin: string;
+  strokeMiterlimit: string;
+  strokeWidth: string;
+};
 
 export type SupportedAssetsExtention = "png" | "json";
 
@@ -38,7 +50,7 @@ export type SupportedAssetsType =
   | HTMLImageElement
   | JSON
   | TileMapType
-  | CachedSVGCoordinates;
+  | CachedSVGAsset[];
 
 export interface BaseEntityProps {
   position: Vec2;
@@ -54,6 +66,12 @@ export type SpriteProps = Omit<BaseEntityProps, "size"> & {
   texture: string;
   tileMap?: string;
 };
+
+export type SVGImageProps = BaseEntityProps & {
+  src: string;
+};
+
+export type Path2DProps = BaseEntityProps & CachedSVGAsset;
 
 export type SerializedBaseEntityProps<
   T extends BaseEntityProps = BaseEntityProps,
