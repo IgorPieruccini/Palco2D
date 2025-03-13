@@ -14,7 +14,6 @@ export class SVGImageEntity extends BaseEntity {
 
   create2DPaths() {
     const paths2D = AssetHandler.getAsset<CachedSVGAsset[]>(this.src);
-    console.log(paths2D);
 
     if (!paths2D) {
       throw new Error(`svg asset not found ${this.src}`);

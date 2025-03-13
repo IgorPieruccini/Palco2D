@@ -3,13 +3,13 @@ import { InfinityCanvasPlugin } from "@palco-2d/plugins";
 
 export class SvgImageScene extends Scene {
   public async start() {
-    await AssetHandler.loadSVG("assets/character.svg");
+    await AssetHandler.loadSVG("assets/tiger.svg");
 
     const svgEntity = new SVGImageEntity({
       position: { x: 100, y: 100 },
       size: { x: 100, y: 100 },
       rotation: 0,
-      src: "assets/character.svg",
+      src: "assets/tiger.svg",
     });
 
     this.addPlugin(new InfinityCanvasPlugin(this), "infinityCanvasPlugin");
