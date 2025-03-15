@@ -31,6 +31,8 @@ export type TileMapType = {
 
 export type CachedSVGAsset = {
   coordinates: string;
+  matrix: number[][];
+  translate: Vec2;
   fill: string;
   fillRule: string;
   opacity: string;

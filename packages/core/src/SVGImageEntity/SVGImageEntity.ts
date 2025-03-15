@@ -29,6 +29,11 @@ export class SVGImageEntity extends BaseEntity {
     this.createSVGDataFromAsset(assetData);
   }
 
+  isObjectInViewport(): boolean {
+    // TODO: Implement this method
+    return true;
+  }
+
   /**
    * Creates a Path2D object for each path in the SVG asset.
    */
@@ -87,11 +92,24 @@ export class SVGImageEntity extends BaseEntity {
 
     for (let i = 0; i < this.svgData.length; i++) {
       const data = this.svgData[i];
-      const path2D = new Path2D(data.coordinates);
+
+      ctx.save();
+      ctx.transform(
+        data.matrix[0][0],
+        data.matrix[1][0],
+        data.matrix[0][1],
+        data.matrix[1][1],
+        data.matrix[0][2],
+        data.matrix[1][2],
+      );
+      ctx.translate(data.translate.x, data.translate.y);
+
       ctx.fillStyle = data.fill;
       ctx.strokeStyle = data.stroke;
       ctx.lineWidth = Number(data.strokeWidth);
-      ctx.fill(path2D);
+      ctx.fill(data.coordinates);
+
+      ctx.restore();
     }
   }
 }
