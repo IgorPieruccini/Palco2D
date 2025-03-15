@@ -43,6 +43,11 @@ export type CachedSVGAsset = {
   strokeWidth: string;
 };
 
+export type SVGData = Omit<CachedSVGAsset, "coordinates" | "strokeWidth"> & {
+  coordinates: Path2D;
+  strokeWidth: number;
+};
+
 export type SupportedAssetsExtention = "png" | "json";
 
 export type JsonType = { [key: string]: string | number | JsonType };
@@ -71,7 +76,7 @@ export type SVGImageProps = BaseEntityProps & {
   src: string;
 };
 
-export type Path2DProps = BaseEntityProps & CachedSVGAsset;
+export type Path2DProps = BaseEntityProps & { svgData: SVGData };
 
 export type SerializedBaseEntityProps<
   T extends BaseEntityProps = BaseEntityProps,
