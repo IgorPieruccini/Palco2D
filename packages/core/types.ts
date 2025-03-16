@@ -108,3 +108,10 @@ export type SerializedBaseEntityProps<
   children: SerializedBaseEntityProps[];
   address: string;
 };
+
+export type BoundingBox = {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+};

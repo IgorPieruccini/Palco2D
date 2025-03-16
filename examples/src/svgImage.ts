@@ -1,15 +1,17 @@
 import { AssetHandler, SVGImageEntity, Scene } from "@palco-2d/core";
-import { InfinityCanvasPlugin } from "@palco-2d/plugins";
+import { BoundingBoxEntity, InfinityCanvasPlugin } from "@palco-2d/plugins";
 
 export class SvgImageScene extends Scene {
   public async start() {
-    await AssetHandler.loadSVG("assets/tiger.svg");
+    await AssetHandler.loadSVG("assets/building.svg");
 
     const svgEntity = new SVGImageEntity({
-      position: { x: 100, y: 100 },
+      position: { x: 0, y: 0 },
       rotation: 0,
-      src: "assets/tiger.svg",
+      src: "assets/building.svg",
     });
+
+    svgEntity.addPlugin(BoundingBoxEntity, "boundingBoxEntity");
 
     this.addPlugin(new InfinityCanvasPlugin(this), "infinityCanvasPlugin");
 

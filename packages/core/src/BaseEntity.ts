@@ -5,6 +5,7 @@ import {
   Vec2,
   BaseEntityProps,
   SerializedBaseEntityProps,
+  BoundingBox,
 } from "../types";
 import {
   generateUUID,
@@ -123,6 +124,11 @@ export class BaseEntity {
    */
   private plugins: EntityPlugin[] = [];
 
+  /**
+   * The bounding box of the entity, constains the position and size of the entity.
+   */
+  public boundingBox: BoundingBox = { x: 0, y: 0, width: 0, height: 0 };
+
   constructor(props: BaseEntityProps) {
     this.id = props.id || generateUUID();
     this.position = props.position;
@@ -138,6 +144,12 @@ export class BaseEntity {
     this.globalCompositeOperation =
       props.globalCompositeOperation || "source-over";
     this.quadrant = new EntityQuadrant(this);
+    this.boundingBox = {
+      x: this.position.x,
+      y: this.position.y,
+      width: this.size.x,
+      height: this.size.y,
+    };
   }
 
   public on(event: EventsType, callback: () => void) {
@@ -167,6 +179,13 @@ export class BaseEntity {
       this.quadrant.shouldUpdate = false;
     }
 
+    this.renderEntityPlugins(ctx);
+  }
+
+  /**
+   * Call the render method of each EntityPlugin attached to the entity.
+   */
+  protected renderEntityPlugins(ctx: CanvasRenderingContext2D) {
     this.plugins.forEach((plugin) => {
       plugin.render(ctx);
     });
@@ -415,8 +434,9 @@ export class BaseEntity {
     };
   }
 
-  public addPlugin(plugin: EntityPlugin) {
-    this.plugins.push(plugin);
+  public addPlugin(Plugin: typeof EntityPlugin, key: string) {
+    const plug = new Plugin(this, key);
+    this.plugins.push(plug);
   }
 
   public getPluginByKey(key: string) {
@@ -458,5 +478,17 @@ export class BaseEntity {
 
   public getStatic() {
     return this.static;
+  }
+
+  /**
+   * Update the bounding box of the entity, using the position and size of the entity.
+   */
+  public updateBoundingBox() {
+    this.boundingBox = {
+      x: this.position.x,
+      y: this.position.y,
+      width: this.size.x,
+      height: this.size.y,
+    };
   }
 }

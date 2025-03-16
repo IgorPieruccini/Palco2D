@@ -1,10 +1,11 @@
 import { CachedSVGAsset, SVGData, SVGImageProps, Vec2 } from "../../types";
 import { AssetHandler } from "../AssetHandler";
 import { BaseEntity } from "../BaseEntity";
+import { applyTransformation } from "../utils";
 import { Path2DEntity } from "./Path2DEntity";
+import { calculateSVGBoundingBox } from "./utils";
 
 export class SVGImageEntity extends BaseEntity {
-  private src: string;
   private foldedElemnts: Map<string, Path2DEntity> = new Map<
     string,
     Path2DEntity
@@ -18,22 +19,35 @@ export class SVGImageEntity extends BaseEntity {
   public svgData: SVGData[] = [];
 
   constructor(props: SVGImageProps) {
-    // TODO: implement the constructor
-    const size = { x: 100, y: 100 };
-    super({ ...props, size });
-    this.src = props.src;
+    const assetData = AssetHandler.getAsset<CachedSVGAsset[]>(props.src);
 
-    const assetData = AssetHandler.getAsset<CachedSVGAsset[]>(this.src);
     if (!assetData) {
-      throw new Error(`svg asset not found ${this.src}`);
+      throw new Error(`svg asset not found ${props.src}`);
     }
+    const size = { x: 100, y: 100 };
+
+    super({ ...props, size });
 
     this.createSVGDataFromAsset(assetData);
+    this.updateBoundingBox();
   }
 
+  /**
+   * Checks if the SVGImageEntity is in the viewport.
+   * @override - BaseEntity
+   */
   isObjectInViewport(): boolean {
     // TODO: Implement this method
     return true;
+  }
+
+  /**
+   * Updates the bounding box of the SVGImageEntity based on the current SVGData.
+   * @override - BaseEntity
+   */
+  public updateBoundingBox() {
+    const bounds = calculateSVGBoundingBox(this.svgData);
+    this.boundingBox = bounds;
   }
 
   /**
@@ -70,6 +84,7 @@ export class SVGImageEntity extends BaseEntity {
 
   /**
    * Parses each Path2DEntity into a CachedSVGAsset with the updated values,
+   *
    * and then removes the Path2DEntity from the children of SVGImageEntity.
    */
   public fold() {
@@ -86,6 +101,7 @@ export class SVGImageEntity extends BaseEntity {
   }
 
   render(ctx: CanvasRenderingContext2D) {
+    super.render(ctx);
     // No need to render the SVGImageEntity if it is folded, because the path2DEntities
     // render them selves as children of the SVGImageEntity
     if (this.isFolded()) {
@@ -113,5 +129,7 @@ export class SVGImageEntity extends BaseEntity {
 
       ctx.restore();
     }
+
+    this.renderEntityPlugins(ctx);
   }
 }

@@ -34,7 +34,7 @@ export class EntityPluginExample extends Scene {
     frog.on("mousedown", () => {
       if (this.activeObject?.id !== frog.id) {
         this.activeObject?.removeAllPlugins();
-        frog.addPlugin(new TransformerEntityController(frog, "boundaries"));
+        frog.addPlugin(TransformerEntityController, "boundaries");
         this.activeObject = frog;
       }
     });
@@ -49,7 +49,7 @@ export class EntityPluginExample extends Scene {
     rect.on("mousedown", () => {
       if (this.activeObject?.id !== rect.id) {
         this.activeObject?.removeAllPlugins();
-        rect.addPlugin(new TransformerEntityController(rect, "boundaries"));
+        rect.addPlugin(TransformerEntityController, "boundaries");
         this.activeObject = rect;
       }
     });

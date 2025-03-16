@@ -5,10 +5,6 @@ function toCamelCase(str: string) {
   return str.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase());
 }
 
-const isCommandCharacter = (char: string): char is SVGCommand[0] => {
-  return /[MmLlHhVvCcSsQqTtAaZz]/.test(char);
-};
-
 const createSVGCommandsFromSVGStringCoordinates = (d: string) => {
   const regex = /([MmLlHhVvCcSsQqTtAaZz])\s*([^MmLlHhVvCcSsQqTtAaZz]*)/g;
   const commands: SVGCommand[] = [];
@@ -17,7 +13,10 @@ const createSVGCommandsFromSVGStringCoordinates = (d: string) => {
   while (match !== null) {
     const characterCommand = match[1] as SVGCommand[0];
 
-    const values = match[2].split(/\s|,/).map(Number);
+    // THIS DOES NOT WORK: FIX IT
+    const sanitizedMatch = match[2].replace(/\s/, "");
+    let coords = sanitizedMatch.replace(/-/g, " -");
+    const values = coords.split(/\s/).map(Number);
 
     if (characterCommand === "Z" || characterCommand === "z") {
       commands.push([characterCommand]);
