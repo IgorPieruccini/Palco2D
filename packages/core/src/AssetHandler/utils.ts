@@ -14,15 +14,18 @@ const createSVGCommandsFromSVGStringCoordinates = (d: string) => {
     const characterCommand = match[1] as SVGCommand[0];
 
     // THIS DOES NOT WORK: FIX IT
-    const sanitizedMatch = match[2].replace(/\s/, "");
-    let coords = sanitizedMatch.replace(/-/g, " -");
-    const values = coords.split(/\s/).map(Number);
+    //
+    const values = match[2].match(/-?\d+(\.\d+)?/g);
 
     if (characterCommand === "Z" || characterCommand === "z") {
       commands.push([characterCommand]);
     } else {
+      if (!values) {
+        throw new Error("Values are not defined");
+      }
+      const numberValues = values.map(Number);
       //@ts-expect-error - FixMe
-      commands.push([characterCommand, ...values]);
+      commands.push([characterCommand, ...numberValues]);
     }
     match = regex.exec(d);
   }
