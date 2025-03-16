@@ -1,9 +1,35 @@
-import { CachedSVGAsset, Vec2 } from "../../types";
+import { CachedSVGAsset, SVGCommand, Vec2 } from "../../types";
 import { identityMatrix, multiplyMatrices } from "../utils";
 
 function toCamelCase(str: string) {
   return str.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase());
 }
+
+const isCommandCharacter = (char: string): char is SVGCommand[0] => {
+  return /[MmLlHhVvCcSsQqTtAaZz]/.test(char);
+};
+
+const createSVGCommandsFromSVGStringCoordinates = (d: string) => {
+  const regex = /([MmLlHhVvCcSsQqTtAaZz])\s*([^MmLlHhVvCcSsQqTtAaZz]*)/g;
+  const commands: SVGCommand[] = [];
+  let match: RegExpExecArray | null = regex.exec(d);
+
+  while (match !== null) {
+    const characterCommand = match[1] as SVGCommand[0];
+
+    const values = match[2].split(/\s|,/).map(Number);
+
+    if (characterCommand === "Z" || characterCommand === "z") {
+      commands.push([characterCommand]);
+    } else {
+      //@ts-expect-error - FixMe
+      commands.push([characterCommand, ...values]);
+    }
+    match = regex.exec(d);
+  }
+
+  return commands;
+};
 
 export const getSVGAssetsFromPathElement = (
   pathElement: SVGPathElement,
@@ -30,6 +56,7 @@ export const getSVGAssetsFromPathElement = (
     opacity: "1",
     matrix: identityMatrix,
     translate: { x: 0, y: 0 },
+    commands: [],
   };
 
   if (style) {
@@ -78,5 +105,7 @@ export const getSVGAssetsFromPathElement = (
     }
   }
 
-  return { coordinates, ...styleProperties, translate, matrix };
+  const commands = createSVGCommandsFromSVGStringCoordinates(coordinates);
+
+  return { coordinates, ...styleProperties, translate, matrix, commands };
 };

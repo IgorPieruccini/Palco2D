@@ -7,7 +7,6 @@ export class SvgImageScene extends Scene {
 
     const svgEntity = new SVGImageEntity({
       position: { x: 100, y: 100 },
-      size: { x: 100, y: 100 },
       rotation: 0,
       src: "assets/tiger.svg",
     });

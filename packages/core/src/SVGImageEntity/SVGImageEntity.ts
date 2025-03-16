@@ -1,4 +1,4 @@
-import { CachedSVGAsset, SVGData, SVGImageProps } from "../../types";
+import { CachedSVGAsset, SVGData, SVGImageProps, Vec2 } from "../../types";
 import { AssetHandler } from "../AssetHandler";
 import { BaseEntity } from "../BaseEntity";
 import { Path2DEntity } from "./Path2DEntity";
@@ -18,7 +18,9 @@ export class SVGImageEntity extends BaseEntity {
   public svgData: SVGData[] = [];
 
   constructor(props: SVGImageProps) {
-    super(props);
+    // TODO: implement the constructor
+    const size = { x: 100, y: 100 };
+    super({ ...props, size });
     this.src = props.src;
 
     const assetData = AssetHandler.getAsset<CachedSVGAsset[]>(this.src);

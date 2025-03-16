@@ -29,8 +29,29 @@ export type TileMapType = {
   sequence: string[];
 };
 
+export type SVGCommand =
+  | ["M", number, number]
+  | ["m", number, number]
+  | ["L", number, number]
+  | ["l", number, number]
+  | ["H", number]
+  | ["h", number]
+  | ["V", number]
+  | ["v", number]
+  | ["C", number, number, number, number, number, number]
+  | ["c", number, number, number, number, number, number]
+  | ["S", number, number, number, number]
+  | ["s", number, number, number, number]
+  | ["Q", number, number, number, number]
+  | ["q", number, number, number, number]
+  | ["T", number, number]
+  | ["t", number, number]
+  | ["Z"]
+  | ["z"];
+
 export type CachedSVGAsset = {
   coordinates: string;
+  commands: SVGCommand[];
   matrix: number[][];
   translate: Vec2;
   fill: string;
@@ -74,7 +95,7 @@ export type SpriteProps = Omit<BaseEntityProps, "size"> & {
   tileMap?: string;
 };
 
-export type SVGImageProps = BaseEntityProps & {
+export type SVGImageProps = Omit<BaseEntityProps, "size"> & {
   src: string;
 };
 
