@@ -1,5 +1,5 @@
 import { BoundingBox, SVGData, Vec2 } from "../../types";
-import { applyTransformation } from "../utils";
+import { applyTransformation, getScaleFromMatrix } from "../utils";
 
 export function calculateSVGBoundingBox(svgsData: Array<SVGData>): BoundingBox {
   let minX = null;
@@ -19,10 +19,18 @@ export function calculateSVGBoundingBox(svgsData: Array<SVGData>): BoundingBox {
       svgData.matrix,
     );
 
-    let transformedSize = applyTransformation(
-      { x: width, y: height },
-      svgData.matrix,
-    );
+    const matrixScale = getScaleFromMatrix(svgData.matrix);
+
+    const transformedSize = {
+      x: width * matrixScale.x,
+      y: height * matrixScale.y,
+    };
+
+    // APPLYING TRANSFORM IS NOT WORKING ON THIS CASE
+    // let transformedSize = applyTransformation(
+    //   { x: width, y: height },
+    //   svgData.matrix,
+    // );
 
     if (minX === null || minY === null || maxX === null || maxY === null) {
       minX = transformedPosition.x;
@@ -139,7 +147,32 @@ export function calculatePathBoundingBox(data: SVGData): BoundingBox {
     });
   }
 
+  function arcBounds(
+    cx: number,
+    cy: number,
+    r: number,
+    startAngle: number,
+    endAngle: number,
+  ) {
+    let points = [
+      { x: cx + r * Math.cos(startAngle), y: cy + r * Math.sin(startAngle) },
+      { x: cx + r * Math.cos(endAngle), y: cy + r * Math.sin(endAngle) },
+    ];
+
+    [0, Math.PI / 2, Math.PI, (3 * Math.PI) / 2].forEach((angle) => {
+      if (startAngle <= angle && angle <= endAngle) {
+        points.push({
+          x: cx + r * Math.cos(angle),
+          y: cy + r * Math.sin(angle),
+        });
+      }
+    });
+
+    points.forEach((p) => updateBounds(p.x, p.y));
+  }
+
   let current = { x: 0, y: 0 };
+  let lastControlPoint: Vec2 | null = null;
 
   for (let cmd of data.commands) {
     switch (cmd[0]) {
@@ -147,27 +180,33 @@ export function calculatePathBoundingBox(data: SVGData): BoundingBox {
       case "L":
         current = { x: cmd[1], y: cmd[2] };
         updateBounds(cmd[1], cmd[2]);
+        lastControlPoint = current;
         break;
       case "m":
       case "l":
         current = { x: current.x + cmd[1], y: current.y + cmd[2] };
         updateBounds(current.x, current.y);
+        lastControlPoint = current;
         break;
       case "H":
         current.x = cmd[1];
         updateBounds(current.x, current.y);
+        lastControlPoint = current;
         break;
       case "h":
         current.x += cmd[1];
         updateBounds(current.x, current.y);
+        lastControlPoint = current;
         break;
       case "V":
         current.y = cmd[1];
         updateBounds(current.x, current.y);
+        lastControlPoint = current;
         break;
       case "v":
         current.y += cmd[1];
         updateBounds(current.x, current.y);
+        lastControlPoint = current;
         break;
       case "C":
         cubicBezierBounds(
@@ -177,6 +216,7 @@ export function calculatePathBoundingBox(data: SVGData): BoundingBox {
           { x: cmd[5], y: cmd[6] },
         );
         current = { x: cmd[5], y: cmd[6] };
+        lastControlPoint = { x: cmd[3], y: cmd[4] };
         break;
       case "c":
         cubicBezierBounds(
@@ -186,22 +226,61 @@ export function calculatePathBoundingBox(data: SVGData): BoundingBox {
           { x: current.x + cmd[5], y: current.y + cmd[6] },
         );
         current = { x: current.x + cmd[5], y: current.y + cmd[6] };
+        lastControlPoint = { x: current.x + cmd[3], y: current.y + cmd[4] };
         break;
       case "S":
-        quadraticBezierBounds(
+        // first control point is the reflection of the last control point
+        if (lastControlPoint === null) {
+          lastControlPoint = current;
+        }
+
+        const firstControlPoint = {
+          x: 2 * current.x - lastControlPoint!.x,
+          y: 2 * current.y - lastControlPoint!.y,
+        };
+
+        cubicBezierBounds(
           current,
+          firstControlPoint,
           { x: cmd[1], y: cmd[2] },
           { x: cmd[3], y: cmd[4] },
         );
         current = { x: cmd[3], y: cmd[4] };
+        lastControlPoint = { x: cmd[1], y: cmd[2] };
         break;
-      case "s":
-        quadraticBezierBounds(
+      case "s": {
+        // first control point is the reflection of the last control point
+        if (lastControlPoint === null) {
+          lastControlPoint = current;
+        }
+
+        const firstControlPoint = {
+          x: 2 * current.x - lastControlPoint!.x,
+          y: 2 * current.y - lastControlPoint!.y,
+        };
+
+        cubicBezierBounds(
           current,
+          firstControlPoint,
           { x: current.x + cmd[1], y: current.y + cmd[2] },
           { x: current.x + cmd[3], y: current.y + cmd[4] },
         );
+
         current = { x: current.x + cmd[3], y: current.y + cmd[4] };
+        lastControlPoint = { x: current.x + cmd[1], y: current.y + cmd[2] };
+        break;
+      }
+      case "A":
+        arcBounds(current.x, current.y, cmd[1], cmd[2], cmd[2] + cmd[3]);
+        current = { x: cmd[6], y: cmd[7] };
+        lastControlPoint = current;
+
+        break;
+      case "a":
+        arcBounds(current.x, current.y, cmd[1], cmd[2], cmd[2] + cmd[3]);
+        current = { x: current.x + cmd[6], y: current.y + cmd[7] };
+        lastControlPoint = current;
+
         break;
       case "Q":
         quadraticBezierBounds(
@@ -210,6 +289,7 @@ export function calculatePathBoundingBox(data: SVGData): BoundingBox {
           { x: cmd[3], y: cmd[4] },
         );
         current = { x: cmd[3], y: cmd[4] };
+        lastControlPoint = current;
         break;
       case "q":
         quadraticBezierBounds(
@@ -218,11 +298,13 @@ export function calculatePathBoundingBox(data: SVGData): BoundingBox {
           { x: current.x + cmd[3], y: current.y + cmd[4] },
         );
         current = { x: current.x + cmd[3], y: current.y + cmd[4] };
+        lastControlPoint = current;
         break;
       case "T":
       case "t":
         quadraticBezierBounds(current, current, { x: cmd[1], y: cmd[2] });
         current = { x: cmd[1], y: cmd[2] };
+        lastControlPoint = current;
         break;
       case "Z":
       case "z":

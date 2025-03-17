@@ -1,5 +1,28 @@
-import { CachedSVGAsset, SVGCommand, Vec2 } from "../../types";
+import { CachedSVGAsset, SVGCommand, SVGCommandKey, Vec2 } from "../../types";
 import { identityMatrix, multiplyMatrices } from "../utils";
+
+const SVGCommandValueLenght: Record<SVGCommandKey, number> = {
+  M: 2,
+  m: 2,
+  L: 2,
+  l: 2,
+  H: 1,
+  h: 1,
+  V: 1,
+  v: 1,
+  C: 6,
+  c: 6,
+  S: 4,
+  s: 4,
+  A: 7,
+  a: 7,
+  Q: 4,
+  q: 4,
+  T: 2,
+  t: 2,
+  Z: 0,
+  z: 0,
+};
 
 function toCamelCase(str: string) {
   return str.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase());
@@ -13,8 +36,6 @@ const createSVGCommandsFromSVGStringCoordinates = (d: string) => {
   while (match !== null) {
     const characterCommand = match[1] as SVGCommand[0];
 
-    // THIS DOES NOT WORK: FIX IT
-    //
     const values = match[2].match(/-?\d+(\.\d+)?/g);
 
     if (characterCommand === "Z" || characterCommand === "z") {
@@ -24,8 +45,23 @@ const createSVGCommandsFromSVGStringCoordinates = (d: string) => {
         throw new Error("Values are not defined");
       }
       const numberValues = values.map(Number);
-      //@ts-expect-error - FixMe
-      commands.push([characterCommand, ...numberValues]);
+      const expectedLength =
+        SVGCommandValueLenght[characterCommand as SVGCommandKey];
+
+      if (numberValues.length > expectedLength) {
+        const splitValues: number[][] = [];
+        for (let i = 0; i < numberValues.length; i += expectedLength) {
+          splitValues.push(numberValues.slice(i, i + expectedLength));
+        }
+
+        splitValues.forEach((value) => {
+          //@ts-expect-error - FixMe
+          commands.push([characterCommand, ...value]);
+        });
+      } else {
+        //@ts-expect-error - FixMe
+        commands.push([characterCommand, ...numberValues]);
+      }
     }
     match = regex.exec(d);
   }

@@ -46,8 +46,12 @@ export type SVGCommand =
   | ["q", number, number, number, number]
   | ["T", number, number]
   | ["t", number, number]
+  | ["A", number, number, number, number, number, number, number, number]
+  | ["a", number, number, number, number, number, number, number, number]
   | ["Z"]
   | ["z"];
+
+export type SVGCommandKey = SVGCommand[0];
 
 export type CachedSVGAsset = {
   coordinates: string;
