@@ -151,7 +151,7 @@ export const generateUUID = () => {
 export const invertMatrix = (matrix: number[][]) => {
   const det = matrixDeterminant(matrix);
   if (det === 0) {
-    throw new Error("Matrix is not invertible");
+    return matrix;
   }
   const cofactors = cofactorMatrix3x3(matrix);
   const adjugate = transpose3x3(cofactors);

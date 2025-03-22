@@ -8,6 +8,7 @@ import {
   BoundingBox,
 } from "../types";
 import {
+  applyTransformation,
   generateUUID,
   getMatrixPosition,
   getMatrixRotation,
@@ -16,6 +17,7 @@ import {
   getRotationAngleFromMatrix,
   getScaleFromMatrix,
   identityMatrix,
+  invertMatrix,
   multiplyMatrices,
 } from "./utils";
 import { EntityQuadrant } from "./QuadrantsHandler/EntityQuadrant";
@@ -39,11 +41,23 @@ export class BaseEntity {
    */
   public position: Vec2;
 
+  private _size: Vec2;
   /**
    * The size of the entity in the canvas.
    * if the entity is a child, the size is relative to the parent.
    */
-  public size: Vec2;
+  public get size() {
+    const scale = this.getScale();
+    return {
+      x: this._size.x / scale.x,
+      y: this._size.y / scale.y,
+    };
+  }
+
+  public set size(size: Vec2) {
+    this._size = size;
+    this.updateBoundingBox();
+  }
 
   /**
    * The rotation of the entity in degrees.
@@ -132,7 +146,7 @@ export class BaseEntity {
   constructor(props: BaseEntityProps) {
     this.id = props.id || generateUUID();
     this.position = props.position;
-    this.size = props.size;
+    this._size = props.size;
     this.initialSize = { x: props.size.x, y: props.size.y };
     this.rotation = props.rotation;
     this.isMouseHover = false;
@@ -147,8 +161,8 @@ export class BaseEntity {
     this.boundingBox = {
       x: this.position.x,
       y: this.position.y,
-      width: this.size.x,
-      height: this.size.y,
+      width: this._size.x,
+      height: this._size.y,
     };
   }
 
@@ -160,16 +174,22 @@ export class BaseEntity {
   }
 
   public getScale() {
+    if (this._size.x === Infinity || this._size.y === Infinity) {
+      return {
+        x: 1,
+        y: 1,
+      };
+    }
     return {
-      x: this.size.x / this.initialSize.x,
-      y: this.size.y / this.initialSize.y,
+      x: this._size.x / this.initialSize.x,
+      y: this._size.y / this.initialSize.y,
     };
   }
 
   public getPivotPosition() {
     return {
-      x: this.position.x + this.size.x / 2,
-      y: this.position.y + this.size.y / 2,
+      x: this.position.x + this._size.x / 2,
+      y: this.position.y + this._size.y / 2,
     };
   }
 
@@ -239,10 +259,10 @@ export class BaseEntity {
     const position = getPositionFromMatrix(finalMatrix);
 
     const corners = [
-      { x: -this.size.x / 2, y: -this.size.y / 2 },
-      { x: this.size.x / 2, y: -this.size.y / 2 },
-      { x: this.size.x / 2, y: this.size.y / 2 },
-      { x: -this.size.x / 2, y: this.size.y / 2 },
+      { x: -this._size.x / 2, y: -this._size.y / 2 },
+      { x: this._size.x / 2, y: -this._size.y / 2 },
+      { x: this._size.x / 2, y: this._size.y / 2 },
+      { x: -this._size.x / 2, y: this._size.y / 2 },
     ];
 
     const angle = parentRotation * (180 / Math.PI);
@@ -374,10 +394,10 @@ export class BaseEntity {
     };
 
     return (
-      (-this.size.x * globalScale.x) / 2 <= mousePos.x &&
-      (this.size.x * globalScale.x) / 2 >= mousePos.x &&
-      (-this.size.y * globalScale.y) / 2 <= mousePos.y &&
-      (this.size.y * globalScale.y) / 2 >= mousePos.y
+      (-this._size.x * globalScale.x) / 2 <= mousePos.x &&
+      (this._size.x * globalScale.x) / 2 >= mousePos.x &&
+      (-this._size.y * globalScale.y) / 2 <= mousePos.y &&
+      (this._size.y * globalScale.y) / 2 >= mousePos.y
     );
   }
 
@@ -385,7 +405,7 @@ export class BaseEntity {
     const globalMatrix = this.getWorldMatrix();
     const positionM = getMatrixPosition(this.position.x, this.position.y);
     const rotationM = getMatrixRotation(this.rotation * (Math.PI / 180));
-    const scaleM = getMatrixScale(this.size.x, this.size.y);
+    const scaleM = getMatrixScale(this._size.x, this._size.y);
 
     const matrix = multiplyMatrices(
       multiplyMatrices(positionM, rotationM),
@@ -426,7 +446,7 @@ export class BaseEntity {
       type: "baseEntity",
       id: this.id,
       position: this.position,
-      size: this.size,
+      size: this._size,
       rotation: this.rotation,
       layer: this.layer,
       children: serializedChildren,
@@ -484,11 +504,21 @@ export class BaseEntity {
    * Update the bounding box of the entity, using the position and size of the entity.
    */
   public updateBoundingBox() {
+    const matrix = this.getMatrix();
+    const inverseMatrix = invertMatrix(matrix);
+    const position = applyTransformation(
+      {
+        x: this.position.x,
+        y: this.position.y,
+      },
+      inverseMatrix,
+    );
+
     this.boundingBox = {
-      x: this.position.x,
-      y: this.position.y,
-      width: this.size.x,
-      height: this.size.y,
+      x: position.x - this._size.x / 2,
+      y: position.y - this._size.y / 2,
+      width: this._size.x,
+      height: this._size.y,
     };
   }
 }

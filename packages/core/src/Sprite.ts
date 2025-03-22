@@ -51,6 +51,7 @@ export class Sprite extends BaseEntity {
       y: this.currentTile.height,
     };
     this.size = { x: this.currentTile.width, y: this.currentTile.height };
+    this.updateBoundingBox();
   }
 
   setTile(key: string) {
@@ -81,8 +82,6 @@ export class Sprite extends BaseEntity {
     if (this.globalCompositeOperation) {
       ctx.globalCompositeOperation = this.globalCompositeOperation;
     }
-
-    const scale = this.getScale();
 
     ctx.drawImage(
       this.texture,

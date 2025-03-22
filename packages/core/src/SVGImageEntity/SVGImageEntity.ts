@@ -1,7 +1,7 @@
 import { CachedSVGAsset, SVGData, SVGImageProps, Vec2 } from "../../types";
 import { AssetHandler } from "../AssetHandler";
 import { BaseEntity } from "../BaseEntity";
-import { applyTransformation } from "../utils";
+import { applyTransformation, invertMatrix } from "../utils";
 import { Path2DEntity } from "./Path2DEntity";
 import { calculateSVGBoundingBox } from "./utils";
 
@@ -118,6 +118,13 @@ export class SVGImageEntity extends BaseEntity {
       return;
     }
 
+    ctx.save();
+    // Center the SVGImageEntity in the middle
+    ctx.translate(
+      -this.boundingBox.x - this.boundingBox.width / 2,
+      -this.boundingBox.y - this.boundingBox.height / 2,
+    );
+
     for (let i = 0; i < this.svgData.length; i++) {
       const data = this.svgData[i];
 
@@ -140,6 +147,8 @@ export class SVGImageEntity extends BaseEntity {
 
       ctx.restore();
     }
+
+    ctx.restore();
 
     this.renderEntityPlugins(ctx);
   }
