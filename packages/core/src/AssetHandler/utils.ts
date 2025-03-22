@@ -42,7 +42,7 @@ const createSVGCommandsFromSVGStringCoordinates = (d: string) => {
       commands.push([characterCommand]);
     } else {
       if (!values) {
-        throw new Error("Values are not defined");
+        throw new Error("Commands must have values");
       }
       const numberValues = values.map(Number);
       const expectedLength =
@@ -69,6 +69,11 @@ const createSVGCommandsFromSVGStringCoordinates = (d: string) => {
   return commands;
 };
 
+/**
+ * Parses the path element and all it's properties into a CachedSVGAsset, enabling easy access to the properties of the path element.
+ * @param {SVGPathElement} pathElement - The path element to parse.
+ * @returns {CachedSVGAsset} - The parsed path element.
+ */
 export const getSVGAssetsFromPathElement = (
   pathElement: SVGPathElement,
 ): CachedSVGAsset => {
@@ -79,6 +84,7 @@ export const getSVGAssetsFromPathElement = (
   }
 
   const style = pathElement.getAttribute("style");
+  const fill = pathElement.getAttribute("fill");
   const transform = pathElement.getAttribute("transform");
 
   let styleProperties: Omit<CachedSVGAsset, "coordinates"> = {
@@ -106,6 +112,10 @@ export const getSVGAssetsFromPathElement = (
       styleProperties[toCamelCase(match[1])] = match[2].trim();
       match = regex.exec(style);
     }
+  }
+
+  if (fill) {
+    styleProperties.fill = fill;
   }
 
   const matrices: Array<number[][]> = [];
