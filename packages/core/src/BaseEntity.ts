@@ -56,7 +56,6 @@ export class BaseEntity {
 
   public set size(size: Vec2) {
     this._size = size;
-    this.updateBoundingBox();
   }
 
   /**
@@ -138,11 +137,6 @@ export class BaseEntity {
    */
   private plugins: EntityPlugin[] = [];
 
-  /**
-   * The bounding box of the entity, constains the position and size of the entity.
-   */
-  public boundingBox: BoundingBox = { x: 0, y: 0, width: 0, height: 0 };
-
   constructor(props: BaseEntityProps) {
     this.id = props.id || generateUUID();
     this.position = props.position;
@@ -158,12 +152,6 @@ export class BaseEntity {
     this.globalCompositeOperation =
       props.globalCompositeOperation || "source-over";
     this.quadrant = new EntityQuadrant(this);
-    this.boundingBox = {
-      x: this.position.x,
-      y: this.position.y,
-      width: this._size.x,
-      height: this._size.y,
-    };
   }
 
   public on(event: EventsType, callback: () => void) {
@@ -498,27 +486,5 @@ export class BaseEntity {
 
   public getStatic() {
     return this.static;
-  }
-
-  /**
-   * Update the bounding box of the entity, using the position and size of the entity.
-   */
-  public updateBoundingBox() {
-    const matrix = this.getMatrix();
-    const inverseMatrix = invertMatrix(matrix);
-    const position = applyTransformation(
-      {
-        x: this.position.x,
-        y: this.position.y,
-      },
-      inverseMatrix,
-    );
-
-    this.boundingBox = {
-      x: position.x - this._size.x / 2,
-      y: position.y - this._size.y / 2,
-      width: this._size.x,
-      height: this._size.y,
-    };
   }
 }

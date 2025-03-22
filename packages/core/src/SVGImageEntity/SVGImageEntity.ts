@@ -1,4 +1,10 @@
-import { CachedSVGAsset, SVGData, SVGImageProps, Vec2 } from "../../types";
+import {
+  BoundingBox,
+  CachedSVGAsset,
+  SVGData,
+  SVGImageProps,
+  Vec2,
+} from "../../types";
 import { AssetHandler } from "../AssetHandler";
 import { BaseEntity } from "../BaseEntity";
 import { applyTransformation, invertMatrix } from "../utils";
@@ -18,6 +24,16 @@ export class SVGImageEntity extends BaseEntity {
    */
   public svgData: SVGData[] = [];
 
+  /**
+   * The bounding box of the svg path elements
+   */
+  private pathBoundingBox: BoundingBox = {
+    x: Infinity,
+    y: Infinity,
+    width: Infinity,
+    height: Infinity,
+  };
+
   constructor(props: SVGImageProps) {
     const assetData = AssetHandler.getAsset<CachedSVGAsset[]>(props.src);
 
@@ -36,10 +52,13 @@ export class SVGImageEntity extends BaseEntity {
     this.updateBoundingBox();
     // with the bounding box updated we can set the size to the initial size.
     this.initialSize = {
-      x: this.boundingBox.width,
-      y: this.boundingBox.height,
+      x: this.pathBoundingBox.width,
+      y: this.pathBoundingBox.height,
     };
-    this.size = { x: this.boundingBox.width, y: this.boundingBox.height };
+    this.size = {
+      x: this.pathBoundingBox.width,
+      y: this.pathBoundingBox.height,
+    };
   }
 
   /**
@@ -57,7 +76,7 @@ export class SVGImageEntity extends BaseEntity {
    */
   public updateBoundingBox() {
     const bounds = calculateSVGBoundingBox(this.svgData);
-    this.boundingBox = bounds;
+    this.pathBoundingBox = bounds;
   }
 
   /**
@@ -121,8 +140,8 @@ export class SVGImageEntity extends BaseEntity {
     ctx.save();
     // Center the SVGImageEntity in the middle
     ctx.translate(
-      -this.boundingBox.x - this.boundingBox.width / 2,
-      -this.boundingBox.y - this.boundingBox.height / 2,
+      -this.pathBoundingBox.x - this.pathBoundingBox.width / 2,
+      -this.pathBoundingBox.y - this.pathBoundingBox.height / 2,
     );
 
     for (let i = 0; i < this.svgData.length; i++) {

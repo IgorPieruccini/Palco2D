@@ -51,7 +51,6 @@ export class Sprite extends BaseEntity {
       y: this.currentTile.height,
     };
     this.size = { x: this.currentTile.width, y: this.currentTile.height };
-    this.updateBoundingBox();
   }
 
   setTile(key: string) {
