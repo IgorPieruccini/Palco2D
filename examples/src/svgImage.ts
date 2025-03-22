@@ -12,6 +12,7 @@ export class SvgImageScene extends Scene {
     });
 
     svgEntity.addPlugin(BoundingBoxEntity, "boundingBoxEntity");
+    svgEntity.size = { x: 256, y: 256 };
 
     this.addPlugin(new InfinityCanvasPlugin(this), "infinityCanvasPlugin");
 

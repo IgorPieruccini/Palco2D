@@ -165,8 +165,15 @@ export class RenderHandler {
       }
 
       this.ctx.save();
-      this.ctx.translate(entity.position.x, entity.position.y);
-      this.ctx.rotate(entity.rotation * (Math.PI / 180));
+      const matrix = entity.getMatrix();
+      this.ctx.transform(
+        matrix[0][0], // a
+        matrix[1][0], // b
+        matrix[0][1], // c
+        matrix[1][1], // d
+        matrix[0][2], // e
+        matrix[1][2], // f
+      );
 
       if (isInViewPort && !entity.getStatic()) {
         entity.render(this.ctx);

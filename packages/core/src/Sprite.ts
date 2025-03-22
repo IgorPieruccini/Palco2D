@@ -18,7 +18,7 @@ export class Sprite extends BaseEntity {
     const { texture, ...rest } = props;
     const loadedTexture = AssetHandler.getAsset<HTMLImageElement>(texture);
 
-    const size = { x: loadedTexture.width, y: loadedTexture.height };
+    const size = { x: Infinity, y: Infinity };
 
     super({ ...rest, size });
 
@@ -42,10 +42,15 @@ export class Sprite extends BaseEntity {
       this.currentTile = {
         x: 0,
         y: 0,
-        width: this.size.x,
-        height: this.size.y,
+        width: loadedTexture.width,
+        height: loadedTexture.height,
       };
     }
+    this.initialSize = {
+      x: this.currentTile.width,
+      y: this.currentTile.height,
+    };
+    this.size = { x: this.currentTile.width, y: this.currentTile.height };
   }
 
   setTile(key: string) {
@@ -76,17 +81,19 @@ export class Sprite extends BaseEntity {
     if (this.globalCompositeOperation) {
       ctx.globalCompositeOperation = this.globalCompositeOperation;
     }
-    ctx.scale(this.size.x < 0 ? -1 : 1, this.size.y < 0 ? -1 : 1);
+
+    const scale = this.getScale();
+
     ctx.drawImage(
       this.texture,
       this.currentTile.x,
       this.currentTile.y,
       this.currentTile.width,
       this.currentTile.height,
-      -this.size.x / 2,
-      -this.size.y / 2,
-      this.size.x,
-      this.size.y,
+      -this.currentTile.width / 2,
+      -this.currentTile.height / 2,
+      this.currentTile.width,
+      this.currentTile.height,
     );
   }
 

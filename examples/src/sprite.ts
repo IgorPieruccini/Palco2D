@@ -17,8 +17,6 @@ export class SpriteExample extends Scene {
           rotation: 0,
         });
 
-        frog.size = { x: 64, y: 54 };
-
         frog.on("mouseenter", () => {
           frog.size = { x: frog.size.x + 10, y: frog.size.y + 10 };
         });

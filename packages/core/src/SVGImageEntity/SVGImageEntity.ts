@@ -24,12 +24,22 @@ export class SVGImageEntity extends BaseEntity {
     if (!assetData) {
       throw new Error(`svg asset not found ${props.src}`);
     }
-    const size = { x: 100, y: 100 };
+
+    // Set the size to infinity, as we need to create the svg data to calculate the bounding box.
+    const size = { x: Infinity, y: Infinity };
 
     super({ ...props, size });
 
     this.createSVGDataFromAsset(assetData);
+
+    // Update the bounding box after creating the SVGData
     this.updateBoundingBox();
+    // with the bounding box updated we can set the size to the initial size.
+    this.initialSize = {
+      x: this.boundingBox.width,
+      y: this.boundingBox.height,
+    };
+    this.size = { x: this.boundingBox.width, y: this.boundingBox.height };
   }
 
   /**
@@ -112,6 +122,7 @@ export class SVGImageEntity extends BaseEntity {
       const data = this.svgData[i];
 
       ctx.save();
+
       ctx.transform(
         data.matrix[0][0],
         data.matrix[1][0],

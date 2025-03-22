@@ -115,7 +115,7 @@ export class BaseEntity {
    * Used to keep track of the entity scale
    * @private
    */
-  private initialSize: Vec2;
+  protected initialSize: Vec2;
 
   /**
    * Array of EntityPlugins that are attached to the entity,
