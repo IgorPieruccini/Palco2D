@@ -1,4 +1,5 @@
 import { BoundingBox, SVGData, Vec2 } from "../../types";
+import { arcToCubicBezier } from "../AssetHandler/utils";
 import { applyTransformation, getScaleFromMatrix } from "../utils";
 
 export function calculateSVGBoundingBox(svgsData: Array<SVGData>): BoundingBox {
@@ -26,12 +27,6 @@ export function calculateSVGBoundingBox(svgsData: Array<SVGData>): BoundingBox {
       y: height * matrixScale.y,
     };
 
-    // APPLYING TRANSFORM IS NOT WORKING ON THIS CASE
-    // let transformedSize = applyTransformation(
-    //   { x: width, y: height },
-    //   svgData.matrix,
-    // );
-
     if (minX === null || minY === null || maxX === null || maxY === null) {
       minX = transformedPosition.x;
       minY = transformedPosition.y;
@@ -47,8 +42,7 @@ export function calculateSVGBoundingBox(svgsData: Array<SVGData>): BoundingBox {
   }
 
   if (minX === null || minY === null || maxX === null || maxY === null) {
-    // TODO: add a better error message
-    throw new Error("Error calculating bounding box");
+    throw new Error("Error calculating bounding box of the path");
   }
 
   return {
@@ -147,42 +141,28 @@ export function calculatePathBoundingBox(data: SVGData): BoundingBox {
     });
   }
 
-  function arcBounds(
-    cx: number,
-    cy: number,
-    r: number,
-    startAngle: number,
-    endAngle: number,
-  ) {
-    let points = [
-      { x: cx + r * Math.cos(startAngle), y: cy + r * Math.sin(startAngle) },
-      { x: cx + r * Math.cos(endAngle), y: cy + r * Math.sin(endAngle) },
-    ];
-
-    [0, Math.PI / 2, Math.PI, (3 * Math.PI) / 2].forEach((angle) => {
-      if (startAngle <= angle && angle <= endAngle) {
-        points.push({
-          x: cx + r * Math.cos(angle),
-          y: cy + r * Math.sin(angle),
-        });
-      }
-    });
-
-    points.forEach((p) => updateBounds(p.x, p.y));
-  }
-
   let current = { x: 0, y: 0 };
   let lastControlPoint: Vec2 | null = null;
-
+  let initialPoint: Vec2 | null = null;
   for (let cmd of data.commands) {
     switch (cmd[0]) {
       case "M":
+        current = { x: cmd[1], y: cmd[2] };
+        updateBounds(cmd[1], cmd[2]);
+        lastControlPoint = current;
+        initialPoint = { x: current.x, y: current.y };
+        break;
+      case "m":
+        current = { x: current.x + cmd[1], y: current.y + cmd[2] };
+        updateBounds(current.x, current.y);
+        lastControlPoint = current;
+        initialPoint = { x: current.x, y: current.y };
+        break;
       case "L":
         current = { x: cmd[1], y: cmd[2] };
         updateBounds(cmd[1], cmd[2]);
         lastControlPoint = current;
         break;
-      case "m":
       case "l":
         current = { x: current.x + cmd[1], y: current.y + cmd[2] };
         updateBounds(current.x, current.y);
@@ -270,18 +250,58 @@ export function calculatePathBoundingBox(data: SVGData): BoundingBox {
         lastControlPoint = { x: current.x + cmd[1], y: current.y + cmd[2] };
         break;
       }
-      case "A":
-        arcBounds(current.x, current.y, cmd[1], cmd[2], cmd[2] + cmd[3]);
-        current = { x: cmd[6], y: cmd[7] };
-        lastControlPoint = current;
+      case "A": {
+        const beziers = arcToCubicBezier(
+          current.x,
+          current.y,
+          cmd[1], // rx
+          cmd[2], // ry
+          cmd[3], // angle
+          cmd[4], // largeArcFlag
+          cmd[5], // sweepFlag
+          cmd[6], // x2
+          cmd[7], // y2
+        );
+
+        for (let bezier of beziers) {
+          cubicBezierBounds(
+            current,
+            { x: bezier[0], y: bezier[1] },
+            { x: bezier[2], y: bezier[3] },
+            { x: bezier[4], y: bezier[5] },
+          );
+          current = { x: bezier[4], y: bezier[5] };
+          lastControlPoint = { x: bezier[2], y: bezier[3] };
+        }
 
         break;
-      case "a":
-        arcBounds(current.x, current.y, cmd[1], cmd[2], cmd[2] + cmd[3]);
-        current = { x: current.x + cmd[6], y: current.y + cmd[7] };
-        lastControlPoint = current;
+      }
+      case "a": {
+        const beziers = arcToCubicBezier(
+          current.x,
+          current.y,
+          cmd[1], // rx
+          cmd[2], // ry
+          cmd[3], // angle
+          cmd[4], // largeArcFlag
+          cmd[5], // sweepFlag
+          current.x + cmd[6], // x2
+          current.y + cmd[7], // y2
+        );
+
+        for (let bezier of beziers) {
+          cubicBezierBounds(
+            current,
+            { x: bezier[0], y: bezier[1] },
+            { x: bezier[2], y: bezier[3] },
+            { x: bezier[4], y: bezier[5] },
+          );
+          current = { x: bezier[4], y: bezier[5] };
+          lastControlPoint = { x: bezier[2], y: bezier[3] };
+        }
 
         break;
+      }
       case "Q":
         quadraticBezierBounds(
           current,
@@ -308,13 +328,15 @@ export function calculatePathBoundingBox(data: SVGData): BoundingBox {
         break;
       case "Z":
       case "z":
+        if (initialPoint) {
+          current = initialPoint;
+        }
         break;
     }
   }
 
   if (minX === null || minY === null || maxX === null || maxY === null) {
-    // TODO: add a better error message
-    throw new Error("Error calculating bounding box");
+    throw new Error("Error calculating bounding box of commands");
   }
 
   return {
