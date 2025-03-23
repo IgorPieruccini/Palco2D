@@ -1,6 +1,11 @@
 import { SVGAsset, SVGCommand, SVGCommandKey, Vec2 } from "../../types";
 import { identityMatrix, multiplyMatrices } from "../utils";
 
+/**
+ * The SVG coordinates  have  a specific number of values that should be passed with it, but svg commands can be written in a shorthand way,
+ * using one single command character eg: L 100 100 200 200 300 300, or using multiple command characters eg: L 100 100 L 200 200 L 300 300.
+ * We have this list to know where to split the values of the command to generate the right array of commands
+ */
 const SVGCommandValueLenght: Record<SVGCommandKey, number> = {
   M: 2,
   m: 2,
@@ -28,7 +33,17 @@ function toCamelCase(str: string) {
   return str.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase());
 }
 
-const createSVGCommandsFromSVGStringCoordinates = (d: string) => {
+/**
+ * Parses the SVG string coordinates into an array of SVG commands.
+ * @param {string} d - The SVG string coordinates.
+ * @returns {SVGCommand[]} - The parsed SVG commands.
+ * ```ts
+ * Example:
+ * const d = "M 100 100 L 200 200 L 300 300";
+ * [ [ 'M', 100, 100 ], [ 'L', 200, 200 ], [ 'L', 300, 300 ] ]
+ * ```
+ */
+export const createSVGCommandsFromSVGStringCoordinates = (d: string) => {
   const regex = /([MmLlHhVvCcSsQqTtAaZz])\s*([^MmLlHhVvCcSsQqTtAaZz]*)/g;
   const commands: SVGCommand[] = [];
   let match: RegExpExecArray | null = regex.exec(d);
@@ -70,9 +85,29 @@ const createSVGCommandsFromSVGStringCoordinates = (d: string) => {
 };
 
 /**
- * Parses the path element and all it's properties into a CachedSVGAsset, enabling easy access to the properties of the path element.
+ * Parses the path element and all it's properties into a SVGAsset, enabling easy access to the properties of the path element.
  * @param {SVGPathElement} pathElement - The path element to parse.
- * @returns {CachedSVGAsset} - The parsed path element.
+ * @returns {CachedSVGAsset} The parsed path element.
+ *
+ * @example
+ * takes a path element:
+ * ```ts
+ *  <path d="M 100 100 L 200 200 L 300 300" fill="none" stroke="black" stroke-width="2" />
+ * ```
+ * and returns:
+ * ```ts
+ * {
+ *  coordinates: "M 100 100 L 200 200 L 300 300",
+ *  fill: "none",
+ *  stroke: "black",
+ *  strokeWidth: "2",
+ *  opacity: "1",
+ *  matrix: [ [ 1, 0, 0 ], [ 0, 1, 0 ], [ 0, 0, 1 ] ],
+ *  translate: { x: 0, y: 0 },
+ *  commands: [ [ 'M', 100, 100 ], [ 'L', 200, 200 ], [ 'L', 300, 300 ] ]
+ *  ...restOfProperties
+ *  }
+ * ```
  */
 export const getSVGAssetsFromPathElement = (
   pathElement: SVGPathElement,
@@ -157,85 +192,3 @@ export const getSVGAssetsFromPathElement = (
 
   return { coordinates, ...styleProperties, translate, matrix, commands };
 };
-
-type BezierCurve = [number, number, number, number, number, number];
-
-export function arcToCubicBezier(
-  x1: number,
-  y1: number,
-  rx: number,
-  ry: number,
-  phi: number,
-  largeArcFlag: number,
-  sweepFlag: number,
-  x2: number,
-  y2: number,
-): BezierCurve[] {
-  const curves: BezierCurve[] = [];
-  const sinPhi = Math.sin((phi * Math.PI) / 180);
-  const cosPhi = Math.cos((phi * Math.PI) / 180);
-
-  let dx = (x1 - x2) / 2;
-  let dy = (y1 - y2) / 2;
-  let x1p = cosPhi * dx + sinPhi * dy;
-  let y1p = -sinPhi * dx + cosPhi * dy;
-
-  let lambda = (x1p * x1p) / (rx * rx) + (y1p * y1p) / (ry * ry);
-  if (lambda > 1) {
-    const sqrtLambda = Math.sqrt(lambda);
-    rx *= sqrtLambda;
-    ry *= sqrtLambda;
-  }
-
-  const rxSq = rx * rx;
-  const rySq = ry * ry;
-  const x1pSq = x1p * x1p;
-  const y1pSq = y1p * y1p;
-
-  let factor = Math.sqrt(
-    Math.max(
-      0,
-      (rxSq * rySq - rxSq * y1pSq - rySq * x1pSq) /
-      (rxSq * y1pSq + rySq * x1pSq),
-    ),
-  );
-  if (largeArcFlag === sweepFlag) factor = -factor;
-
-  const cxp = (factor * (rx * y1p)) / ry;
-  const cyp = (factor * (-ry * x1p)) / rx;
-
-  const cx = cosPhi * cxp - sinPhi * cyp + (x1 + x2) / 2;
-  const cy = sinPhi * cxp + cosPhi * cyp + (y1 + y2) / 2;
-
-  let theta1 = Math.atan2((y1p - cyp) / ry, (x1p - cxp) / rx);
-  let deltaTheta = Math.atan2((-y1p - cyp) / ry, (-x1p - cxp) / rx) - theta1;
-
-  if (sweepFlag === 0 && deltaTheta > 0) {
-    deltaTheta -= 2 * Math.PI;
-  } else if (sweepFlag === 1 && deltaTheta < 0) {
-    deltaTheta += 2 * Math.PI;
-  }
-
-  const numSegments = Math.ceil(Math.abs(deltaTheta) / (Math.PI / 2));
-  const delta = deltaTheta / numSegments;
-  const t = ((8 / 3) * Math.pow(Math.sin(delta / 4), 2)) / Math.sin(delta / 2);
-
-  for (let i = 0; i < numSegments; i++) {
-    const angle1 = theta1 + i * delta;
-    const angle2 = theta1 + (i + 1) * delta;
-
-    const x1 = cx + rx * Math.cos(angle1);
-    const y1 = cy + ry * Math.sin(angle1);
-    const x2 = cx + rx * Math.cos(angle2);
-    const y2 = cy + ry * Math.sin(angle2);
-
-    const dx1 = -rx * Math.sin(angle1) * t;
-    const dy1 = ry * Math.cos(angle1) * t;
-    const dx2 = rx * Math.sin(angle2) * t;
-    const dy2 = -ry * Math.cos(angle2) * t;
-
-    curves.push([x1 + dx1, y1 + dy1, x2 + dx2, y2 + dy2, x2, y2]);
-  }
-
-  return curves;
-}
