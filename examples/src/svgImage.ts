@@ -13,7 +13,6 @@ export class SvgImageScene extends Scene {
     });
 
     svgEntity.addPlugin(BoundingBoxEntity, "boundingBoxEntity");
-    svgEntity.size = { x: 256, y: 256 };
 
     const frog = new Sprite({
       texture: "assets/ninja-frog-jump.png",

@@ -1,13 +1,12 @@
+import { BoundingBoxEntity } from "../../../plugins";
 import {
   BoundingBox,
   CachedSVGAsset,
   SVGData,
   SVGImageProps,
-  Vec2,
 } from "../../types";
 import { AssetHandler } from "../AssetHandler";
 import { BaseEntity } from "../BaseEntity";
-import { applyTransformation, invertMatrix } from "../utils";
 import { Path2DEntity } from "./Path2DEntity";
 import { calculateSVGBoundingBox } from "./utils";
 
@@ -50,7 +49,7 @@ export class SVGImageEntity extends BaseEntity {
 
     // Update the bounding box after creating the SVGData
     this.updateBoundingBox();
-    // with the bounding box updated we can set the size to the initial size.
+    // After the bounding box updated we can set the size to the initial size.
     this.initialSize = {
       x: this.pathBoundingBox.width,
       y: this.pathBoundingBox.height,
@@ -102,12 +101,16 @@ export class SVGImageEntity extends BaseEntity {
     for (let i = 0; i < this.svgData.length; i++) {
       const path2D = new Path2DEntity({
         svgData: this.svgData[i],
-        position: { x: 0, y: 0 },
         size: { x: 100, y: 100 },
+        offset: {
+          x: this.pathBoundingBox.x + this.pathBoundingBox.width / 2,
+          y: this.pathBoundingBox.y + this.pathBoundingBox.height / 2,
+        },
         rotation: 0,
       });
 
       this.addChild(path2D);
+      this.foldedElemnts.set(path2D.getIdAdress(), path2D);
     }
   }
 

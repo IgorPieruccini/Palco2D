@@ -1,12 +1,32 @@
-import { Path2DProps, SVGData, Vec2 } from "../../types";
+import { BoundingBox, Path2DProps, SVGData, Vec2 } from "../../types";
 import { BaseEntity } from "../BaseEntity";
+import { calculateSVGBoundingBox } from "./utils";
 
 export class Path2DEntity extends BaseEntity {
   private svgData: SVGData;
+  private pathBoundingBox: BoundingBox = {
+    x: Infinity,
+    y: Infinity,
+    width: Infinity,
+    height: Infinity,
+  };
 
   constructor(props: Path2DProps) {
-    super(props);
+    const bounds = calculateSVGBoundingBox([props.svgData]);
+
+    const position = {
+      x: -props.offset.x + bounds.x + bounds.width / 2,
+      y: -props.offset.y + bounds.y + bounds.height / 2,
+    };
+
+    const size = {
+      x: bounds.width,
+      y: bounds.height,
+    };
+
+    super({ ...props, position, size });
     this.svgData = props.svgData;
+    this.pathBoundingBox = bounds;
   }
 
   /**
@@ -16,10 +36,45 @@ export class Path2DEntity extends BaseEntity {
     return true;
   }
 
+  /**
+   * Updates the bounding box of the path based on the current SVGData.
+   * @override - BaseEntity
+   */
+  public updateBoundingBox() {
+    const bounds = calculateSVGBoundingBox([this.svgData]);
+    this.pathBoundingBox = bounds;
+  }
+
   render(ctx: CanvasRenderingContext2D) {
-    ctx.fillStyle = this.svgData.fill;
-    ctx.strokeStyle = this.svgData.stroke;
-    ctx.lineWidth = this.svgData.strokeWidth;
-    ctx.fill(this.svgData.coordinates);
+    super.render(ctx);
+
+    const data = this.svgData;
+
+    ctx.save();
+
+    // Center the SVGImageEntity in the middle
+    ctx.translate(
+      -this.pathBoundingBox.x - this.pathBoundingBox.width / 2,
+      -this.pathBoundingBox.y - this.pathBoundingBox.height / 2,
+    );
+
+    ctx.transform(
+      data.matrix[0][0],
+      data.matrix[1][0],
+      data.matrix[0][1],
+      data.matrix[1][1],
+      data.matrix[0][2],
+      data.matrix[1][2],
+    );
+    ctx.translate(data.translate.x, data.translate.y);
+
+    ctx.fillStyle = data.fill;
+    ctx.strokeStyle = data.stroke;
+    ctx.lineWidth = Number(data.strokeWidth);
+    ctx.fill(data.coordinates);
+
+    ctx.restore();
+
+    this.renderEntityPlugins(ctx);
   }
 }

@@ -103,7 +103,14 @@ export type SVGImageProps = Omit<BaseEntityProps, "size"> & {
   src: string;
 };
 
-export type Path2DProps = BaseEntityProps & { svgData: SVGData };
+export type Path2DProps = Omit<BaseEntityProps, "position"> & {
+  svgData: SVGData;
+  /**
+   * Then unfolding the SVGImageEntity bounding box used to center the image,
+   * this centering adds an offset that needs to be passed to paths when unfolding them.
+   */
+  offset: Vec2;
+};
 
 export type SerializedBaseEntityProps<
   T extends BaseEntityProps = BaseEntityProps,
