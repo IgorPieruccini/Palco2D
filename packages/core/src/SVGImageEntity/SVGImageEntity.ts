@@ -1,10 +1,5 @@
 import { BoundingBoxEntity } from "../../../plugins";
-import {
-  BoundingBox,
-  CachedSVGAsset,
-  SVGData,
-  SVGImageProps,
-} from "../../types";
+import { BoundingBox, SVGAsset, SVGData, SVGImageProps } from "../../types";
 import { AssetHandler } from "../AssetHandler";
 import { BaseEntity } from "../BaseEntity";
 import { Path2DEntity } from "./Path2DEntity";
@@ -34,7 +29,7 @@ export class SVGImageEntity extends BaseEntity {
   };
 
   constructor(props: SVGImageProps) {
-    const assetData = AssetHandler.getAsset<CachedSVGAsset[]>(props.src);
+    const assetData = AssetHandler.getAsset<SVGAsset[]>(props.src);
 
     if (!assetData) {
       throw new Error(`svg asset not found ${props.src}`);
@@ -81,7 +76,7 @@ export class SVGImageEntity extends BaseEntity {
   /**
    * Creates a Path2D object for each path in the SVG asset.
    */
-  private createSVGDataFromAsset(assetData: CachedSVGAsset[]) {
+  private createSVGDataFromAsset(assetData: SVGAsset[]) {
     for (let i = 0; i < assetData.length; i++) {
       const data = assetData[i];
       const path2D = new Path2D(data.coordinates);

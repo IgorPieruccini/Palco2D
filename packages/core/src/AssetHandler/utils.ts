@@ -1,4 +1,4 @@
-import { CachedSVGAsset, SVGCommand, SVGCommandKey, Vec2 } from "../../types";
+import { SVGAsset, SVGCommand, SVGCommandKey, Vec2 } from "../../types";
 import { identityMatrix, multiplyMatrices } from "../utils";
 
 const SVGCommandValueLenght: Record<SVGCommandKey, number> = {
@@ -76,7 +76,7 @@ const createSVGCommandsFromSVGStringCoordinates = (d: string) => {
  */
 export const getSVGAssetsFromPathElement = (
   pathElement: SVGPathElement,
-): CachedSVGAsset => {
+): SVGAsset => {
   const coordinates = pathElement.getAttribute("d");
 
   if (!coordinates) {
@@ -87,7 +87,7 @@ export const getSVGAssetsFromPathElement = (
   const fill = pathElement.getAttribute("fill");
   const transform = pathElement.getAttribute("transform");
 
-  let styleProperties: Omit<CachedSVGAsset, "coordinates"> = {
+  let styleProperties: Omit<SVGAsset, "coordinates"> = {
     fill: "none",
     stroke: "none",
     strokeWidth: "0",

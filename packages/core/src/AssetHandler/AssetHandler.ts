@@ -1,4 +1,4 @@
-import { CachedSVGAsset, SupportedAssetsType, TileMapType } from "../../types";
+import { SVGAsset, SupportedAssetsType, TileMapType } from "../../types";
 import { getSVGAssetsFromPathElement } from "./utils";
 
 /**
@@ -36,14 +36,14 @@ export class AssetHandler {
    * @param {string} path - Path to the svg image.
    */
   public static loadSVG = async (path: string) => {
-    return new Promise<CachedSVGAsset[]>((resolve, reject) => {
+    return new Promise<SVGAsset[]>((resolve, reject) => {
       fetch(path)
         .then((res) => res.text())
         .then((data) => {
           const parser = new DOMParser();
           const svg = parser.parseFromString(data, "image/svg+xml");
           const paths = svg.getElementsByTagName("path");
-          const svgAssets: CachedSVGAsset[] = [];
+          const svgAssets: SVGAsset[] = [];
           for (let i = 0; i < paths.length; i++) {
             const pathProperties = getSVGAssetsFromPathElement(paths[i]);
             svgAssets.push(pathProperties);

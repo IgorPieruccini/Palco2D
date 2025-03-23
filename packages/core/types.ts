@@ -53,7 +53,7 @@ export type SVGCommand =
 
 export type SVGCommandKey = SVGCommand[0];
 
-export type CachedSVGAsset = {
+export type SVGAsset = {
   coordinates: string;
   commands: SVGCommand[];
   matrix: number[][];
@@ -70,7 +70,7 @@ export type CachedSVGAsset = {
   strokeWidth: string;
 };
 
-export type SVGData = Omit<CachedSVGAsset, "coordinates" | "strokeWidth"> & {
+export type SVGData = Omit<SVGAsset, "coordinates" | "strokeWidth"> & {
   coordinates: Path2D;
   strokeWidth: number;
 };
@@ -82,7 +82,7 @@ export type SupportedAssetsType =
   | HTMLImageElement
   | JSON
   | TileMapType
-  | CachedSVGAsset[];
+  | SVGAsset[];
 
 export interface BaseEntityProps {
   position: Vec2;
