@@ -267,3 +267,24 @@ export const getSVGAssetsFromCircleElement = (
 
   return { coordinates, ...elementProperties, commands };
 };
+
+export const getSVGAssetsFromRectElement = (
+  rectElement: SVGRectElement,
+): SVGAsset => {
+  const elementProperties = getPropertiesFromElement(rectElement);
+  const x = rectElement.x.baseVal.value;
+  const y = rectElement.y.baseVal.value;
+  const width = rectElement.width.baseVal.value;
+  const height = rectElement.height.baseVal.value;
+
+  const commands: SVGCommand[] = [
+    ["M", x, y],
+    ["L", x + width, y],
+    ["L", x + width, y + height],
+    ["L", x, y + height],
+    ["Z"],
+  ];
+  const coordinates = createCoordinatesFromSVGCommands(commands);
+
+  return { coordinates, ...elementProperties, commands };
+};

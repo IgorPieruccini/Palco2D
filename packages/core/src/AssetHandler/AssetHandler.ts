@@ -3,6 +3,7 @@ import {
   getSVGAssetsFromCircleElement,
   getSVGAssetsFromPathElement,
   getSVGAssetsFromPolygonElement,
+  getSVGAssetsFromRectElement,
 } from "./utils";
 
 /**
@@ -67,6 +68,13 @@ export class AssetHandler {
           const circles = svg.getElementsByTagName("circle");
           for (let i = 0; i < circles.length; i++) {
             const pathProperties = getSVGAssetsFromCircleElement(circles[i]);
+            svgAssets.push(pathProperties);
+          }
+
+          // load rect
+          const rects = svg.getElementsByTagName("rect");
+          for (let i = 0; i < rects.length; i++) {
+            const pathProperties = getSVGAssetsFromRectElement(rects[i]);
             svgAssets.push(pathProperties);
           }
 
