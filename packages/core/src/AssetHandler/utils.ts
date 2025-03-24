@@ -85,42 +85,13 @@ export const createSVGCommandsFromSVGStringCoordinates = (d: string) => {
 };
 
 /**
- * Parses the path element and all it's properties into a SVGAsset, enabling easy access to the properties of the path element.
- * @param {SVGPathElement} pathElement - The path element to parse.
- * @returns {CachedSVGAsset} The parsed path element.
- *
- * @example
- * takes a path element:
- * ```ts
- *  <path d="M 100 100 L 200 200 L 300 300" fill="none" stroke="black" stroke-width="2" />
- * ```
- * and returns:
- * ```ts
- * {
- *  coordinates: "M 100 100 L 200 200 L 300 300",
- *  fill: "none",
- *  stroke: "black",
- *  strokeWidth: "2",
- *  opacity: "1",
- *  matrix: [ [ 1, 0, 0 ], [ 0, 1, 0 ], [ 0, 0, 1 ] ],
- *  translate: { x: 0, y: 0 },
- *  commands: [ [ 'M', 100, 100 ], [ 'L', 200, 200 ], [ 'L', 300, 300 ] ]
- *  ...restOfProperties
- *  }
- * ```
+ * Extracts the properties from the SVG element and returns them as
+ * an object.
  */
-export const getSVGAssetsFromPathElement = (
-  pathElement: SVGPathElement,
-): SVGAsset => {
-  const coordinates = pathElement.getAttribute("d");
-
-  if (!coordinates) {
-    throw new Error("Path element does not have coordinates");
-  }
-
-  const style = pathElement.getAttribute("style");
-  const fill = pathElement.getAttribute("fill");
-  const transform = pathElement.getAttribute("transform");
+const getPropertiesFromElement = (element: SVGElement) => {
+  const style = element.getAttribute("style");
+  const fill = element.getAttribute("fill");
+  const transform = element.getAttribute("transform");
 
   let styleProperties: Omit<SVGAsset, "coordinates"> = {
     fill: "none",
@@ -188,7 +159,90 @@ export const getSVGAssetsFromPathElement = (
     }
   }
 
+  return { ...styleProperties, translate, matrix };
+};
+
+/**
+ * Creates a SVG string coordinates from an array of SVG commands.
+ */
+export const createCoordinatesFromSVGCommands = (commands: SVGCommand[]) => {
+  return commands
+    .map((command) => {
+      const [key, ...values] = command;
+      return `${key} ${values.join(" ")}`;
+    })
+    .join(" ");
+};
+
+/**
+ * Parses the path element and all it's properties into a SVGAsset, enabling easy access to the properties of the path element.
+ * @param {SVGPathElement} pathElement - The path element to parse.
+ * @returns {CachedSVGAsset} The parsed path element.
+ *
+ * @example
+ * takes a path element:
+ * ```ts
+ *  <path d="M 100 100 L 200 200 L 300 300" fill="none" stroke="black" stroke-width="2" />
+ * ```
+ * and returns:
+ * ```ts
+ * {
+ *  coordinates: "M 100 100 L 200 200 L 300 300",
+ *  fill: "none",
+ *  stroke: "black",
+ *  strokeWidth: "2",
+ *  opacity: "1",
+ *  matrix: [ [ 1, 0, 0 ], [ 0, 1, 0 ], [ 0, 0, 1 ] ],
+ *  translate: { x: 0, y: 0 },
+ *  commands: [ [ 'M', 100, 100 ], [ 'L', 200, 200 ], [ 'L', 300, 300 ] ]
+ *  ...restOfProperties
+ *  }
+ * ```
+ */
+export const getSVGAssetsFromPathElement = (
+  pathElement: SVGPathElement,
+): SVGAsset => {
+  const elementProperties = getPropertiesFromElement(pathElement);
+
+  const coordinates = pathElement.getAttribute("d");
+
+  if (!coordinates) {
+    throw new Error("Path element does not have coordinates");
+  }
+
   const commands = createSVGCommandsFromSVGStringCoordinates(coordinates);
 
-  return { coordinates, ...styleProperties, translate, matrix, commands };
+  return { coordinates, ...elementProperties, commands };
+};
+
+export const getSVGAssetsFromPolygonElement = (
+  polygonElement: SVGPolygonElement,
+): SVGAsset => {
+  const elementProperties = getPropertiesFromElement(polygonElement);
+  const pointsProperty = polygonElement.getAttribute("points");
+
+  if (!pointsProperty) {
+    throw new Error("Polygon element does not have points");
+  }
+
+  const points = pointsProperty.split(/\s|,/).map(Number);
+
+  const commands: SVGCommand[] = [];
+
+  for (let i = 0; i < points.length; i += 2) {
+    if (i === 0) {
+      commands.push(["M", points[i], points[i + 1]]);
+    } else {
+      const firstValue = points[i];
+      const secondValue = points[i + 1];
+      if (firstValue && secondValue) {
+        commands.push(["L", points[i], points[i + 1]]);
+      }
+    }
+  }
+  commands.push(["Z"]);
+
+  const coordinates = createCoordinatesFromSVGCommands(commands);
+
+  return { coordinates, ...elementProperties, commands };
 };

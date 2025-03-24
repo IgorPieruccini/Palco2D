@@ -1,5 +1,8 @@
 import { SVGAsset, SupportedAssetsType, TileMapType } from "../../types";
-import { getSVGAssetsFromPathElement } from "./utils";
+import {
+  getSVGAssetsFromPathElement,
+  getSVGAssetsFromPolygonElement,
+} from "./utils";
 
 /**
  * AssetHandler is a singleton class that handles loading and storing assets.
@@ -42,12 +45,23 @@ export class AssetHandler {
         .then((data) => {
           const parser = new DOMParser();
           const svg = parser.parseFromString(data, "image/svg+xml");
-          const paths = svg.getElementsByTagName("path");
+
           const svgAssets: SVGAsset[] = [];
+
+          // Load path
+          const paths = svg.getElementsByTagName("path");
           for (let i = 0; i < paths.length; i++) {
             const pathProperties = getSVGAssetsFromPathElement(paths[i]);
             svgAssets.push(pathProperties);
           }
+
+          // load polygon
+          const polygons = svg.getElementsByTagName("polygon");
+          for (let i = 0; i < polygons.length; i++) {
+            const pathProperties = getSVGAssetsFromPolygonElement(polygons[i]);
+            svgAssets.push(pathProperties);
+          }
+
           this.assets[path] = svgAssets;
           resolve(svgAssets);
         })
