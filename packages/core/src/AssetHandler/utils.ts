@@ -215,6 +215,11 @@ export const getSVGAssetsFromPathElement = (
   return { coordinates, ...elementProperties, commands };
 };
 
+/**
+ * Parses the polygon element and all it's properties into a SVGAsset, enabling easy access to the properties of the polygon element.
+ * @param {SVGPolygonElement} polygonElement - The polygon element to parse.
+ * @returns {CachedSVGAsset} The parsed polygon element.
+ */
 export const getSVGAssetsFromPolygonElement = (
   polygonElement: SVGPolygonElement,
 ): SVGAsset => {
@@ -247,6 +252,10 @@ export const getSVGAssetsFromPolygonElement = (
   return { coordinates, ...elementProperties, commands };
 };
 
+/**
+ * Parses the circle element and all it's properties into a SVGAsset, enabling easy access to the properties of the circle element.
+ * @param {SVGCircleElement} circleElement - The circle element to parse.
+ */
 export const getSVGAssetsFromCircleElement = (
   circleElement: SVGCircleElement,
 ): SVGAsset => {
@@ -268,6 +277,10 @@ export const getSVGAssetsFromCircleElement = (
   return { coordinates, ...elementProperties, commands };
 };
 
+/**
+ * Parses the rect element and all it's properties into a SVGAsset, enabling easy access to the properties of the rect element.
+ * @param {SVGRectElement} rectElement - The rect element to parse.
+ */
 export const getSVGAssetsFromRectElement = (
   rectElement: SVGRectElement,
 ): SVGAsset => {
@@ -289,6 +302,10 @@ export const getSVGAssetsFromRectElement = (
   return { coordinates, ...elementProperties, commands };
 };
 
+/**
+ * Parses the ellipse element and all it's properties into a SVGAsset, enabling easy access to the properties of the ellipse element.
+ * @param {SVGEllipseElement} ellipseElement - The ellipse element to parse.
+ */
 export const getSVGAssetsFromEllipseElement = (
   ellipseElement: SVGEllipseElement,
 ): SVGAsset => {
