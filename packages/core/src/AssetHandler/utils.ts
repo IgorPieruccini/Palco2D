@@ -246,3 +246,24 @@ export const getSVGAssetsFromPolygonElement = (
 
   return { coordinates, ...elementProperties, commands };
 };
+
+export const getSVGAssetsFromCircleElement = (
+  circleElement: SVGCircleElement,
+): SVGAsset => {
+  const elementProperties = getPropertiesFromElement(circleElement);
+  const cx = circleElement.cx.baseVal.value;
+  const cy = circleElement.cy.baseVal.value;
+  const r = circleElement.r.baseVal.value;
+
+  // convert circle to path
+  const commands: SVGCommand[] = [
+    ["M", cx - r, cy],
+    ["a", r, r, 0, 1, 0, r * 2, 0],
+    ["a", r, r, 0, 1, 0, -r * 2, 0],
+    ["Z"],
+  ];
+
+  const coordinates = createCoordinatesFromSVGCommands(commands);
+
+  return { coordinates, ...elementProperties, commands };
+};
