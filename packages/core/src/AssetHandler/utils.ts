@@ -288,3 +288,24 @@ export const getSVGAssetsFromRectElement = (
 
   return { coordinates, ...elementProperties, commands };
 };
+
+export const getSVGAssetsFromEllipseElement = (
+  ellipseElement: SVGEllipseElement,
+): SVGAsset => {
+  const elementProperties = getPropertiesFromElement(ellipseElement);
+  const cx = ellipseElement.cx.baseVal.value;
+  const cy = ellipseElement.cy.baseVal.value;
+  const rx = ellipseElement.rx.baseVal.value;
+  const ry = ellipseElement.ry.baseVal.value;
+
+  const commands: SVGCommand[] = [
+    ["M", cx - rx, cy],
+    ["a", rx, ry, 0, 1, 0, rx * 2, 0],
+    ["a", rx, ry, 0, 1, 0, -rx * 2, 0],
+    ["Z"],
+  ];
+
+  const coordinates = createCoordinatesFromSVGCommands(commands);
+
+  return { coordinates, ...elementProperties, commands };
+};

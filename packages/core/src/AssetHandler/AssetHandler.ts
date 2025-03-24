@@ -1,6 +1,7 @@
 import { SVGAsset, SupportedAssetsType, TileMapType } from "../../types";
 import {
   getSVGAssetsFromCircleElement,
+  getSVGAssetsFromEllipseElement,
   getSVGAssetsFromPathElement,
   getSVGAssetsFromPolygonElement,
   getSVGAssetsFromRectElement,
@@ -57,24 +58,31 @@ export class AssetHandler {
             svgAssets.push(pathProperties);
           }
 
-          // load polygon
+          // Load polygon
           const polygons = svg.getElementsByTagName("polygon");
           for (let i = 0; i < polygons.length; i++) {
             const pathProperties = getSVGAssetsFromPolygonElement(polygons[i]);
             svgAssets.push(pathProperties);
           }
 
-          // load circle
+          // Load circle
           const circles = svg.getElementsByTagName("circle");
           for (let i = 0; i < circles.length; i++) {
             const pathProperties = getSVGAssetsFromCircleElement(circles[i]);
             svgAssets.push(pathProperties);
           }
 
-          // load rect
+          // Load rect
           const rects = svg.getElementsByTagName("rect");
           for (let i = 0; i < rects.length; i++) {
             const pathProperties = getSVGAssetsFromRectElement(rects[i]);
+            svgAssets.push(pathProperties);
+          }
+
+          // Load ellipse
+          const ellipses = svg.getElementsByTagName("ellipse");
+          for (let i = 0; i < ellipses.length; i++) {
+            const pathProperties = getSVGAssetsFromEllipseElement(ellipses[i]);
             svgAssets.push(pathProperties);
           }
 
