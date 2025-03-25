@@ -122,8 +122,9 @@ const getPropertiesFromElement = (element: SVGElement) => {
     let match: RegExpExecArray | null = regex.exec(style);
 
     while (match !== null) {
-      //@ts-expect-error - FixMe
-      styleProperties[toCamelCase(match[1])] = match[2].trim();
+      const key = toCamelCase(match[1]) as keyof Omit<SVGAsset, "coordinates">;
+      // @ts-expect-error - FixMe
+      styleProperties[key] = match[2].trim();
       match = regex.exec(style);
     }
   }
