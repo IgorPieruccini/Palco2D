@@ -1,4 +1,3 @@
-import { BoundingBoxEntity } from "../../../plugins";
 import { BoundingBox, SVGAsset, SVGData, SVGImageProps } from "../../types";
 import { AssetHandler } from "../AssetHandler";
 import { BaseEntity } from "../BaseEntity";
@@ -136,6 +135,7 @@ export class SVGImageEntity extends BaseEntity {
     }
 
     ctx.save();
+
     // Center the SVGImageEntity in the middle
     ctx.translate(
       -this.pathBoundingBox.x - this.pathBoundingBox.width / 2,
@@ -157,6 +157,7 @@ export class SVGImageEntity extends BaseEntity {
       );
       ctx.translate(data.translate.x, data.translate.y);
 
+      ctx.globalAlpha = Number(data.opacity);
       ctx.fillStyle = data.fill;
       ctx.strokeStyle = data.stroke;
       ctx.lineWidth = Number(data.strokeWidth);

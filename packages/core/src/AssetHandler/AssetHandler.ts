@@ -5,6 +5,7 @@ import {
   getSVGAssetsFromPathElement,
   getSVGAssetsFromPolygonElement,
   getSVGAssetsFromRectElement,
+  parentIsClipMask,
 } from "./utils";
 
 /**
@@ -54,6 +55,7 @@ export class AssetHandler {
           // Load path
           const paths = svg.getElementsByTagName("path");
           for (let i = 0; i < paths.length; i++) {
+            if (parentIsClipMask(paths[i])) continue;
             const pathProperties = getSVGAssetsFromPathElement(paths[i]);
             svgAssets.push(pathProperties);
           }
@@ -61,6 +63,7 @@ export class AssetHandler {
           // Load polygon
           const polygons = svg.getElementsByTagName("polygon");
           for (let i = 0; i < polygons.length; i++) {
+            if (parentIsClipMask(polygons[i])) continue;
             const pathProperties = getSVGAssetsFromPolygonElement(polygons[i]);
             svgAssets.push(pathProperties);
           }
@@ -68,6 +71,7 @@ export class AssetHandler {
           // Load circle
           const circles = svg.getElementsByTagName("circle");
           for (let i = 0; i < circles.length; i++) {
+            if (parentIsClipMask(circles[i])) continue;
             const pathProperties = getSVGAssetsFromCircleElement(circles[i]);
             svgAssets.push(pathProperties);
           }
@@ -75,6 +79,7 @@ export class AssetHandler {
           // Load rect
           const rects = svg.getElementsByTagName("rect");
           for (let i = 0; i < rects.length; i++) {
+            if (parentIsClipMask(rects[i])) continue;
             const pathProperties = getSVGAssetsFromRectElement(rects[i]);
             svgAssets.push(pathProperties);
           }
@@ -82,6 +87,7 @@ export class AssetHandler {
           // Load ellipse
           const ellipses = svg.getElementsByTagName("ellipse");
           for (let i = 0; i < ellipses.length; i++) {
+            if (parentIsClipMask(ellipses[i])) continue;
             const pathProperties = getSVGAssetsFromEllipseElement(ellipses[i]);
             svgAssets.push(pathProperties);
           }

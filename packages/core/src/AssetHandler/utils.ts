@@ -91,6 +91,14 @@ export const createSVGCommandsFromSVGStringCoordinates = (d: string) => {
 const getPropertiesFromElement = (element: SVGElement) => {
   const style = element.getAttribute("style");
   const fill = element.getAttribute("fill");
+  const opacity = element.getAttribute("opacity");
+  const stroke = element.getAttribute("stroke");
+  const strokeWidth = element.getAttribute("stroke-width");
+  const strokeDasharray = element.getAttribute("stroke-dasharray");
+  const strokeDashoffset = element.getAttribute("stroke-dashoffset");
+  const strokeLinecap = element.getAttribute("stroke-linecap");
+  const strokeLinejoin = element.getAttribute("stroke-linejoin");
+  const strokeMiterlimit = element.getAttribute("stroke-miterlimit");
   const transform = element.getAttribute("transform");
 
   let styleProperties: Omit<SVGAsset, "coordinates"> = {
@@ -122,6 +130,38 @@ const getPropertiesFromElement = (element: SVGElement) => {
 
   if (fill) {
     styleProperties.fill = fill;
+  }
+
+  if (opacity) {
+    styleProperties.opacity = opacity;
+  }
+
+  if (stroke) {
+    styleProperties.stroke = stroke;
+  }
+
+  if (strokeWidth) {
+    styleProperties.strokeWidth = strokeWidth;
+  }
+
+  if (strokeDasharray) {
+    styleProperties.strokeDasharray = strokeDasharray;
+  }
+
+  if (strokeDashoffset) {
+    styleProperties.strokeDashoffset = strokeDashoffset;
+  }
+
+  if (strokeLinecap) {
+    styleProperties.strokeLinecap = strokeLinecap;
+  }
+
+  if (strokeLinejoin) {
+    styleProperties.strokeLinejoin = strokeLinejoin;
+  }
+
+  if (strokeMiterlimit) {
+    styleProperties.strokeMiterlimit = strokeMiterlimit;
   }
 
   const matrices: Array<number[][]> = [];
@@ -325,4 +365,10 @@ export const getSVGAssetsFromEllipseElement = (
   const coordinates = createCoordinatesFromSVGCommands(commands);
 
   return { coordinates, ...elementProperties, commands };
+};
+
+export const parentIsClipMask = (element: SVGElement) => {
+  let parent = element.parentElement;
+  if (!parent) return false;
+  return parent.tagName === "clipPath";
 };
