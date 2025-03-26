@@ -411,11 +411,15 @@ export class BaseEntity {
     const position = getPositionFromMatrix(matrixResult);
     const size = getScaleFromMatrix(matrixResult);
 
+    // In case the entity is flipped (width or height negative)
+    const sizeX = Math.abs(this._size.x) / 2;
+    const sizeY = Math.abs(this._size.y) / 2;
+
     if (
-      position.x + size.x < viewport.position.x ||
-      position.x - size.x > viewport.position.x + viewport.size.x ||
-      position.y + size.y < viewport.position.y ||
-      position.y - size.x > viewport.position.y + viewport.size.y
+      position.x + sizeX < viewport.position.x ||
+      position.x - sizeX > viewport.position.x + viewport.size.x ||
+      position.y + sizeY < viewport.position.y ||
+      position.y - sizeY > viewport.position.y + viewport.size.y
     ) {
       return false;
     }

@@ -55,15 +55,6 @@ export class SVGImageEntity extends BaseEntity {
   }
 
   /**
-   * Checks if the SVGImageEntity is in the viewport.
-   * @override - BaseEntity
-   */
-  isObjectInViewport(): boolean {
-    // TODO: Implement this method
-    return true;
-  }
-
-  /**
    * Updates the bounding box of the SVGImageEntity based on the current SVGData.
    * @override - BaseEntity
    */
