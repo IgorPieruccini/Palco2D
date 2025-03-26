@@ -258,8 +258,8 @@ export class BaseEntity {
     const rad = finalAngle * (Math.PI / 180);
 
     const scale = this.getScale();
-    const cos = Math.cos(rad) * scale.x;
-    const sin = Math.sin(rad) * scale.y;
+    const cos = Math.cos(-rad);
+    const sin = Math.sin(-rad);
 
     return corners.map((corner) => {
       const x = corner.x * cos - corner.y * sin;
@@ -397,33 +397,18 @@ export class BaseEntity {
   }
 
   isObjectInViewport(viewport: { position: Vec2; size: Vec2 }) {
-    const globalMatrix = this.getWorldMatrix();
-    const positionM = getMatrixPosition(this.position.x, this.position.y);
-    const rotationM = getMatrixRotation(this.rotation * (Math.PI / 180));
-    const scaleM = getMatrixScale(this._size.x, this._size.y);
+    const coordinates = this.getCoords();
+    const isPointInViewport = (point: Vec2) => {
+      return (
+        point.x >= viewport.position.x &&
+        point.x <= viewport.position.x + viewport.size.x &&
+        point.y >= viewport.position.y &&
+        point.y <= viewport.position.y + viewport.size.y
+      );
+    };
 
-    const matrix = multiplyMatrices(
-      multiplyMatrices(positionM, rotationM),
-      scaleM,
-    );
-    const matrixResult = multiplyMatrices(globalMatrix, matrix);
-
-    const position = getPositionFromMatrix(matrixResult);
-    const size = getScaleFromMatrix(matrixResult);
-
-    // In case the entity is flipped (width or height negative)
-    const sizeX = Math.abs(this._size.x) / 2;
-    const sizeY = Math.abs(this._size.y) / 2;
-
-    if (
-      position.x + sizeX < viewport.position.x ||
-      position.x - sizeX > viewport.position.x + viewport.size.x ||
-      position.y + sizeY < viewport.position.y ||
-      position.y - sizeY > viewport.position.y + viewport.size.y
-    ) {
-      return false;
-    }
-    return true;
+    const inViewport = coordinates.some((point) => isPointInViewport(point));
+    return inViewport;
   }
 
   private setParent(parentEntity: BaseEntity) {

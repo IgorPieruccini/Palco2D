@@ -7,10 +7,12 @@ export class SvgImageScene extends Scene {
     await AssetHandler.loadPng("assets/ninja-frog-jump.png");
 
     const svgEntity = new SVGImageEntity({
-      position: { x: 414, y: 387 },
+      position: { x: 100, y: 100 },
       rotation: 0,
       src: "assets/tiger.svg",
     });
+
+    svgEntity.size = { x: 50, y: 50 };
 
     svgEntity.addPlugin(BoundingBoxEntity, "boundingBoxEntity");
 
@@ -25,7 +27,7 @@ export class SvgImageScene extends Scene {
     this.addPlugin(new InfinityCanvasPlugin(this), "infinityCanvasPlugin");
 
     this.render.addEntity(svgEntity);
-    this.render.addEntity(frog);
+    // this.render.addEntity(frog);
     this.render.startRender();
     this.startAllPlugins();
   }
