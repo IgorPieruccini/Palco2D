@@ -370,6 +370,9 @@ export class BaseEntity {
     }
   }
 
+  /**
+   * Check if the point is over the entity.
+   */
   isPointOverEntity(point: Vec2) {
     const relativePosition = this.getRelativePostion(point);
 
@@ -381,11 +384,15 @@ export class BaseEntity {
       y: relativePosition.y,
     };
 
+    // In case the entity is flipped (width or height negative)
+    const sizeX = Math.abs(this._size.x);
+    const sizeY = Math.abs(this._size.y);
+
     return (
-      (-this._size.x * globalScale.x) / 2 <= mousePos.x &&
-      (this._size.x * globalScale.x) / 2 >= mousePos.x &&
-      (-this._size.y * globalScale.y) / 2 <= mousePos.y &&
-      (this._size.y * globalScale.y) / 2 >= mousePos.y
+      (-sizeX * globalScale.x) / 2 <= mousePos.x &&
+      (sizeX * globalScale.x) / 2 >= mousePos.x &&
+      (-sizeY * globalScale.y) / 2 <= mousePos.y &&
+      (sizeY * globalScale.y) / 2 >= mousePos.y
     );
   }
 
