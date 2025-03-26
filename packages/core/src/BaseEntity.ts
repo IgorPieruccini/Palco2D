@@ -465,6 +465,14 @@ export class BaseEntity {
     this.plugins = [];
   }
 
+  /**
+   * Get the string address of the entity.
+   * With the address id you can get any entity in the scene, it represents the path to the entity.
+   * @example
+   * {layer}:{id}/{layer}:{id}/{layer}:{id}
+   *
+   * the first layer and id is the entity itself, the next layers and ids are the parents of the entity.
+   */
   public getIdAdress() {
     const parents = this.getAllParents();
 

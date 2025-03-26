@@ -48,6 +48,9 @@ export class MouseHandler {
     this.hoveredEntities = [];
   }
 
+  /**
+   * Remove entity from all quadrants
+   */
   public removeEntity(entity: BaseEntity) {
     const currentEntityQuadrant = entity.quadrant.getQuadrant();
 

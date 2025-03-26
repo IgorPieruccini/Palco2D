@@ -90,17 +90,24 @@ export class RenderHandler {
     }
   }
 
+  /**
+   * Remove entity from scene
+   * if the entity has children, they will be removed as well
+   */
   public removeEntity(entity: BaseEntity) {
     const address = entity.getIdAdress();
     this.removeEntityByAdress(address);
   }
 
+  /**
+   * Get the instance of the entity by its id address
+   */
   public getEntityByAddress(address: string): BaseEntity | undefined {
     const location = address.split("/");
 
     let currentEntity: BaseEntity | undefined = undefined;
 
-    for (let i = 0; i < location.length; i++) {
+    for (let i = location.length - 1; i >= 0; i--) {
       const [layer, id] = location[i].split(":");
       if (!currentEntity) {
         currentEntity = this.entities.get(parseInt(layer))?.get(id);
@@ -113,6 +120,10 @@ export class RenderHandler {
     return currentEntity;
   }
 
+  /**
+   * Find the entity by its id and remove it from the scene
+   * if the entity has children, they will be removed as well
+   */
   public removeEntityByAdress(address: string) {
     const location = address.split("/");
 
