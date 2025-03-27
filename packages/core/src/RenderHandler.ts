@@ -176,7 +176,7 @@ export class RenderHandler {
       }
 
       this.ctx.save();
-      const matrix = entity.getMatrix();
+      const matrix = entity.matrix;
       this.ctx.transform(
         matrix[0][0], // a
         matrix[1][0], // b
@@ -198,7 +198,7 @@ export class RenderHandler {
 
       while (!childrenIteratorResult.done) {
         this.ctx.save();
-        const entityMatrix = entity.getMatrix();
+        const entityMatrix = entity.matrix;
         this.ctx.transform(
           entityMatrix[0][0], // a
           entityMatrix[1][0], // b

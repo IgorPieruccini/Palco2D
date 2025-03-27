@@ -30,7 +30,7 @@ export class EntityQuadrant {
       });
       return true;
     }
-    const entityMatrix = this.entity.getMatrix();
+    const entityMatrix = this.entity.matrix;
 
     const needToUpdate = entityMatrix.some((row, i) => {
       return row.some((cell, j) => {

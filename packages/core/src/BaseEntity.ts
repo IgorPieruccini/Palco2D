@@ -5,10 +5,8 @@ import {
   Vec2,
   BaseEntityProps,
   SerializedBaseEntityProps,
-  BoundingBox,
 } from "../types";
 import {
-  applyTransformation,
   generateUUID,
   getMatrixPosition,
   getMatrixRotation,
@@ -17,7 +15,6 @@ import {
   getRotationAngleFromMatrix,
   getScaleFromMatrix,
   identityMatrix,
-  invertMatrix,
   multiplyMatrices,
 } from "./utils";
 import { EntityQuadrant } from "./QuadrantsHandler/EntityQuadrant";
@@ -36,11 +33,27 @@ export class BaseEntity {
   public id: string;
 
   /**
+   * Do not use this property directly, use the position property instead.
+   */
+  private _position: Vec2;
+  /**
    * The position of the entity in the canvas, relative to the top-left corner.
    * if the entity is a child, the position is relative to the parent.
    */
-  public position: Vec2;
+  public get position() {
+    return this._position;
+  }
 
+  public set position(position: Vec2) {
+    this._position = position;
+
+    this.coords = this.getCoords();
+    this.matrix = this.getMatrix();
+  }
+
+  /**
+   * Do not use this property directly, use the position property instead.
+   */
   private _size: Vec2;
   /**
    * The size of the entity in the canvas.
@@ -56,13 +69,38 @@ export class BaseEntity {
 
   public set size(size: Vec2) {
     this._size = size;
+
+    this.coords = this.getCoords();
+    this.matrix = this.getMatrix();
   }
+
+  /**
+   * The coordinates of the entity in the canvas.
+   * top-left, top-right, bottom-right, bottom-left
+   */
+  public coords: Vec2[] = [];
+
+  /**
+   * The matrix of the entity, used to calculate the transformation of the entity.
+   */
+  public matrix: number[][] = [];
 
   /**
    * The rotation of the entity in degrees.
    * if the entity is a child, the rotation is relative to the parent.
    */
-  public rotation: number;
+  private _rotation: number;
+
+  public get rotation() {
+    return this._rotation;
+  }
+
+  public set rotation(rotation: number) {
+    this._rotation = rotation;
+
+    this.coords = this.getCoords();
+    this.matrix = this.getMatrix();
+  }
 
   /**
    * If the mouse is hovering the entity it returns true, otherwise false.
@@ -95,12 +133,23 @@ export class BaseEntity {
    * Mouse handler will trigger these events depending on the interaction with the entity.
    * if the entity is static, the mouse handler will not trigger any event.
    */
-  onEntityEvent: EntityEvents;
+  public onEntityEvent: EntityEvents;
 
   /**
    * The parent of the entity, if the entity is not a child, the parent is null.
    */
-  parent: BaseEntity | null;
+  public _parent: BaseEntity | null = null;
+
+  public get parent() {
+    return this._parent;
+  }
+
+  public set parent(parent: BaseEntity | null) {
+    this._parent = parent;
+
+    this.coords = this.getCoords();
+    this.matrix = this.getMatrix();
+  }
 
   /**
    * If the entity is static, the mouse handler will not trigger any event.
@@ -111,7 +160,7 @@ export class BaseEntity {
    * The globalCompositeOperation property sets the type of compositing operation to apply when drawing the render method.
    * The default value is source-over.
    */
-  globalCompositeOperation: GlobalCompositeOperation = "source-over";
+  public globalCompositeOperation: GlobalCompositeOperation = "source-over";
 
   /**
    *  The canvas is divided into quadrants, and each entity is assigned to a quadrant.
@@ -139,10 +188,10 @@ export class BaseEntity {
 
   constructor(props: BaseEntityProps) {
     this.id = props.id || generateUUID();
-    this.position = props.position;
+    this._position = props.position;
     this._size = props.size;
     this.initialSize = { x: props.size.x, y: props.size.y };
-    this.rotation = props.rotation;
+    this._rotation = props.rotation;
     this.isMouseHover = false;
     this.layer = props.layer || 0;
     this.children = new Map();
@@ -152,6 +201,8 @@ export class BaseEntity {
     this.globalCompositeOperation =
       props.globalCompositeOperation || "source-over";
     this.quadrant = new EntityQuadrant(this);
+    this.matrix = this.getMatrix();
+    this.coords = this.getCoords();
   }
 
   public on(event: EventsType, callback: () => void) {
@@ -176,8 +227,8 @@ export class BaseEntity {
 
   public getPivotPosition() {
     return {
-      x: this.position.x + this._size.x / 2,
-      y: this.position.y + this._size.y / 2,
+      x: this._position.x + this._size.x / 2,
+      y: this._position.y + this._size.y / 2,
     };
   }
 
@@ -226,19 +277,27 @@ export class BaseEntity {
     return matrix;
   }
 
-  public getMatrix() {
+  /**
+   * Gets the transformation matrix of the entity,
+   */
+  protected getMatrix() {
     let matrix: number[][] = [];
     const scale = this.getScale();
-    const mPosition = getMatrixPosition(this.position.x, this.position.y);
+    const mPosition = getMatrixPosition(this._position.x, this.position.y);
     const mScale = getMatrixScale(scale.x, scale.y);
-    const mRotation = getMatrixRotation(this.rotation * (Math.PI / 180));
+    const mRotation = getMatrixRotation(this._rotation * (Math.PI / 180));
 
     matrix = multiplyMatrices(mPosition, mRotation);
     matrix = multiplyMatrices(matrix, mScale);
     return matrix;
   }
 
-  public getCoords() {
+  /**
+   * Gets the coords of the entity in the canvas.
+   * the coords are the corners of the entity in the canvas.
+   * eg: top-left, top-right, bottom-right, bottom-left
+   */
+  protected getCoords() {
     const parentMatrix = this.getWorldMatrix();
     const parentRotation = getRotationAngleFromMatrix(parentMatrix);
     const matrix = this.getMatrix();
@@ -254,10 +313,9 @@ export class BaseEntity {
     ];
 
     const angle = parentRotation * (180 / Math.PI);
-    const finalAngle = this.rotation + angle;
+    const finalAngle = this._rotation + angle;
     const rad = finalAngle * (Math.PI / 180);
 
-    const scale = this.getScale();
     const cos = Math.cos(-rad);
     const sin = Math.sin(-rad);
 
@@ -305,11 +363,11 @@ export class BaseEntity {
 
     // child
     const translatedMousePositionChild = {
-      x: mouseLocalPosition.x - this.position.x * globalScale.x,
-      y: mouseLocalPosition.y - this.position.y * globalScale.y,
+      x: mouseLocalPosition.x - this._position.x * globalScale.x,
+      y: mouseLocalPosition.y - this._position.y * globalScale.y,
     };
 
-    const rad = this.rotation * (Math.PI / 180);
+    const rad = this._rotation * (Math.PI / 180);
     const cosAngleChild = Math.cos(-rad);
     const sinAngleChild = Math.sin(-rad);
 
@@ -429,9 +487,9 @@ export class BaseEntity {
     return {
       type: "baseEntity",
       id: this.id,
-      position: this.position,
+      position: this._position,
       size: this._size,
-      rotation: this.rotation,
+      rotation: this._rotation,
       layer: this.layer,
       children: serializedChildren,
       address: this.getIdAdress(),

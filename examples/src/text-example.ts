@@ -32,7 +32,7 @@ export class TextExample extends Scene {
       color: "white",
       font: "PixelifySans",
       fontSize: 50,
-      position: { x: 200, y: 100 },
+      position: { x: 200, y: 300 },
       rotation: 45,
     });
     addEventsToText(parentText);
@@ -47,7 +47,7 @@ export class TextExample extends Scene {
       },
       font: "BebasNeue",
       fontSize: 100,
-      position: { x: 0, y: 100 },
+      position: { x: 100, y: 100 },
       rotation: 0,
       shadow: {
         shadowColor: "black",
@@ -62,7 +62,6 @@ export class TextExample extends Scene {
 
     this.render.addEntities([parentText]);
     this.render.startRender();
-
     this.mouseHandler.start();
   }
 }

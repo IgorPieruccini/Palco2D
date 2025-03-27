@@ -56,29 +56,15 @@ export class Text extends BaseEntity {
     const metrics = ctx.measureText(this.text);
     const fontHeight =
       metrics.fontBoundingBoxAscent + metrics.actualBoundingBoxDescent;
-    this.dimations = { x: metrics.width, y: fontHeight };
-  }
-
-  isPointOverEntity(point: Vec2) {
-    const relativePosition = this.getRelativePostion(point);
-
-    const mousePos = {
-      x: relativePosition.x,
-      y: relativePosition.y,
-    };
-
-    return (
-      this.dimations.x >= mousePos.x &&
-      0 <= mousePos.x &&
-      this.dimations.y >= mousePos.y &&
-      0 <= mousePos.y
-    );
+    this.initialSize = { x: metrics.width, y: fontHeight };
+    this.size = { x: metrics.width, y: fontHeight };
   }
 
   render(ctx: CanvasRenderingContext2D) {
     super.render(ctx);
     ctx.font = `${this.fontSize}px ${this.font}`;
-    ctx.textBaseline = "top";
+    ctx.textBaseline = "middle";
+    ctx.textAlign = "center";
 
     if (this.shadow) {
       ctx.shadowColor = this.shadow.shadowColor;
@@ -97,40 +83,6 @@ export class Text extends BaseEntity {
     ctx.fillText(this.text, 0, 0, this.maxWidth);
 
     this.setTextBoundary(ctx);
-  }
-
-  public getCoords() {
-    const parentMatrix = this.getWorldMatrix();
-    const parentRotation = getRotationAngleFromMatrix(parentMatrix);
-    const matrix = this.getMatrix();
-
-    const finalMatrix = multiplyMatrices(parentMatrix, matrix);
-    const position = getPositionFromMatrix(finalMatrix);
-
-    const corners = [
-      { x: -this.dimations.x / 2, y: -this.dimations.y / 2 },
-      { x: this.dimations.x / 2, y: -this.dimations.y / 2 },
-      { x: -this.dimations.x / 2, y: this.dimations.y / 2 },
-      { x: this.dimations.x / 2, y: this.dimations.y / 2 },
-    ];
-
-    const angle = parentRotation * (180 / Math.PI);
-    const finalAngle = this.rotation + angle;
-    const rad = finalAngle * (Math.PI / 180);
-
-    const scale = this.getScale();
-    const cos = Math.cos(rad) * scale.x;
-    const sin = Math.sin(rad) * scale.y;
-
-    return corners.map((corner) => {
-      const x = corner.x * cos - corner.y * sin;
-      const y = corner.x * sin + corner.y * cos;
-
-      return {
-        x: x + position.x,
-        y: y + position.y,
-      };
-    });
   }
 
   serialize() {

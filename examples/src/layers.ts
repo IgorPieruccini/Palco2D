@@ -53,7 +53,6 @@ export class LayersExample extends Scene {
 
     for (let y = 0; y < NUMBER_OF_SQUARES; y++) {
       const layer = Math.floor(Math.sin(y) * 4) + 4;
-      console.log(layer);
       const originalSize: Vec2 = { x: 100, y: 100 };
       const aditionalSize = (20 * layer) / 2;
       const size: Vec2 = {
