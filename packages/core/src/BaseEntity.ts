@@ -47,8 +47,7 @@ export class BaseEntity {
   public set position(position: Vec2) {
     this._position = position;
 
-    this.coords = this.getCoords();
-    this.matrix = this.getMatrix();
+    this.updateTransform();
   }
 
   /**
@@ -70,8 +69,7 @@ export class BaseEntity {
   public set size(size: Vec2) {
     this._size = size;
 
-    this.coords = this.getCoords();
-    this.matrix = this.getMatrix();
+    this.updateTransform();
   }
 
   /**
@@ -98,8 +96,7 @@ export class BaseEntity {
   public set rotation(rotation: number) {
     this._rotation = rotation;
 
-    this.coords = this.getCoords();
-    this.matrix = this.getMatrix();
+    this.updateTransform();
   }
 
   /**
@@ -147,8 +144,7 @@ export class BaseEntity {
   public set parent(parent: BaseEntity | null) {
     this._parent = parent;
 
-    this.coords = this.getCoords();
-    this.matrix = this.getMatrix();
+    this.updateTransform();
   }
 
   /**
@@ -186,6 +182,17 @@ export class BaseEntity {
    */
   private plugins: EntityPlugin[] = [];
 
+  private updateTransform() {
+    this.coords = this.getCoords();
+    this.matrix = this.getMatrix();
+
+    this.children.forEach((layer) => {
+      layer.forEach((child) => {
+        child.updateTransform();
+      });
+    });
+  }
+
   constructor(props: BaseEntityProps) {
     this.id = props.id || generateUUID();
     this._position = props.position;
@@ -201,8 +208,7 @@ export class BaseEntity {
     this.globalCompositeOperation =
       props.globalCompositeOperation || "source-over";
     this.quadrant = new EntityQuadrant(this);
-    this.matrix = this.getMatrix();
-    this.coords = this.getCoords();
+    this.updateTransform();
   }
 
   public on(event: EventsType, callback: () => void) {
