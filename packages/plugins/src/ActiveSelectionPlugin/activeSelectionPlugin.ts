@@ -1,20 +1,28 @@
-import { Scene, ScenePlugin } from "@palco-2d/core";
+import { BaseEntity, Scene, ScenePlugin } from "@palco-2d/core";
+import { BoundingBoxEntity } from "../BoundingBoxEntity";
 
 export class ActiveSelectionPlugin extends ScenePlugin {
+  selectedEntities: Map<string, BaseEntity> = new Map();
+
   init() {
     this.scene.eventHandler.subscribeToAddEntity((entity) => {
-      entity.on("mousedown", () => {
-        console.log("Entity selected:", entity.id);
+      entity.on("mouseup", () => {
+        this.clearSelection();
+        this.selectedEntities.set(entity.id, entity);
+        entity.addPlugin(BoundingBoxEntity, "boundingBox");
       });
+    });
+
+    this.scene.mouseHandler.onCanvas("mouseup", () => {
+      this.clearSelection();
+      this.selectedEntities.clear();
     });
   }
 
-  render(ctx: CanvasRenderingContext2D) {
-    ctx.save();
-    ctx.strokeStyle = "blue";
-    ctx.lineWidth = 1;
-    ctx.setLineDash([5, 5]);
-    ctx.strokeRect(0, 0, 100, 100);
-    ctx.restore();
+  clearSelection() {
+    this.selectedEntities.forEach((entity) => {
+      entity.removePluginByKey("boundingBox");
+    });
+    this.selectedEntities.clear();
   }
 }

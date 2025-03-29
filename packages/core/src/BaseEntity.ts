@@ -191,7 +191,7 @@ export class BaseEntity {
    * used to extend the entity functionality and rendering.
    * @private
    */
-  private plugins: EntityPlugin[] = [];
+  private plugins: Map<string, EntityPlugin> = new Map();
 
   private updateTransform() {
     this.coords = this.getCoords();
@@ -541,25 +541,21 @@ export class BaseEntity {
 
   public addPlugin(Plugin: typeof EntityPlugin, key: string) {
     const plug = new Plugin(this, key);
-    this.plugins.push(plug);
+    this.plugins.set(key, plug);
   }
 
   public getPluginByKey(key: string) {
-    return this.plugins.find((plugin) => plugin.key === key);
+    return this.plugins.get(key);
   }
 
   public removePluginByKey(key: string) {
-    const pluginIndex = this.plugins.findIndex((plugin) => plugin.key === key);
-    this.plugins[pluginIndex].destroy();
-    this.plugins.splice(pluginIndex, 1);
+    const plugin = this.plugins.get(key);
+    plugin?.destroy();
+    this.plugins.delete(key);
   }
 
   public removeAllPlugins() {
-    for (const plugin of this.plugins) {
-      plugin.destroy();
-    }
-
-    this.plugins = [];
+    this.plugins.clear();
   }
 
   /**
