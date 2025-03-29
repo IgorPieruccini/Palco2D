@@ -96,11 +96,13 @@ export class Scene {
    * add the plugin to the scene, to run the custom logic of the plugin, the plugin must be started.
    * @param plugin - The plugin to add to the scene.
    */
-  public addPlugin(plugin: ScenePlugin, key: string) {
+  public addPlugin(Plugin: typeof ScenePlugin, key: string) {
+    const plug = new Plugin(this);
+
     if (this.plugins[key]) {
       throw new Error(`Plugin with key ${key} already exists`);
     }
-    this.plugins[key] = plugin;
+    this.plugins[key] = plug;
     this.render.setPlugins(Object.values(this.plugins));
   }
 

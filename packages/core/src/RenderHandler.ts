@@ -12,6 +12,7 @@ export class RenderHandler {
   canvas: HTMLCanvasElement;
   upperCanvas: HTMLCanvasElement;
   ctx: CanvasRenderingContext2D;
+  upperCtx: CanvasRenderingContext2D;
   public entities: Map<number, Map<string, BaseEntity>> = new Map();
   private fpsHandler = FPSHandler();
   private running = false;
@@ -31,6 +32,12 @@ export class RenderHandler {
       throw new Error("Canvas context not found");
     }
     this.ctx = ctx;
+
+    const upperCtx = upperCanvas.getContext("2d");
+    if (!upperCtx) {
+      throw new Error("Upper canvas context not found");
+    }
+    this.upperCtx = upperCtx;
 
     const sortedLayers = entities.sort((a, b) => a.layer - b.layer);
     this.addEntities(sortedLayers);

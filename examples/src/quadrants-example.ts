@@ -79,7 +79,7 @@ export class QuadrantExamples extends Scene {
     square.addChild(childSquare);
     childSquare.addChild(secondChildSquare);
 
-    this.addPlugin(new InfinityCanvasPlugin(this), "infinityCanvasPlugin");
+    this.addPlugin(InfinityCanvasPlugin, "infinityCanvas");
 
     this.render.addEntity(square);
     this.render.addEntity(rect1);

@@ -5,22 +5,12 @@ import {
   Sprite,
   SquareEntity,
 } from "@palco-2d/core";
-import {
-  TransformerEntityController,
-  InfinityCanvasPlugin,
-} from "@palco-2d/plugins";
+import { InfinityCanvasPlugin } from "@palco-2d/plugins";
 
-export class EntityPluginExample extends Scene {
+export class PluginsExample extends Scene {
   activeObject: BaseEntity | null = null;
 
   public async start() {
-    this.mouseHandler.onCanvas("mousedown", () => {
-      if (this.activeObject) {
-        this.activeObject.removeAllPlugins();
-        this.activeObject = null;
-      }
-    });
-
     await AssetHandler.loadPng("assets/ninja-frog-jump.png");
 
     const frog = new Sprite({
@@ -34,7 +24,6 @@ export class EntityPluginExample extends Scene {
     frog.on("mousedown", () => {
       if (this.activeObject?.id !== frog.id) {
         this.activeObject?.removeAllPlugins();
-        frog.addPlugin(TransformerEntityController, "boundaries");
         this.activeObject = frog;
       }
     });
@@ -49,12 +38,11 @@ export class EntityPluginExample extends Scene {
     rect.on("mousedown", () => {
       if (this.activeObject?.id !== rect.id) {
         this.activeObject?.removeAllPlugins();
-        rect.addPlugin(TransformerEntityController, "boundaries");
         this.activeObject = rect;
       }
     });
 
-    this.addPlugin(new InfinityCanvasPlugin(this), "infinityCanvas");
+    this.addPlugin(InfinityCanvasPlugin, "infinityCanvas");
 
     this.render.addEntity(frog);
     this.render.addEntity(rect);

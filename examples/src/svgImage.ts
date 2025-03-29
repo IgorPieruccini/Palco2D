@@ -24,7 +24,7 @@ export class SvgImageScene extends Scene {
 
     frog.addPlugin(BoundingBoxEntity, "boundingBoxEntity");
 
-    this.addPlugin(new InfinityCanvasPlugin(this), "infinityCanvasPlugin");
+    this.addPlugin(InfinityCanvasPlugin, "infinityCanvas");
 
     this.render.addEntity(svgEntity);
     // this.render.addEntity(frog);

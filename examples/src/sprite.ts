@@ -31,7 +31,7 @@ export class SpriteExample extends Scene {
 
     createFrogs();
 
-    this.addPlugin(new InfinityCanvasPlugin(this), "infinityCanvasPlugin");
+    this.addPlugin(InfinityCanvasPlugin, "infinityCanvasPlugin");
     this.mouseHandler.start();
     this.render.startRender();
     this.startAllPlugins();
