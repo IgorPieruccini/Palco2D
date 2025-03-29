@@ -141,7 +141,7 @@ export class BaseEntity {
    * Mouse handler will trigger these events depending on the interaction with the entity.
    * if the entity is static, the mouse handler will not trigger any event.
    */
-  public onEntityEvent: EntityEvents;
+  public onEntityEvent: EntityEvents = new Map();
 
   /**
    * The parent of the entity, if the entity is not a child, the parent is null.
@@ -213,7 +213,6 @@ export class BaseEntity {
     this.isMouseHover = false;
     this.layer = props.layer || 0;
     this.children = new Map();
-    this.onEntityEvent = {};
     this.parent = null;
     this.static = props.static || false;
     this.globalCompositeOperation =
@@ -223,10 +222,8 @@ export class BaseEntity {
   }
 
   public on(event: EventsType, callback: () => void) {
-    this.onEntityEvent = {
-      ...this.onEntityEvent,
-      [event]: callback,
-    };
+    const events = this.onEntityEvent.get(event);
+    this.onEntityEvent.set(event, [...(events || []), callback]);
   }
 
   public getScale() {

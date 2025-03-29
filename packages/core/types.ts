@@ -13,7 +13,7 @@ export type EventsType =
   | "mouseenter"
   | "mouseleave"
   | "mousehover";
-export type EntityEvents = Partial<Record<EventsType, () => void>>;
+export type EntityEvents = Map<EventsType, Array<() => void>>;
 
 export type CanvasEventType = "mousemove" | "mousedown" | "mouseup";
 export type CanvasEvent = Partial<Record<CanvasEventType, () => void>>;

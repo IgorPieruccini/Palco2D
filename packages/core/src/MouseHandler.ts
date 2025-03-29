@@ -103,7 +103,9 @@ export class MouseHandler {
       return;
     }
 
-    this.getTopLayerHoveredEntity().onEntityEvent.mousedown?.();
+    this.getTopLayerHoveredEntity()
+      .onEntityEvent.get("mousedown")
+      ?.forEach((cb) => cb());
   }
 
   private onMouseUp(ev: MouseEvent) {
@@ -115,7 +117,9 @@ export class MouseHandler {
       return;
     }
 
-    this.getTopLayerHoveredEntity().onEntityEvent.mouseup?.();
+    this.getTopLayerHoveredEntity()
+      .onEntityEvent.get("mouseup")
+      ?.forEach((cb) => cb());
   }
 
   private dispatchEventToEntities(lastActiveQuadrant: string | null = null) {
@@ -173,7 +177,7 @@ export class MouseHandler {
       const wasMouseOver = this.hoveredEntities.find((e) => e.id === entity.id);
 
       if (!isMouseOver && wasMouseOver) {
-        entity?.onEntityEvent.mouseleave?.();
+        entity?.onEntityEvent.get("mouseleave")?.forEach((cb) => cb());
 
         this.hoveredEntities = this.hoveredEntities.filter(
           (e) => e.id !== entity.id,
@@ -182,11 +186,11 @@ export class MouseHandler {
 
       if (isMouseOver) {
         if (!wasMouseOver) {
-          entity.onEntityEvent.mouseenter?.();
+          entity.onEntityEvent.get("mouseenter")?.forEach((cb) => cb());
           this.hoveredEntities.push(entity);
         }
 
-        entity.onEntityEvent.mousehover?.();
+        entity.onEntityEvent.get("mouseenter")?.forEach((cb) => cb());
       }
 
       iteratorResult = iterator.next();
