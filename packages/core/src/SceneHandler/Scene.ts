@@ -14,6 +14,13 @@ export class Scene {
    * The HTML canvas element the scene renders to.
    */
   public canvas: HTMLCanvasElement;
+
+  /**
+   * The HTML canvas element the scene used by scene plugins.
+   * to render on top of the main canvas, without interfering with the main canvas.
+   */
+  public upperCanvas: HTMLCanvasElement;
+
   /**
    * The 2D rendering context of the canvas.
    */
@@ -36,6 +43,7 @@ export class Scene {
 
   constructor() {
     this.canvas = SceneHandler.canvas;
+    this.upperCanvas = SceneHandler.upperCanvas;
 
     const ctx = this.canvas.getContext("2d");
     if (!ctx) {
@@ -43,7 +51,7 @@ export class Scene {
     }
 
     this.ctx = ctx;
-    this.render = new RenderHandler(this.canvas, []);
+    this.render = new RenderHandler(this.canvas, this.upperCanvas, []);
     this.mouseHandler = new MouseHandler(this.canvas);
   }
 
@@ -79,7 +87,7 @@ export class Scene {
    * on start, a re-creation of the scene is not needed.
    */
   public pause() {
-    this.mouseHandler.puase();
+    this.mouseHandler.pause();
     this.render.pauseRender();
     // SHOULD STOP ALL PLUGINS?
   }

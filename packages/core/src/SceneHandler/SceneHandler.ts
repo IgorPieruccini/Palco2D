@@ -21,10 +21,30 @@ export class SceneHandler {
    */
   public static canvas: HTMLCanvasElement;
 
+  /**
+   * The HTML canvas element the scenes used by scene plugins.
+   * to render on top of the main canvas, without interfering with the main canvas.
+   */
+  public static upperCanvas: HTMLCanvasElement;
+
   constructor() {
-    const canvas = document.getElementById(
-      "palco-2d-canvas",
-    ) as HTMLCanvasElement;
+    const canvasWrapper = document.createElement("div");
+    canvasWrapper.style.position = "relative";
+    canvasWrapper.id = "palco-2d-canvas-wrapper";
+    document.body.appendChild(canvasWrapper);
+
+    const canvas = document.createElement("canvas");
+    canvas.style.position = "absolute";
+    canvas.style.top = "0";
+    canvas.style.left = "0";
+    canvas.style.width = "100%";
+    canvas.style.height = "100%";
+    canvasWrapper.appendChild(canvas);
+
+    const upperCanvas = canvas.cloneNode(true) as HTMLCanvasElement;
+    upperCanvas.style.pointerEvents = "none";
+
+    canvasWrapper.appendChild(upperCanvas);
 
     if (!canvas) {
       throw new Error(
@@ -33,6 +53,7 @@ export class SceneHandler {
     }
 
     SceneHandler.canvas = canvas;
+    SceneHandler.upperCanvas = upperCanvas;
   }
 
   /**

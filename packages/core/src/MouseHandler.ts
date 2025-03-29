@@ -34,11 +34,11 @@ export class MouseHandler {
   }
 
   public stop() {
-    this.puase();
+    this.pause();
     this.quadrant.quadrants.clear();
   }
 
-  public puase() {
+  public pause() {
     this.canvas.removeEventListener(
       "mousemove",
       this.binded.updateMousePosition,

@@ -10,6 +10,7 @@ const MAX_CHILDER_LAYERS = 5;
 
 export class RenderHandler {
   canvas: HTMLCanvasElement;
+  upperCanvas: HTMLCanvasElement;
   ctx: CanvasRenderingContext2D;
   public entities: Map<number, Map<string, BaseEntity>> = new Map();
   private fpsHandler = FPSHandler();
@@ -17,8 +18,13 @@ export class RenderHandler {
   private paused: boolean = false;
   private plugins: Array<ScenePlugin> = [];
 
-  constructor(canvas: HTMLCanvasElement, entities: BaseEntity[]) {
+  constructor(
+    canvas: HTMLCanvasElement,
+    upperCanvas: HTMLCanvasElement,
+    entities: BaseEntity[],
+  ) {
     this.canvas = canvas;
+    this.upperCanvas = upperCanvas;
 
     const ctx = canvas.getContext("2d");
     if (!ctx) {
@@ -44,6 +50,13 @@ export class RenderHandler {
   private setCanvasSize() {
     this.canvas.setAttribute("width", `${this.canvas.clientWidth * dpr}`);
     this.canvas.setAttribute("height", `${this.canvas.clientHeight * dpr}`);
+
+    this.upperCanvas.setAttribute("width", `${this.canvas.clientWidth * dpr}`);
+    this.upperCanvas.setAttribute(
+      "height",
+      `${this.canvas.clientHeight * dpr}`,
+    );
+
     this.setIdentityMatrix();
   }
 
