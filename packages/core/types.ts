@@ -126,3 +126,8 @@ export type BoundingBox = {
   width: number;
   height: number;
 };
+
+export type Coords = {
+  corners: Vec2[];
+  boundingBox: BoundingBox;
+};

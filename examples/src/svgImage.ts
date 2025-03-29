@@ -7,12 +7,12 @@ export class SvgImageScene extends Scene {
     await AssetHandler.loadPng("assets/ninja-frog-jump.png");
 
     const svgEntity = new SVGImageEntity({
-      position: { x: 100, y: 100 },
-      rotation: 0,
+      position: { x: 300, y: 300 },
+      rotation: 45,
       src: "assets/tiger.svg",
     });
 
-    svgEntity.size = { x: 50, y: 50 };
+    svgEntity.size = { x: 500, y: 500 };
 
     svgEntity.addPlugin(BoundingBoxEntity, "boundingBoxEntity");
 

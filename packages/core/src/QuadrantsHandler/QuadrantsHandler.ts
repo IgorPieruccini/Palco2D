@@ -19,7 +19,7 @@ export class QuadrantsHandler {
       this.quadrants.get(quad)?.delete(entity.id);
     });
 
-    const keys = this.getQuadrantsContainedByQuads(entity.coords);
+    const keys = this.getQuadrantsContainedByQuads(entity.coords.corners);
 
     for (const key of keys) {
       entity.quadrant.updateQuadrant(key);

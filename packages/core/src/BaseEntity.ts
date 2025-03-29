@@ -5,6 +5,8 @@ import {
   Vec2,
   BaseEntityProps,
   SerializedBaseEntityProps,
+  Coords,
+  BoundingBox,
 } from "../types";
 import {
   generateUUID,
@@ -74,9 +76,18 @@ export class BaseEntity {
 
   /**
    * The coordinates of the entity in the canvas.
-   * top-left, top-right, bottom-right, bottom-left
+   * represents the for corners of the entity in the canvas,
+   * and the bounding box of that these corners describes.
    */
-  public coords: Vec2[] = [];
+  public coords: Coords = {
+    corners: [],
+    boundingBox: {
+      x: Infinity,
+      y: Infinity,
+      width: Infinity,
+      height: Infinity,
+    },
+  };
 
   /**
    * The matrix of the entity, used to calculate the transformation of the entity.
@@ -303,7 +314,7 @@ export class BaseEntity {
    * the coords are the corners of the entity in the canvas.
    * eg: top-left, top-right, bottom-right, bottom-left
    */
-  protected getCoords() {
+  protected getCoords(): Coords {
     const parentMatrix = this.getWorldMatrix();
     const parentRotation = getRotationAngleFromMatrix(parentMatrix);
     const matrix = this.getMatrix();
@@ -311,7 +322,7 @@ export class BaseEntity {
     const finalMatrix = multiplyMatrices(parentMatrix, matrix);
     const position = getPositionFromMatrix(finalMatrix);
 
-    const corners = [
+    const fixedCorners = [
       { x: -this._size.x / 2, y: -this._size.y / 2 },
       { x: this._size.x / 2, y: -this._size.y / 2 },
       { x: this._size.x / 2, y: this._size.y / 2 },
@@ -325,7 +336,7 @@ export class BaseEntity {
     const cos = Math.cos(-rad);
     const sin = Math.sin(-rad);
 
-    return corners.map((corner) => {
+    const corners = fixedCorners.map((corner) => {
       const x = corner.x * cos - corner.y * sin;
       const y = corner.x * sin + corner.y * cos;
 
@@ -334,6 +345,31 @@ export class BaseEntity {
         y: y + position.y,
       };
     });
+
+    const xValues = corners.map((corner) => corner.x);
+    const yValues = corners.map((corner) => corner.y);
+
+    const minX = Math.min(...xValues);
+    const maxX = Math.max(...xValues);
+    const minY = Math.min(...yValues);
+    const maxY = Math.max(...yValues);
+
+    const sizeX = maxX - minX;
+    const sizeY = maxY - minY;
+    const positionX = minX + sizeX / 2;
+    const positionY = minY + sizeY / 2;
+
+    const boundingBox: BoundingBox = {
+      x: positionX,
+      y: positionY,
+      width: sizeX,
+      height: sizeY,
+    };
+
+    return {
+      corners,
+      boundingBox,
+    };
   }
 
   getRelativePostion(mousePosition: Vec2, relativeToParent?: boolean) {
@@ -461,17 +497,25 @@ export class BaseEntity {
   }
 
   isObjectInViewport(viewport: { position: Vec2; size: Vec2 }) {
-    const coordinates = this.getCoords();
-    const isPointInViewport = (point: Vec2) => {
-      return (
-        point.x >= viewport.position.x &&
-        point.x <= viewport.position.x + viewport.size.x &&
-        point.y >= viewport.position.y &&
-        point.y <= viewport.position.y + viewport.size.y
-      );
-    };
+    const { boundingBox } = this.getCoords();
 
-    const inViewport = coordinates.some((point) => isPointInViewport(point));
+    let inViewport = false;
+
+    if (
+      boundingBox.x + boundingBox.width / 2 - viewport.position.x >= 0 &&
+      boundingBox.x - boundingBox.width / 2 - viewport.position.x <=
+      viewport.size.x &&
+      boundingBox.y + boundingBox.height / 2 - viewport.position.y >= 0 &&
+      boundingBox.y - boundingBox.height / 2 - viewport.position.y <=
+      viewport.size.y
+    ) {
+      inViewport = true;
+    }
+
+    if (!inViewport) {
+      console.log("out of viewport");
+    }
+
     return inViewport;
   }
 
