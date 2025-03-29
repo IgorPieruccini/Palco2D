@@ -22,10 +22,7 @@ export class PluginsExample extends Scene {
 
     frog.size = { x: 64, y: 64 };
     frog.on("mousedown", () => {
-      if (this.activeObject?.id !== frog.id) {
-        this.activeObject?.removeAllPlugins();
-        this.activeObject = frog;
-      }
+      console.log("Frog clicked");
     });
 
     const rect = new SquareEntity({
@@ -36,19 +33,15 @@ export class PluginsExample extends Scene {
     });
 
     rect.on("mousedown", () => {
-      if (this.activeObject?.id !== rect.id) {
-        this.activeObject?.removeAllPlugins();
-        this.activeObject = rect;
-      }
+      console.log("Rect clicked");
     });
 
     this.addPlugin(InfinityCanvasPlugin, "infinityCanvas");
     this.addPlugin(ActiveSelectionPlugin, "activeSelection");
 
-    this.render.addEntity(frog);
-    this.render.addEntity(rect);
+    this.addEntity(frog);
+    this.addEntity(rect);
     this.render.startRender();
-
     this.mouseHandler.start();
     this.startAllPlugins();
   }

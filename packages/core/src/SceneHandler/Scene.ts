@@ -3,6 +3,8 @@ import { ScenePlugin } from "../ScenePlugin";
 import { RenderHandler } from "../RenderHandler";
 import { SceneHandler } from "./SceneHandler";
 import { WorldHandler } from "../WorldHandler";
+import { BaseEntity } from "../BaseEntity";
+import { SceneEventHandlers } from "./SceneEventHandlers";
 
 /**
  *The Scene class serves as the core component of Palco 2D, providing the foundation for creating and managing 2D scenes.
@@ -40,6 +42,11 @@ export class Scene {
    * Plugins are used to add custom functionality to the scene.
    */
   private plugins: Record<string, ScenePlugin> = {};
+
+  /**
+   * The scene handler provides ways to subscribe to specific scene events such as adding or removing entities for example.
+   */
+  public eventHandler: SceneEventHandlers = new SceneEventHandlers();
 
   constructor() {
     this.canvas = SceneHandler.canvas;
@@ -138,5 +145,24 @@ export class Scene {
     Object.values(this.plugins).forEach((plugin) => {
       plugin.start();
     });
+  }
+
+  /**
+   * Adds an entity to the scene.
+   * under the hood, adds the entity to the render handler and consequentially to the mouseHandler
+   * to enable mouse interactions.
+   */
+  public addEntity(entity: BaseEntity) {
+    this.render.addEntity(entity);
+    this.eventHandler.notifyAddEntity(entity);
+  }
+
+  /**
+   * Removes an entity from the scene.
+   * under the hood, removes the entity from the render handler and consequentially from the mouseHandler
+   */
+  public removeEntity(entity: BaseEntity) {
+    this.render.removeEntity(entity);
+    this.eventHandler.notifyRemoveEntity(entity);
   }
 }

@@ -6,7 +6,10 @@ export class ScenePlugin {
 
   constructor(scene: Scene) {
     this.scene = scene;
+    this.init();
   }
+
+  public init() { }
 
   public start() {
     this.running = true;

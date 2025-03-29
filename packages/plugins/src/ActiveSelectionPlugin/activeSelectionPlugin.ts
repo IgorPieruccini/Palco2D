@@ -1,8 +1,12 @@
 import { Scene, ScenePlugin } from "@palco-2d/core";
 
 export class ActiveSelectionPlugin extends ScenePlugin {
-  constructor(scene: Scene) {
-    super(scene);
+  init() {
+    this.scene.eventHandler.subscribeToAddEntity((entity) => {
+      entity.on("mousedown", () => {
+        console.log("Entity selected:", entity.id);
+      });
+    });
   }
 
   render(ctx: CanvasRenderingContext2D) {
