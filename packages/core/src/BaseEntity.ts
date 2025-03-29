@@ -512,10 +512,6 @@ export class BaseEntity {
       inViewport = true;
     }
 
-    if (!inViewport) {
-      console.log("out of viewport");
-    }
-
     return inViewport;
   }
 

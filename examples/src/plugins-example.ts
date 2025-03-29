@@ -5,7 +5,7 @@ import {
   Sprite,
   SquareEntity,
 } from "@palco-2d/core";
-import { InfinityCanvasPlugin } from "@palco-2d/plugins";
+import { ActiveSelectionPlugin, InfinityCanvasPlugin } from "@palco-2d/plugins";
 
 export class PluginsExample extends Scene {
   activeObject: BaseEntity | null = null;
@@ -43,6 +43,7 @@ export class PluginsExample extends Scene {
     });
 
     this.addPlugin(InfinityCanvasPlugin, "infinityCanvas");
+    this.addPlugin(ActiveSelectionPlugin, "activeSelection");
 
     this.render.addEntity(frog);
     this.render.addEntity(rect);

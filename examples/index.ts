@@ -30,12 +30,12 @@ sceneHandler.addScene(new FlipSpriteExample(), "FlipSpriteExample");
 sceneHandler.addScene(new BlendingModeExample(), "BlendingModeExample");
 sceneHandler.addScene(new SerializeExample(), "SerializeExample");
 sceneHandler.addScene(new InvitiyCanvasSceneExample(), "InfinityCanvas");
-sceneHandler.addScene(new PluginsExample(), "EntityPluginExample");
+sceneHandler.addScene(new PluginsExample(), "PluginsExample");
 sceneHandler.addScene(new AddRemoveEntityExample(), "AddRemoveEntity");
 sceneHandler.addScene(new QuadrantExamples(), "QuadrantsExample");
 sceneHandler.addScene(new SvgImageScene(), "SvgImage");
 
-const initialScene = "SvgImage";
+const initialScene = "PluginsExample";
 
 const createSceneDropdown = () => {
   const select = document.getElementById("select-example") as HTMLSelectElement;
