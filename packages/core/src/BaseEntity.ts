@@ -331,7 +331,7 @@ export class BaseEntity {
     const rad = finalAngle * (Math.PI / 180);
 
     const cos = Math.cos(-rad);
-    const sin = Math.sin(-rad);
+    const sin = Math.sin(rad);
 
     const corners = fixedCorners.map((corner) => {
       const x = corner.x * cos - corner.y * sin;

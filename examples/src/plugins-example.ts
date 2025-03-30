@@ -25,7 +25,7 @@ export class PluginsExample extends Scene {
     const rect = new SquareEntity({
       id: "rect",
       position: { x: 600, y: 200 },
-      size: { x: 60, y: 60 },
+      size: { x: 60, y: 100 },
       rotation: 45,
     });
 
