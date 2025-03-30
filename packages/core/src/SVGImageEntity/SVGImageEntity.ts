@@ -158,7 +158,5 @@ export class SVGImageEntity extends BaseEntity {
     }
 
     ctx.restore();
-
-    this.renderEntityPlugins(ctx);
   }
 }

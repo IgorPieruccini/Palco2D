@@ -1,4 +1,3 @@
-import { EntityPlugin } from "./EntityPlugin";
 import {
   EntityEvents,
   EventsType,
@@ -186,13 +185,6 @@ export class BaseEntity {
    */
   protected initialSize: Vec2;
 
-  /**
-   * Array of EntityPlugins that are attached to the entity,
-   * used to extend the entity functionality and rendering.
-   * @private
-   */
-  private plugins: Map<string, EntityPlugin> = new Map();
-
   private updateTransform() {
     this.coords = this.getCoords();
     this.matrix = this.getMatrix();
@@ -251,17 +243,6 @@ export class BaseEntity {
       SceneHandler.currentScene.mouseHandler.quadrant.updateQuadrants(this);
       this.quadrant.shouldUpdate = false;
     }
-
-    this.renderEntityPlugins(ctx);
-  }
-
-  /**
-   * Call the render method of each EntityPlugin attached to the entity.
-   */
-  protected renderEntityPlugins(ctx: CanvasRenderingContext2D) {
-    this.plugins.forEach((plugin) => {
-      plugin.render(ctx);
-    });
   }
 
   private getAllParents() {
@@ -445,13 +426,7 @@ export class BaseEntity {
     this.children.get(parseInt(layer))?.delete(id);
   }
 
-  destroy(plugins?: boolean) {
-    if (plugins) {
-      this.plugins.forEach((plugin) => {
-        plugin.destroy();
-      });
-    }
-
+  destroy() {
     this.children.forEach((childMap) => {
       childMap.forEach((child) => {
         child.destroy();
@@ -537,25 +512,6 @@ export class BaseEntity {
       children: serializedChildren,
       address: this.getIdAdress(),
     };
-  }
-
-  public addPlugin(Plugin: typeof EntityPlugin, key: string) {
-    const plug = new Plugin(this, key);
-    this.plugins.set(key, plug);
-  }
-
-  public getPluginByKey(key: string) {
-    return this.plugins.get(key);
-  }
-
-  public removePluginByKey(key: string) {
-    const plugin = this.plugins.get(key);
-    plugin?.destroy();
-    this.plugins.delete(key);
-  }
-
-  public removeAllPlugins() {
-    this.plugins.clear();
   }
 
   /**

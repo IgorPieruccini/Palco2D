@@ -74,7 +74,5 @@ export class Path2DEntity extends BaseEntity {
     ctx.fill(data.coordinates);
 
     ctx.restore();
-
-    this.renderEntityPlugins(ctx);
   }
 }
