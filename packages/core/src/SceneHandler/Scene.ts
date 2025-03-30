@@ -154,7 +154,7 @@ export class Scene {
    */
   public addEntity(entity: BaseEntity) {
     this.render.addEntity(entity);
-    this.eventHandler.notifyAddEntity(entity);
+    this.eventHandler.notify("addEntity", entity);
   }
 
   /**
@@ -174,6 +174,6 @@ export class Scene {
    */
   public removeEntity(entity: BaseEntity) {
     this.render.removeEntity(entity);
-    this.eventHandler.notifyRemoveEntity(entity);
+    this.eventHandler.notify("removeEntity", entity);
   }
 }

@@ -1,20 +1,59 @@
 import { BaseEntity, ScenePlugin, WorldHandler } from "@palco-2d/core";
+import { Vec2 } from "@palco-2d/core/types";
 
 export class ActiveSelectionPlugin extends ScenePlugin {
-  selectedEntities: Map<string, BaseEntity> = new Map();
+  private holdingEntity: BaseEntity | null = null;
+  private selectedEntities: Map<string, BaseEntity> = new Map();
+  private lastClickPosition: Vec2 | null = null;
+  private clickDistanceFromEntity: Vec2 | null = null;
 
   init() {
-    this.scene.eventHandler.subscribeToAddEntity((entity) => {
-      entity.on("mouseup", () => {
+    this.scene.eventHandler.subscribeToSceneEvent("addEntity", (entity) => {
+      entity.on("mousedown", () => {
         this.clearSelection();
         this.selectedEntities.set(entity.id, entity);
+        this.holdingEntity = entity;
+        this.lastClickPosition = this.scene.mouseHandler.position;
+        this.clickDistanceFromEntity = {
+          x: this.scene.mouseHandler.position.x - entity.coords.boundingBox.x,
+          y: this.scene.mouseHandler.position.y - entity.coords.boundingBox.y,
+        };
+      });
+
+      entity.on("mouseup", () => {
+        this.clearMouseData();
       });
     });
 
-    this.scene.mouseHandler.onCanvas("mouseup", () => {
+    this.scene.mouseHandler.onCanvas("mousedown", () => {
       this.clearSelection();
       this.selectedEntities.clear();
     });
+
+    this.scene.mouseHandler.onCanvas("mousemove", () => {
+      if (
+        this.holdingEntity &&
+        this.lastClickPosition &&
+        this.clickDistanceFromEntity
+      ) {
+        this.holdingEntity.position = {
+          x:
+            this.scene.mouseHandler.position.x - this.clickDistanceFromEntity.x,
+          y:
+            this.scene.mouseHandler.position.y - this.clickDistanceFromEntity.y,
+        };
+      }
+    });
+
+    this.scene.mouseHandler.onCanvas("mouseup", () => {
+      this.clearMouseData();
+    });
+  }
+
+  clearMouseData() {
+    this.holdingEntity = null;
+    this.lastClickPosition = null;
+    this.clickDistanceFromEntity = null;
   }
 
   clearSelection() {

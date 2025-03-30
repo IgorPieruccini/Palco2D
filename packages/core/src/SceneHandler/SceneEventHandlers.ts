@@ -1,3 +1,4 @@
+import { SceneEventKeys } from "../../types";
 import { BaseEntity } from "../BaseEntity";
 import { generateUUID } from "../utils";
 
@@ -19,52 +20,51 @@ export class SceneEventHandlers {
   >();
 
   /**
-   * The callback will be called when an entity is added to the scene.
+   * Subscribe to a scene event and get notified when it happens.
    * @returns A unique identifier for the subscription, useful for unsubscribing.
    */
-  public subscribeToAddEntity(callback: (entity: BaseEntity) => void): string {
-    const id = generateUUID();
-    this.addEntitySubscribers.set(id, callback);
-    return id;
-  }
-
-  /**
-   * The callback will be called when an entity is removed from the scene.
-   */
-  public unsubscribeToAddEntity(id: string): void {
-    this.addEntitySubscribers.delete(id);
-  }
-
-  /**
-   * The callback will be called when an entity is removed from the scene.
-   * @returns A unique identifier for the subscription, useful for unsubscribing.
-   */
-  public subscribeToRemoveEntity(
+  public subscribeToSceneEvent(
+    event: SceneEventKeys,
     callback: (entity: BaseEntity) => void,
   ): string {
     const id = generateUUID();
-    this.removeEntitySubscribers.set(id, callback);
+    switch (event) {
+      case "addEntity":
+        this.addEntitySubscribers.set(id, callback);
+        break;
+      case "removeEntity":
+        this.removeEntitySubscribers.set(id, callback);
+        break;
+    }
     return id;
   }
 
   /**
-   * The callback will be called when an entity is removed from the scene.
+   * Unsubscribe from a scene event.
+   * to stop receiving notifications.
    */
-  public unsubscribeToRemoveEntity(id: string): void {
-    this.removeEntitySubscribers.delete(id);
+  public unsubscribeToSceneEvent(event: SceneEventKeys, id: string): void {
+    switch (event) {
+      case "addEntity":
+        this.addEntitySubscribers.delete(id);
+        break;
+      case "removeEntity":
+        this.removeEntitySubscribers.delete(id);
+        break;
+    }
   }
 
   /**
    * Notify all the subscribers that an entity has been added to the scene.
    */
-  public notifyAddEntity(entity: BaseEntity): void {
-    this.addEntitySubscribers.forEach((callback) => callback(entity));
-  }
-
-  /**
-   * Notify all the subscribers that an entity has been removed from the scene.
-   */
-  public notifyRemoveEntity(entity: BaseEntity): void {
-    this.removeEntitySubscribers.forEach((callback) => callback(entity));
+  public notify(event: SceneEventKeys, entity: BaseEntity): void {
+    switch (event) {
+      case "addEntity":
+        this.addEntitySubscribers.forEach((callback) => callback(entity));
+        break;
+      case "removeEntity":
+        this.removeEntitySubscribers.forEach((callback) => callback(entity));
+        break;
+    }
   }
 }

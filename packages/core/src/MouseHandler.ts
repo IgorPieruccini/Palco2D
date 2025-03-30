@@ -10,8 +10,10 @@ export class MouseHandler {
   public quadrant: QuadrantsHandler;
   private canvas: HTMLCanvasElement;
   private domRect: DOMRect;
-  private canvasEventSubscribers: Map<"mouseup" | "mousedown", Function[]> =
-    new Map();
+  private canvasEventSubscribers: Map<
+    "mouseup" | "mousedown" | "mousemove",
+    Function[]
+  > = new Map();
 
   constructor(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
@@ -88,6 +90,10 @@ export class MouseHandler {
     };
 
     this.dispatchEventToEntities();
+
+    this.canvasEventSubscribers.get("mousemove")?.forEach((callback) => {
+      callback();
+    });
   }
 
   private getTopLayerHoveredEntity() {
@@ -197,7 +203,10 @@ export class MouseHandler {
     }
   }
 
-  public onCanvas(event: "mouseup" | "mousedown", callback: Function) {
+  public onCanvas(
+    event: "mouseup" | "mousedown" | "mousemove",
+    callback: Function,
+  ) {
     const events = this.canvasEventSubscribers.get(event) || [];
     this.canvasEventSubscribers.set(event, [...events, callback]);
   }

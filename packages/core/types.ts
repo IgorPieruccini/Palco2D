@@ -131,3 +131,5 @@ export type Coords = {
   corners: Vec2[];
   boundingBox: BoundingBox;
 };
+
+export type SceneEventKeys = "addEntity" | "removeEntity";
