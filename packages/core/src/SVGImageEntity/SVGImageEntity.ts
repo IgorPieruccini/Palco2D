@@ -106,22 +106,23 @@ export class SVGImageEntity extends BaseEntity {
    */
   public fold() {
     this.foldedElemnts.forEach((path2D) => {
-      this.removeChild(path2D.getIdAdress());
+      this.removeChild(path2D.getOwnAddress());
     });
+    this.foldedElemnts.clear();
   }
 
   /**
    * Returns true if the SVGImageEntity is folded, false otherwise.
    */
   public isFolded(): boolean {
-    return this.foldedElemnts.size > 0;
+    return this.foldedElemnts.size === 0;
   }
 
   render(ctx: CanvasRenderingContext2D) {
     super.render(ctx);
     // No need to render the SVGImageEntity if it is folded, because the path2DEntities
     // render them selves as children of the SVGImageEntity
-    if (this.isFolded()) {
+    if (!this.isFolded()) {
       return;
     }
 

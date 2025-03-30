@@ -20,6 +20,22 @@ export class SceneEventHandlers {
   >();
 
   /**
+   * Subscribers will be notified when an entity adds a child entity.
+   */
+  private addChildEntitySubscribers = new Map<
+    string,
+    (entity: BaseEntity) => void
+  >();
+
+  /**
+   * Subscribers will be notified when an entity removes a child entity.
+   */
+  private removeChildEntitySubscribers = new Map<
+    string,
+    (entity: BaseEntity) => void
+  >();
+
+  /**
    * Subscribe to a scene event and get notified when it happens.
    * @returns A unique identifier for the subscription, useful for unsubscribing.
    */
@@ -34,6 +50,12 @@ export class SceneEventHandlers {
         break;
       case "removeEntity":
         this.removeEntitySubscribers.set(id, callback);
+        break;
+      case "addChild":
+        this.addChildEntitySubscribers.set(id, callback);
+        break;
+      case "removeChild":
+        this.removeChildEntitySubscribers.set(id, callback);
         break;
     }
     return id;
@@ -51,6 +73,12 @@ export class SceneEventHandlers {
       case "removeEntity":
         this.removeEntitySubscribers.delete(id);
         break;
+      case "addChild":
+        this.addChildEntitySubscribers.delete(id);
+        break;
+      case "removeChild":
+        this.removeChildEntitySubscribers.delete(id);
+        break;
     }
   }
 
@@ -64,6 +92,14 @@ export class SceneEventHandlers {
         break;
       case "removeEntity":
         this.removeEntitySubscribers.forEach((callback) => callback(entity));
+        break;
+      case "addChild":
+        this.addChildEntitySubscribers.forEach((callback) => callback(entity));
+        break;
+      case "removeChild":
+        this.removeChildEntitySubscribers.forEach((callback) =>
+          callback(entity),
+        );
         break;
     }
   }

@@ -13,6 +13,9 @@ export class PluginsExample extends Scene {
     await AssetHandler.loadPng("assets/ninja-frog-jump.png");
     await AssetHandler.loadSVG("assets/character.svg");
 
+    this.addPlugin(InfinityCanvasPlugin, "infinityCanvas");
+    this.addPlugin(ActiveSelectionPlugin, "activeSelection");
+
     const frog = new Sprite({
       id: "frog",
       texture: "assets/ninja-frog-jump.png",
@@ -35,9 +38,6 @@ export class PluginsExample extends Scene {
       rotation: 45,
       src: "assets/character.svg",
     });
-
-    this.addPlugin(InfinityCanvasPlugin, "infinityCanvas");
-    this.addPlugin(ActiveSelectionPlugin, "activeSelection");
 
     this.addEntity(frog);
     this.addEntity(rect);

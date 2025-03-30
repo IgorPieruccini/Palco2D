@@ -419,11 +419,18 @@ export class BaseEntity {
 
     layerMap.set(child.id, child);
     child.setParent(this);
+
+    SceneHandler.currentScene.eventHandler.notify("addChild", child);
   }
 
   removeChild(address: string) {
     const [layer, id] = address.split(":");
+    const child = this.children.get(parseInt(layer))?.get(id);
+    if (!child) {
+      throw new Error(`Entity with address ${address} not found`);
+    }
     this.children.get(parseInt(layer))?.delete(id);
+    SceneHandler.currentScene.eventHandler.notify("addChild", child);
   }
 
   destroy() {
@@ -532,7 +539,7 @@ export class BaseEntity {
     return address;
   }
 
-  private getOwnAddress() {
+  public getOwnAddress() {
     return `${this.layer}:${this.id}`;
   }
 

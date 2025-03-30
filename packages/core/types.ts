@@ -132,4 +132,8 @@ export type Coords = {
   boundingBox: BoundingBox;
 };
 
-export type SceneEventKeys = "addEntity" | "removeEntity";
+export type SceneEventKeys =
+  | "addEntity"
+  | "removeEntity"
+  | "addChild"
+  | "removeChild";

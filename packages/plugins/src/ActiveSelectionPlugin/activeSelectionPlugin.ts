@@ -25,6 +25,24 @@ export class ActiveSelectionPlugin extends ScenePlugin {
       });
     });
 
+    this.scene.eventHandler.subscribeToSceneEvent("addChild", (entity) => {
+      this.selectedEntities.set(entity.id, entity);
+      entity.on("mousedown", () => {
+        this.clearSelection();
+        this.selectedEntities.set(entity.id, entity);
+        this.holdingEntity = entity;
+        this.lastClickPosition = this.scene.mouseHandler.position;
+        this.clickDistanceFromEntity = {
+          x: this.scene.mouseHandler.position.x - entity.coords.boundingBox.x,
+          y: this.scene.mouseHandler.position.y - entity.coords.boundingBox.y,
+        };
+      });
+
+      entity.on("mouseup", () => {
+        this.clearMouseData();
+      });
+    });
+
     this.scene.mouseHandler.onCanvas("mousedown", () => {
       this.clearSelection();
       this.selectedEntities.clear();
