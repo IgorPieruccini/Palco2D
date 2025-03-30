@@ -1,4 +1,3 @@
-
 export const FPSHandler = (() => {
   let FPS = 0;
   let deltaTime = 0;
@@ -6,7 +5,6 @@ export const FPSHandler = (() => {
   let frameCount = 0;
 
   function Instance() {
-
     function loop() {
       const currentTime = performance.now();
       deltaTime = (currentTime - previousTime) / 1000;
@@ -25,9 +23,8 @@ export const FPSHandler = (() => {
 
     const getDeltaTime = () => deltaTime;
 
-    return { getFPS, loop, getDeltaTime }
+    return { getFPS, loop, getDeltaTime };
   }
 
   return Instance;
-
-})()
+})();

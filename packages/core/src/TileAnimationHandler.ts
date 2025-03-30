@@ -4,7 +4,7 @@ import { TileMapType } from "../types";
 export class TileAnimationHandler {
   private entity: Sprite;
   private frame: number = 0;
-  private speed: number = 10;
+  private updateCadance: number = 0.2;
   private tileMap: TileMapType;
   private isPlaying: boolean;
   private elapsedTime: number = 0;
@@ -24,7 +24,7 @@ export class TileAnimationHandler {
     if (!this.isPlaying) return;
     this.elapsedTime += deltaTime;
 
-    if (this.elapsedTime >= this.speed) {
+    if (this.elapsedTime >= this.updateCadance) {
       this.elapsedTime = 0;
       this.frame += 1;
 
@@ -42,7 +42,7 @@ export class TileAnimationHandler {
     this.isPlaying = false;
   }
 
-  public setSpeed(speed: number) {
-    this.speed = 100 / speed;
+  public setUpdateCadence(cadence: number) {
+    this.updateCadance = cadence;
   }
 }

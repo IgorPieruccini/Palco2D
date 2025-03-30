@@ -6,7 +6,7 @@ export class TileMapExample extends Scene {
     await AssetHandler.loadTileMap("assets/ninja-frog-run.tilemap.json");
 
     const createFrogs = () => {
-      for (let x = 0; x < 500; x++) {
+      for (let x = 0; x < 100; x++) {
         const frog = new Sprite({
           texture: "assets/ninja-frog-run.png",
           position: {
@@ -17,8 +17,8 @@ export class TileMapExample extends Scene {
           tileMap: "assets/ninja-frog-run.tilemap.json",
         });
 
-        const speed = 2 + Math.random() * 2;
-        frog.animation?.setSpeed(speed);
+        const speed = 0.2 + Math.random() * 2;
+        frog.animation?.setUpdateCadence(speed);
         frog.animation?.start();
 
         frog.on("mouseenter", () => {

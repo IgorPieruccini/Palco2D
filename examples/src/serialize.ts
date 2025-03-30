@@ -96,7 +96,7 @@ export class SerializeExample extends Scene {
 
     const animatedSprite = this.render.getEntityByAddress("0:1/0:5");
     if (animatedSprite instanceof Sprite) {
-      animatedSprite.animation?.setSpeed(2);
+      animatedSprite.animation?.setUpdateCadence(0.1);
       animatedSprite.animation?.start();
     }
 
