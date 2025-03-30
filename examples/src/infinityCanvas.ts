@@ -1,5 +1,5 @@
 import { BaseEntity, Scene, SquareEntity } from "@palco-2d/core";
-import { FPSViewPlugin, InfinityCanvasPlugin } from "@palco-2d/plugins";
+import { InfinityCanvasPlugin } from "@palco-2d/plugins";
 
 export class InvitiyCanvasSceneExample extends Scene {
   public async start() {

@@ -1,4 +1,4 @@
-import { Scene, ScenePlugin, WorldHandler } from "@palco-2d/core";
+import { ScenePlugin, WorldHandler } from "@palco-2d/core";
 
 const ZOOM_SENSITIVITY = 1.1;
 

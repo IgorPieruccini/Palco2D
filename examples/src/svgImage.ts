@@ -1,5 +1,5 @@
 import { AssetHandler, SVGImageEntity, Scene, Sprite } from "@palco-2d/core";
-import { BoundingBoxEntity, InfinityCanvasPlugin } from "@palco-2d/plugins";
+import { ActiveSelectionPlugin, InfinityCanvasPlugin } from "@palco-2d/plugins";
 
 export class SvgImageScene extends Scene {
   public async start() {
@@ -14,20 +14,17 @@ export class SvgImageScene extends Scene {
 
     svgEntity.size = { x: 500, y: 500 };
 
-    svgEntity.addPlugin(BoundingBoxEntity, "boundingBoxEntity");
-
     const frog = new Sprite({
       texture: "assets/ninja-frog-jump.png",
       position: { x: 0, y: 0 },
       rotation: 0,
     });
 
-    frog.addPlugin(BoundingBoxEntity, "boundingBoxEntity");
-
     this.addPlugin(InfinityCanvasPlugin, "infinityCanvas");
+    this.addPlugin(ActiveSelectionPlugin, "activeSelection");
 
     this.render.addEntity(svgEntity);
-    // this.render.addEntity(frog);
+    this.render.addEntity(frog);
     this.render.startRender();
     this.startAllPlugins();
   }
