@@ -23,8 +23,8 @@ export class SvgImageScene extends Scene {
     this.addPlugin(InfinityCanvasPlugin, "infinityCanvas");
     this.addPlugin(ActiveSelectionPlugin, "activeSelection");
 
-    this.render.addEntity(svgEntity);
-    this.render.addEntity(frog);
+    this.addEntity(svgEntity);
+    this.addEntity(frog);
     this.render.startRender();
     this.startAllPlugins();
   }

@@ -25,13 +25,14 @@ export class SpriteExample extends Scene {
           frog.size = { x: frog.size.x - 10, y: frog.size.y - 10 };
         });
 
-        this.render.addEntity(frog);
+        this.addEntity(frog);
       }
     };
 
     createFrogs();
 
     this.addPlugin(InfinityCanvasPlugin, "infinityCanvasPlugin");
+
     this.mouseHandler.start();
     this.render.startRender();
     this.startAllPlugins();

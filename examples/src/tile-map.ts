@@ -25,7 +25,7 @@ export class TileMapExample extends Scene {
           frog.animation?.stop();
         });
 
-        this.render.addEntity(frog);
+        this.addEntity(frog);
       }
     };
 

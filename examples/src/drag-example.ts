@@ -73,7 +73,7 @@ export class DragExample extends Scene {
 
     const entities = [parent];
 
-    this.render.addEntities(entities);
+    this.addEntities(entities);
     this.render.startRender();
     this.mouseHandler.start();
   }

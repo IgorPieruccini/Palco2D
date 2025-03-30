@@ -24,7 +24,7 @@ export class BlendingModeExample extends Scene {
         rotation: 0,
       });
 
-      this.render.addEntities([mainFrog, square]);
+      this.addEntities([mainFrog, square]);
       this.render.startRender();
     };
 

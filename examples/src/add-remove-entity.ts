@@ -27,7 +27,7 @@ export class AddRemoveEntityExample extends Scene {
     const { x, y } = this.mouseHandler.position;
     if (this.mouseHandler.hoveredEntities.length > 0) return;
     const frog = this.createFrog(x, y);
-    this.render.addEntity(frog);
+    this.addEntity(frog);
   }
 
   public async start() {
@@ -37,7 +37,7 @@ export class AddRemoveEntityExample extends Scene {
       const frog = this.createFrog(200 + x * 50, 100);
       frog.addChild(this.createFrog(0, 100));
 
-      this.render.addEntity(frog);
+      this.addEntity(frog);
     }
 
     this.mouseHandler.onCanvas("mousedown", this.onMouseDown.bind(this));

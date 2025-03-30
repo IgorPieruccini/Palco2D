@@ -158,6 +158,17 @@ export class Scene {
   }
 
   /**
+   * Adds entities to the scene.
+   * under the hood, adds each entity in the array to the render handler and consequentially to the mouseHandler
+   * to enable mouse interactions.
+   */
+  public addEntities(entities: BaseEntity[]) {
+    entities.forEach((entity) => {
+      this.addEntity(entity);
+    });
+  }
+
+  /**
    * Removes an entity from the scene.
    * under the hood, removes the entity from the render handler and consequentially from the mouseHandler
    */

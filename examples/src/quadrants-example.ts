@@ -81,8 +81,8 @@ export class QuadrantExamples extends Scene {
 
     this.addPlugin(InfinityCanvasPlugin, "infinityCanvas");
 
-    this.render.addEntity(square);
-    this.render.addEntity(rect1);
+    this.addEntity(square);
+    this.addEntity(rect1);
 
     this.render.startRender();
     this.mouseHandler.start();

@@ -92,7 +92,7 @@ export class SerializeExample extends Scene {
 
     entities.push(...entities);
 
-    this.render.addEntities(entities);
+    this.addEntities(entities);
 
     const animatedSprite = this.render.getEntityByAddress("0:1/0:5");
     if (animatedSprite instanceof Sprite) {

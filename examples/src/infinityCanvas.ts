@@ -66,7 +66,7 @@ export class InvitiyCanvasSceneExample extends Scene {
     entities[0].addChild(square);
 
     this.addPlugin(InfinityCanvasPlugin, "infinityCanvas");
-    this.render.addEntities(entities);
+    this.addEntities(entities);
 
     this.startAllPlugins();
     this.render.startRender();

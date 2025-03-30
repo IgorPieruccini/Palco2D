@@ -20,8 +20,8 @@ export class FlipSpriteExample extends Scene {
 
     flippedFrog.size = { x: -64, y: 64 };
 
-    this.render.addEntity(frog);
-    this.render.addEntity(flippedFrog);
+    this.addEntity(frog);
+    this.addEntity(flippedFrog);
     this.render.startRender();
   }
 }

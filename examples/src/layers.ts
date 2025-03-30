@@ -74,7 +74,7 @@ export class LayersExample extends Scene {
       entities.push(square);
     }
 
-    this.render.addEntities(entities);
+    this.addEntities(entities);
 
     this.render.startRender();
     this.mouseHandler.start();
