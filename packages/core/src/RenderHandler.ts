@@ -52,6 +52,15 @@ export class RenderHandler {
       0, // e
       0, // f
     );
+
+    this.upperCtx.transform(
+      dpr, // a
+      0, // b
+      0, // c
+      dpr, // d
+      0, // e
+      0, // f
+    );
   }
 
   private setCanvasSize() {
@@ -244,6 +253,23 @@ export class RenderHandler {
     }
   }
 
+  private renderPlugins() {
+    this.upperCtx.save();
+    const offset = WorldHandler.getOffset();
+    this.upperCtx.translate(offset.x, offset.y);
+
+    const zoom = WorldHandler.getZoom();
+    this.upperCtx.scale(zoom, zoom);
+
+    this.plugins.forEach((plugin) => {
+      if (plugin.running) {
+        plugin.render(this.upperCtx);
+      }
+    });
+
+    this.upperCtx.restore();
+  }
+
   //TODO: Create abstract class for entities that can be animated
   private animateEntity(sprite: BaseEntity) {
     if (sprite instanceof Sprite) {
@@ -259,7 +285,11 @@ export class RenderHandler {
     }
 
     this.fpsHandler.loop();
+
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    this.upperCtx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+    this.renderPlugins();
 
     for (let i = 0; i < MAX_LAYERS; i++) {
       const layer = this.entities.get(i);
@@ -268,15 +298,7 @@ export class RenderHandler {
       }
     }
 
-    if (this.running) {
-      this.plugins.forEach((plugin) => {
-        if (plugin.running) {
-          plugin.render(this.ctx);
-        }
-      });
-
-      requestAnimationFrame(this.render.bind(this));
-    }
+    requestAnimationFrame(this.render.bind(this));
   }
 
   public setPlugins(plugins: Array<ScenePlugin>) {

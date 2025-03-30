@@ -6,10 +6,6 @@ export class InfinityCanvasPlugin extends ScenePlugin {
   private isDragging: boolean = false;
   private moveToolActive: boolean = false;
 
-  constructor(scene: Scene) {
-    super(scene);
-  }
-
   private keydownHandler = (e: KeyboardEvent) => {
     if (e.code === "Space") {
       this.scene.canvas.style.cursor = "grab";
@@ -91,9 +87,5 @@ export class InfinityCanvasPlugin extends ScenePlugin {
     window.removeEventListener("keyup", this.keyupHandler);
     WorldHandler.setZoom(1);
     WorldHandler.setOffset({ x: 0, y: 0 });
-  }
-
-  render() {
-    // Your code here
   }
 }
