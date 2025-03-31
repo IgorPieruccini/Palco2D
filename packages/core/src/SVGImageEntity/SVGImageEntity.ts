@@ -1,4 +1,10 @@
-import { BoundingBox, SVGAsset, SVGData, SVGImageProps } from "../../types";
+import {
+  BoundingBox,
+  SVGAsset,
+  SVGData,
+  SVGImageProps,
+  Vec2,
+} from "../../types";
 import { AssetHandler } from "../AssetHandler";
 import { BaseEntity } from "../BaseEntity";
 import { Path2DEntity } from "./Path2DEntity";
@@ -52,6 +58,17 @@ export class SVGImageEntity extends BaseEntity {
       x: this.pathBoundingBox.width,
       y: this.pathBoundingBox.height,
     };
+  }
+
+  /**
+   * Checks if the point is over the SVGImageEntity.
+   * if SVGImageEntity is unfolded, it will return false, so the children Path2DEntity can be clicked on
+   */
+  public isPointOverEntity(point: Vec2): boolean {
+    if (this.isFolded()) {
+      return super.isPointOverEntity(point);
+    }
+    return false;
   }
 
   /**

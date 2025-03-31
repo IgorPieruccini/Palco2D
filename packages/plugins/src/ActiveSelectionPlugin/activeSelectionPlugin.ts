@@ -26,15 +26,20 @@ export class ActiveSelectionPlugin extends ScenePlugin {
     });
 
     this.scene.eventHandler.subscribeToSceneEvent("addChild", (entity) => {
-      this.selectedEntities.set(entity.id, entity);
       entity.on("mousedown", () => {
         this.clearSelection();
         this.selectedEntities.set(entity.id, entity);
         this.holdingEntity = entity;
-        this.lastClickPosition = this.scene.mouseHandler.position;
+
+        const relativePosition = entity.getRelativePostion(
+          this.scene.mouseHandler.position,
+          true,
+        );
+
+        this.lastClickPosition = relativePosition;
         this.clickDistanceFromEntity = {
-          x: this.scene.mouseHandler.position.x - entity.coords.boundingBox.x,
-          y: this.scene.mouseHandler.position.y - entity.coords.boundingBox.y,
+          x: relativePosition.x - entity.position.x,
+          y: relativePosition.y - entity.position.y,
         };
       });
 
@@ -54,11 +59,14 @@ export class ActiveSelectionPlugin extends ScenePlugin {
         this.lastClickPosition &&
         this.clickDistanceFromEntity
       ) {
+        const relativePosition = this.holdingEntity.getRelativePostion(
+          this.scene.mouseHandler.position,
+          true,
+        );
+
         this.holdingEntity.position = {
-          x:
-            this.scene.mouseHandler.position.x - this.clickDistanceFromEntity.x,
-          y:
-            this.scene.mouseHandler.position.y - this.clickDistanceFromEntity.y,
+          x: relativePosition.x - this.clickDistanceFromEntity.x,
+          y: relativePosition.y - this.clickDistanceFromEntity.y,
         };
       }
     });

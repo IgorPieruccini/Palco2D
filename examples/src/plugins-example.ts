@@ -1,6 +1,5 @@
 import {
   AssetHandler,
-  BaseEntity,
   SVGImageEntity,
   Scene,
   Sprite,
