@@ -12,7 +12,9 @@ export type EventsType =
   | "mouseup"
   | "mouseenter"
   | "mouseleave"
-  | "mousehover";
+  | "mousehover"
+  | "dblclick";
+
 export type EntityEvents = Map<EventsType, Array<() => void>>;
 
 export type CanvasEventType = "mousemove" | "mousedown" | "mouseup";

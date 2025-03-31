@@ -11,7 +11,7 @@ export class MouseHandler {
   private canvas: HTMLCanvasElement;
   private domRect: DOMRect;
   private canvasEventSubscribers: Map<
-    "mouseup" | "mousedown" | "mousemove",
+    "mouseup" | "mousedown" | "mousemove" | "dblclick",
     Function[]
   > = new Map();
 
@@ -27,12 +27,14 @@ export class MouseHandler {
     updateMousePosition: this.updateMousePosition.bind(this),
     onMouseDown: this.onMouseDown.bind(this),
     onMouseUp: this.onMouseUp.bind(this),
+    onDoubleClick: this.onDoubleClick.bind(this),
   };
 
   public start() {
     this.canvas.addEventListener("mousemove", this.binded.updateMousePosition);
     this.canvas.addEventListener("mousedown", this.binded.onMouseDown);
     this.canvas.addEventListener("mouseup", this.binded.onMouseUp);
+    this.canvas.addEventListener("dblclick", this.binded.onDoubleClick);
   }
 
   public stop() {
@@ -47,6 +49,7 @@ export class MouseHandler {
     );
     this.canvas.removeEventListener("mousedown", this.binded.onMouseDown);
     this.canvas.removeEventListener("mouseup", this.binded.onMouseUp);
+    this.canvas.removeEventListener("dblclick", this.binded.onDoubleClick);
     this.hoveredEntities = [];
   }
 
@@ -125,6 +128,17 @@ export class MouseHandler {
 
     this.getTopLayerHoveredEntity()
       .onEntityEvent.get("mouseup")
+      ?.forEach((cb) => cb());
+  }
+
+  private onDoubleClick(ev: MouseEvent) {
+    ev.stopPropagation();
+    if (this.hoveredEntities.length === 0) {
+      return;
+    }
+
+    this.getTopLayerHoveredEntity()
+      .onEntityEvent.get("dblclick")
       ?.forEach((cb) => cb());
   }
 
