@@ -68,6 +68,7 @@ export class Path2DEntity extends BaseEntity {
     );
     ctx.translate(data.translate.x, data.translate.y);
 
+    ctx.globalAlpha = Number(data.opacity);
     ctx.fillStyle = data.fill;
     ctx.strokeStyle = data.stroke;
     ctx.lineWidth = Number(data.strokeWidth);
