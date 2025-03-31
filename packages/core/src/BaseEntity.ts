@@ -429,8 +429,10 @@ export class BaseEntity {
     if (!child) {
       throw new Error(`Entity with address ${address} not found`);
     }
+
     this.children.get(parseInt(layer))?.delete(id);
-    SceneHandler.currentScene.eventHandler.notify("addChild", child);
+    SceneHandler.currentScene.mouseHandler.removeEntity(child);
+    SceneHandler.currentScene.eventHandler.notify("removeChild", child);
   }
 
   destroy() {
@@ -440,12 +442,16 @@ export class BaseEntity {
       });
     });
 
+    this.onEntityEvent.clear();
+
     if (this.parent) {
       this.parent.removeChild(this.getOwnAddress());
     } else {
       SceneHandler.currentScene.render.entities
         .get(this.layer)
         ?.delete(this.id);
+
+      SceneHandler.currentScene.mouseHandler.removeEntity(this);
     }
   }
 
