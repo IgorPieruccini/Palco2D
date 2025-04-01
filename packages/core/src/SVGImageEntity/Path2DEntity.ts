@@ -11,6 +11,8 @@ export class Path2DEntity extends BaseEntity {
     height: Infinity,
   };
 
+  public initialPosition: Vec2 = { x: 0, y: 0 };
+
   constructor(props: Path2DProps) {
     const bounds = calculateSVGBoundingBox([props.svgData]);
 
@@ -26,6 +28,7 @@ export class Path2DEntity extends BaseEntity {
 
     super({ ...props, position, size });
     this.svgData = props.svgData;
+    this.initialPosition = { ...position };
     this.pathBoundingBox = bounds;
   }
 

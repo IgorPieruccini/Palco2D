@@ -34,8 +34,16 @@ export class PluginsExample extends Scene {
     const character = new SVGImageEntity({
       id: "character",
       position: { x: 400, y: 500 },
-      rotation: 45,
+      rotation: 0,
       src: "assets/character.svg",
+    });
+
+    setTimeout(() => {
+      character.unfold();
+    }, 1000);
+
+    rect.on("mousedown", () => {
+      character.fold();
     });
 
     this.addEntity(frog);
