@@ -7,7 +7,7 @@ import {
 } from "../../types";
 import { AssetHandler } from "../AssetHandler";
 import { BaseEntity } from "../BaseEntity";
-import { getScaleFromMatrix } from "../utils";
+import { getBoundingFromEntities, getScaleFromMatrix } from "../utils";
 import { Path2DEntity } from "./Path2DEntity";
 import { calculateSVGBoundingBox } from "./utils";
 
@@ -123,6 +123,19 @@ export class SVGImageEntity extends BaseEntity {
    * and then removes the Path2DEntity from the children of SVGImageEntity.
    */
   public fold() {
+    if (this.foldedElemnts.size === 0) {
+      return;
+    }
+
+    const bounds = getBoundingFromEntities(
+      Array.from(this.foldedElemnts.values()),
+    );
+
+    const center = {
+      x: bounds.x + bounds.width / 2,
+      y: bounds.y + bounds.height / 2,
+    };
+
     let index = 0;
     this.foldedElemnts.forEach((path2D) => {
       const svgData = this.svgData[index];
@@ -144,6 +157,20 @@ export class SVGImageEntity extends BaseEntity {
       index++;
     });
     this.foldedElemnts.clear();
+    this.updateBoundingBox();
+
+    this.initialSize = {
+      x: this.pathBoundingBox.width,
+      y: this.pathBoundingBox.height,
+    };
+    this.size = {
+      x: this.pathBoundingBox.width,
+      y: this.pathBoundingBox.height,
+    };
+    this.position = {
+      x: center.x,
+      y: center.y,
+    };
   }
 
   /**
