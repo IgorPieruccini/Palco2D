@@ -1,4 +1,5 @@
 import { Vec2 } from "../types";
+import { BaseEntity } from "./BaseEntity";
 
 export const identityMatrix = [
   [1, 0, 0],
@@ -197,4 +198,35 @@ function transpose3x3(m: number[][]) {
     [m[0][1], m[1][1], m[2][1]],
     [m[0][2], m[1][2], m[2][2]],
   ];
+}
+
+export function getBoundingFromEntities(entities: BaseEntity[]) {
+  const firstEntity = entities[0];
+  const { width, height, x, y } = firstEntity.coords.boundingBox;
+  let maxX: number = width;
+  let maxY: number = height;
+  let minX: number = x;
+  let minY: number = y;
+
+  for (let i = 0; i < entities.length; i++) {
+    const entity = entities[i];
+    const boundingBox = entity.coords.boundingBox;
+    const { width, height, x, y } = boundingBox;
+    if (boundingBox) {
+      maxX = Math.max(maxX, width / 2 + x);
+      maxY = Math.max(maxY, height / 2 + y);
+      minX = Math.min(minX, x - width / 2);
+      minY = Math.min(minY, y - height / 2);
+    }
+  }
+
+  if (minX === null || minY === null || maxX === null || maxY === null) {
+    throw new Error("Error calculating bounding box of commands");
+  }
+  return {
+    x: minX,
+    y: minY,
+    width: maxX - minX,
+    height: maxY - minY,
+  };
 }

@@ -1,16 +1,21 @@
 import { BaseEntity, ScenePlugin, WorldHandler } from "@palco-2d/core";
-import { Vec2 } from "@palco-2d/core/types";
+import { BoundingBox, Vec2 } from "@palco-2d/core/types";
+import { getBoundingFromEntities } from "@palco-2d/core/src/utils";
 
 export class ActiveSelectionPlugin extends ScenePlugin {
   private holdingEntity: BaseEntity | null = null;
   private selectedEntities: Map<string, BaseEntity> = new Map();
   private lastClickPosition: Vec2 | null = null;
   private clickDistanceFromEntity: Vec2 | null = null;
+  private pressingShift: boolean = false;
+  private boundingSelectionBox: BoundingBox | null = null;
 
   init() {
     this.scene.eventHandler.subscribeToSceneEvent("addEntity", (entity) => {
       entity.on("mousedown", () => {
-        this.clearSelection();
+        if (!this.pressingShift) {
+          this.clearSelection();
+        }
         this.selectedEntities.set(entity.id, entity);
         this.holdingEntity = entity;
         this.lastClickPosition = this.scene.mouseHandler.position;
@@ -18,6 +23,10 @@ export class ActiveSelectionPlugin extends ScenePlugin {
           x: this.scene.mouseHandler.position.x - entity.coords.boundingBox.x,
           y: this.scene.mouseHandler.position.y - entity.coords.boundingBox.y,
         };
+
+        this.boundingSelectionBox = getBoundingFromEntities(
+          Array.from(this.selectedEntities.values()),
+        );
       });
 
       entity.on("mouseup", () => {
@@ -27,7 +36,9 @@ export class ActiveSelectionPlugin extends ScenePlugin {
 
     this.scene.eventHandler.subscribeToSceneEvent("addChild", (entity) => {
       entity.on("mousedown", () => {
-        this.clearSelection();
+        if (!this.pressingShift) {
+          this.clearSelection();
+        }
         this.selectedEntities.set(entity.id, entity);
         this.holdingEntity = entity;
 
@@ -41,6 +52,10 @@ export class ActiveSelectionPlugin extends ScenePlugin {
           x: relativePosition.x - entity.position.x,
           y: relativePosition.y - entity.position.y,
         };
+
+        this.boundingSelectionBox = getBoundingFromEntities(
+          Array.from(this.selectedEntities.values()),
+        );
       });
 
       entity.on("mouseup", () => {
@@ -50,7 +65,7 @@ export class ActiveSelectionPlugin extends ScenePlugin {
 
     this.scene.mouseHandler.onCanvas("mousedown", () => {
       this.clearSelection();
-      this.selectedEntities.clear();
+      this.boundingSelectionBox = null;
     });
 
     this.scene.mouseHandler.onCanvas("mousemove", () => {
@@ -74,6 +89,8 @@ export class ActiveSelectionPlugin extends ScenePlugin {
     this.scene.mouseHandler.onCanvas("mouseup", () => {
       this.clearMouseData();
     });
+
+    this.listenToKeyboardEvents();
   }
 
   clearMouseData() {
@@ -86,12 +103,26 @@ export class ActiveSelectionPlugin extends ScenePlugin {
     this.selectedEntities.clear();
   }
 
+  listenToKeyboardEvents() {
+    window.addEventListener("keydown", (event: KeyboardEvent) => {
+      if (event.key === "Shift") {
+        this.pressingShift = true;
+      }
+    });
+
+    window.addEventListener("keyup", (event: KeyboardEvent) => {
+      if (event.key === "Shift") {
+        this.pressingShift = false;
+      }
+    });
+  }
+
   render(ctx: CanvasRenderingContext2D) {
     this.selectedEntities.forEach((entity) => {
       const corners = entity.coords.corners;
       ctx.save();
       ctx.strokeStyle = "#00c7ff";
-      ctx.lineWidth = 2 / WorldHandler.getZoom();
+      ctx.lineWidth = 1 / WorldHandler.getZoom();
       ctx.beginPath();
       ctx.moveTo(corners[0].x, corners[0].y);
       ctx.lineTo(corners[1].x, corners[1].y);
@@ -102,5 +133,18 @@ export class ActiveSelectionPlugin extends ScenePlugin {
       ctx.stroke();
       ctx.restore();
     });
+
+    if (this.selectedEntities.size > 1 && this.boundingSelectionBox) {
+      ctx.save();
+      ctx.strokeStyle = "#00c7ff";
+      ctx.lineWidth = 1 / WorldHandler.getZoom();
+      ctx.strokeRect(
+        this.boundingSelectionBox.x,
+        this.boundingSelectionBox.y,
+        this.boundingSelectionBox.width,
+        this.boundingSelectionBox.height,
+      );
+      ctx.restore();
+    }
   }
 }
