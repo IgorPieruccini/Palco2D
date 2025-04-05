@@ -1,70 +1,53 @@
 import { BaseEntity, ScenePlugin, WorldHandler } from "@palco-2d/core";
 import { BoundingBox, Vec2 } from "@palco-2d/core/types";
 import { getBoundingFromEntities } from "@palco-2d/core/src/utils";
+import { ActiveSelectionManager } from "../ActiveSelectionManager";
 
 export class ActiveSelectionPlugin extends ScenePlugin {
   private holdingEntity: BaseEntity | null = null;
-  private selectedEntities: Map<string, BaseEntity> = new Map();
   private lastClickPosition: Vec2 | null = null;
   private clickDistanceFromEntity: Vec2 | null = null;
-  private pressingShift: boolean = false;
   private boundingSelectionBox: BoundingBox | null = null;
 
   init() {
-    this.scene.eventHandler.subscribeToSceneEvent("addEntity", (entity) => {
-      entity.on("mousedown", () => {
-        if (!this.pressingShift) {
-          this.clearSelection();
+    this.activeSelectionHandler.onActiveSelection(
+      (entity: BaseEntity, entities: BaseEntity[]) => {
+        if (entities.length === 0) {
+          this.clearMouseData();
+          return;
         }
-        this.selectedEntities.set(entity.id, entity);
-        this.holdingEntity = entity;
-        this.lastClickPosition = this.scene.mouseHandler.position;
-        this.clickDistanceFromEntity = {
-          x: this.scene.mouseHandler.position.x - entity.coords.boundingBox.x,
-          y: this.scene.mouseHandler.position.y - entity.coords.boundingBox.y,
-        };
 
-        this.boundingSelectionBox = getBoundingFromEntities(
-          Array.from(this.selectedEntities.values()),
-        );
-      });
+        entity.on("mouseup", () => {
+          if (this.holdingEntity) {
+            this.holdingEntity = null;
+          }
+        });
 
-      entity.on("mouseup", () => {
-        this.clearMouseData();
-      });
-    });
-
-    this.scene.eventHandler.subscribeToSceneEvent("addChild", (entity) => {
-      entity.on("mousedown", () => {
-        if (!this.pressingShift) {
-          this.clearSelection();
-        }
-        this.selectedEntities.set(entity.id, entity);
         this.holdingEntity = entity;
 
-        const relativePosition = entity.getRelativePostion(
-          this.scene.mouseHandler.position,
-          true,
-        );
+        if (entity.parent) {
+          const relativePosition = entity.getRelativePostion(
+            this.scene.mouseHandler.position,
+            true,
+          );
+          this.lastClickPosition = relativePosition;
+          this.clickDistanceFromEntity = {
+            x: relativePosition.x - entity.position.x,
+            y: relativePosition.y - entity.position.y,
+          };
+        } else {
+          this.lastClickPosition = this.scene.mouseHandler.position;
+          this.clickDistanceFromEntity = {
+            x: this.scene.mouseHandler.position.x - entity.coords.boundingBox.x,
+            y: this.scene.mouseHandler.position.y - entity.coords.boundingBox.y,
+          };
+        }
 
-        this.lastClickPosition = relativePosition;
-        this.clickDistanceFromEntity = {
-          x: relativePosition.x - entity.position.x,
-          y: relativePosition.y - entity.position.y,
-        };
-
-        this.boundingSelectionBox = getBoundingFromEntities(
-          Array.from(this.selectedEntities.values()),
-        );
-      });
-
-      entity.on("mouseup", () => {
-        this.clearMouseData();
-      });
-    });
+        this.boundingSelectionBox = getBoundingFromEntities(entities);
+      },
+    );
 
     this.scene.mouseHandler.onCanvas("mousedown", () => {
-      this.clearSelection();
       this.boundingSelectionBox = null;
     });
 
@@ -89,8 +72,6 @@ export class ActiveSelectionPlugin extends ScenePlugin {
     this.scene.mouseHandler.onCanvas("mouseup", () => {
       this.clearMouseData();
     });
-
-    this.listenToKeyboardEvents();
   }
 
   clearMouseData() {
@@ -99,26 +80,12 @@ export class ActiveSelectionPlugin extends ScenePlugin {
     this.clickDistanceFromEntity = null;
   }
 
-  clearSelection() {
-    this.selectedEntities.clear();
-  }
-
-  listenToKeyboardEvents() {
-    window.addEventListener("keydown", (event: KeyboardEvent) => {
-      if (event.key === "Shift") {
-        this.pressingShift = true;
-      }
-    });
-
-    window.addEventListener("keyup", (event: KeyboardEvent) => {
-      if (event.key === "Shift") {
-        this.pressingShift = false;
-      }
-    });
-  }
-
   render(ctx: CanvasRenderingContext2D) {
-    this.selectedEntities.forEach((entity) => {
+    console.log(
+      "rendering active selection plugin",
+      ActiveSelectionManager.selectedEntities.size,
+    );
+    ActiveSelectionManager.selectedEntities.forEach((entity) => {
       const corners = entity.coords.corners;
       ctx.save();
       ctx.strokeStyle = "#00c7ff";
@@ -134,7 +101,10 @@ export class ActiveSelectionPlugin extends ScenePlugin {
       ctx.restore();
     });
 
-    if (this.selectedEntities.size > 1 && this.boundingSelectionBox) {
+    if (
+      ActiveSelectionManager.selectedEntities.size > 1 &&
+      this.boundingSelectionBox
+    ) {
       ctx.save();
       ctx.strokeStyle = "#00c7ff";
       ctx.lineWidth = 1 / WorldHandler.getZoom();
