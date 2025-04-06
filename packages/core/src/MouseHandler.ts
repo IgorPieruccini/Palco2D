@@ -12,7 +12,12 @@ export class MouseHandler {
   private domRect: DOMRect;
   private canvasEventSubscribers: Map<
     "mouseup" | "mousedown" | "mousemove" | "dblclick",
-    Function[]
+    Array<() => void>
+  > = new Map();
+
+  private entityEventSubscribers: Map<
+    "mouseup" | "mousedown",
+    Array<(entity: BaseEntity) => void>
   > = new Map();
 
   constructor(canvas: HTMLCanvasElement) {
@@ -112,9 +117,12 @@ export class MouseHandler {
       return;
     }
 
-    this.getTopLayerHoveredEntity()
-      .onEntityEvent.get("mousedown")
-      ?.forEach((cb) => cb());
+    const topLayerHoveredEntity = this.getTopLayerHoveredEntity();
+    topLayerHoveredEntity.onEntityEvent.get("mousedown")?.forEach((cb) => cb());
+
+    this.entityEventSubscribers.get("mousedown")?.forEach((callback) => {
+      callback(topLayerHoveredEntity);
+    });
   }
 
   private onMouseUp(ev: MouseEvent) {
@@ -126,9 +134,12 @@ export class MouseHandler {
       return;
     }
 
-    this.getTopLayerHoveredEntity()
-      .onEntityEvent.get("mouseup")
-      ?.forEach((cb) => cb());
+    const topLayerHoveredEntity = this.getTopLayerHoveredEntity();
+    topLayerHoveredEntity.onEntityEvent.get("mouseup")?.forEach((cb) => cb());
+
+    this.entityEventSubscribers.get("mouseup")?.forEach((callback) => {
+      callback(topLayerHoveredEntity);
+    });
   }
 
   private onDoubleClick(ev: MouseEvent) {
@@ -217,11 +228,21 @@ export class MouseHandler {
     }
   }
 
+  /**
+   * Subscribe to clicking on the canvas where no entity is hovered.
+   */
   public onCanvas(
     event: "mouseup" | "mousedown" | "mousemove",
-    callback: Function,
+    callback: () => void,
   ) {
     const events = this.canvasEventSubscribers.get(event) || [];
     this.canvasEventSubscribers.set(event, [...events, callback]);
+  }
+
+  public onEntity(
+    event: "mouseup" | "mousedown",
+    callback: (entity: BaseEntity) => void,
+  ) {
+    this.entityEventSubscribers.set(event, [callback]);
   }
 }

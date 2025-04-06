@@ -44,7 +44,11 @@ export class ActiveSelectionManager {
         return;
       }
 
-      if (!this.pressingShift) {
+      const isAlreadySelected = ActiveSelectionManager.selectedEntities.has(
+        entity.id,
+      );
+
+      if (!this.pressingShift && !isAlreadySelected) {
         this.clearSelection();
       }
 
