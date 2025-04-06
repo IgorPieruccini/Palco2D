@@ -11,9 +11,20 @@ export class ActiveSelectionPlugin extends ScenePlugin {
   private boundingSelectionBox: BoundingBox | null = null;
 
   init() {
-    this.scene.mouseHandler.onCanvas("mousedown", () => {
-      this.boundingSelectionBox = null;
-    });
+    this.scene.mouseHandler.onCanvas("mousedown", this.onMouseDown.bind(this));
+    this.scene.mouseHandler.onCanvas("mousemove", this.onMouseMove.bind(this));
+  }
+
+  onMouseDown() {
+    this.boundingSelectionBox = null;
+  }
+
+  onMouseMove() {
+    if (this.boundingSelectionBox) {
+      this.boundingSelectionBox = getBoundingFromEntities(
+        Array.from(ActiveSelectionManager.selectedEntities.values()),
+      );
+    }
   }
 
   onActiveSelectionUpdate(_: BaseEntity, entities: BaseEntity[]) {
