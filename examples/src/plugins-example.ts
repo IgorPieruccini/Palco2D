@@ -5,7 +5,11 @@ import {
   Sprite,
   SquareEntity,
 } from "@palco-2d/core";
-import { ActiveSelectionPlugin, InfinityCanvasPlugin } from "@palco-2d/plugins";
+import {
+  ActiveSelectionPlugin,
+  InfinityCanvasPlugin,
+  MoveEntityPlugin,
+} from "@palco-2d/plugins";
 
 export class PluginsExample extends Scene {
   public async start() {
@@ -14,6 +18,7 @@ export class PluginsExample extends Scene {
 
     this.addPlugin(InfinityCanvasPlugin, "infinityCanvas");
     this.addPlugin(ActiveSelectionPlugin, "activeSelection");
+    this.addPlugin(MoveEntityPlugin, "moveEntity");
 
     const frog = new Sprite({
       id: "frog",

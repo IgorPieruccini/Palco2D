@@ -2,6 +2,11 @@ import { ScenePlugin, WorldHandler } from "@palco-2d/core";
 
 const ZOOM_SENSITIVITY = 1.1;
 
+/*
+ * Adds the ability to pan and zoom the canvas freely.
+ * For panning, hold the space key and mouse right click while dragging
+ * For zooming, use the mouse wheel
+ */
 export class InfinityCanvasPlugin extends ScenePlugin {
   private isDragging: boolean = false;
   private moveToolActive: boolean = false;
