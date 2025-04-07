@@ -202,9 +202,9 @@ function transpose3x3(m: number[][]) {
 
 export function getBoundingFromEntities(entities: BaseEntity[]) {
   const firstEntity = entities[0];
-  const { width, height, x, y } = firstEntity.coords.boundingBox;
-  let maxX: number = width;
-  let maxY: number = height;
+  const { x, y } = firstEntity.coords.boundingBox;
+  let maxX: number = x;
+  let maxY: number = y;
   let minX: number = x;
   let minY: number = y;
 
