@@ -17,9 +17,7 @@ export class ScenePlugin {
     this.init();
   }
 
-  public init() {
-    console.warn("init not implemented in plugin");
-  }
+  public init() { }
 
   public start() {
     this.running = true;
@@ -43,7 +41,5 @@ export class ScenePlugin {
   protected onActiveSelectionUpdate(
     entity: BaseEntity,
     entities: BaseEntity[],
-  ) {
-    console.warn("onActiveSelectionUpdate not implemented in plugin");
-  }
+  ) { }
 }

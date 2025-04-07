@@ -38,7 +38,12 @@ export class QuadrantsHandler {
     };
   }
 
-  private getQuadrantsContainedByQuads(quads: Vec2[]) {
+  /**
+   * Get all quadrants that are contained by the quads
+   * @param quads - Array of Vec2 objects representing the corners of the entity or area selection
+   * @returns - Array of strings representing the quadrants key
+   */
+  public getQuadrantsContainedByQuads(quads: Vec2[]) {
     const mapKeys: Map<string, string> = new Map();
 
     for (let i = 0; i < quads.length; i++) {

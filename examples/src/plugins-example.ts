@@ -45,9 +45,9 @@ export class PluginsExample extends Scene {
       src: "assets/character.svg",
     });
 
-    setTimeout(() => {
-      character.unfold();
-    }, 1000);
+    // setTimeout(() => {
+    //   character.unfold();
+    // }, 1000);
 
     rect.on("mousedown", () => {
       character.fold();

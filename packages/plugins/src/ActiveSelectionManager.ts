@@ -97,4 +97,9 @@ export class ActiveSelectionManager {
       );
     });
   }
+
+  public addEntityToSelection(entity: BaseEntity) {
+    ActiveSelectionManager.selectedEntities.set(entity.id, entity);
+    this.notifySubscribers(entity);
+  }
 }

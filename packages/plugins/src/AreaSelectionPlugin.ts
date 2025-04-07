@@ -1,5 +1,6 @@
-import { ScenePlugin } from "@palco-2d/core";
+import { BaseEntity, ScenePlugin } from "@palco-2d/core";
 import { BoundingBox, Vec2 } from "@palco-2d/core/types";
+import { ActiveSelectionManager } from "./ActiveSelectionManager";
 
 export class AreaSelectionPlugin extends ScenePlugin {
   private startPoint: Vec2 | null = null;
@@ -29,8 +30,75 @@ export class AreaSelectionPlugin extends ScenePlugin {
   }
 
   onMouseUp() {
+    this.getEntitiesInBounds();
     this.startPoint = null;
     this.bounds = null;
+  }
+
+  getEntitiesInBounds() {
+    if (!this.bounds) {
+      return [];
+    }
+
+    const quads = [
+      {
+        x: this.bounds.x,
+        y: this.bounds.y,
+      },
+      {
+        x: this.bounds.x + this.bounds.width,
+        y: this.bounds.y,
+      },
+      {
+        x: this.bounds.x + this.bounds.width,
+        y: this.bounds.y + this.bounds.height,
+      },
+      {
+        x: this.bounds.x,
+        y: this.bounds.y + this.bounds.height,
+      },
+    ];
+
+    const quadrantsKeys =
+      this.scene.mouseHandler.quadrant.getQuadrantsContainedByQuads(quads);
+
+    for (let i = 0; i < quadrantsKeys.length; i++) {
+      const key = quadrantsKeys[i];
+      const entities = this.scene.mouseHandler.quadrant.quadrants.get(key);
+      if (entities) {
+        const layerInterator = entities.entries();
+        let iteratorResult = layerInterator.next();
+
+        while (!iteratorResult.done) {
+          const [_, entity] = iteratorResult.value;
+          const isInsideArea = entity.isObjectInViewport({
+            position: {
+              x: this.bounds.x,
+              y: this.bounds.y,
+            },
+            size: {
+              x: this.bounds.width,
+              y: this.bounds.height,
+            },
+          });
+
+          if (isInsideArea) {
+            const isAlreayAdded = ActiveSelectionManager.selectedEntities.has(
+              entity.id,
+            );
+
+            if (isAlreayAdded) {
+              iteratorResult = layerInterator.next();
+              continue;
+            }
+
+            this.activeSelectionHandler.addEntityToSelection(entity);
+          }
+
+          iteratorResult = layerInterator.next();
+        }
+      }
+    }
   }
 
   render(ctx: CanvasRenderingContext2D) {
