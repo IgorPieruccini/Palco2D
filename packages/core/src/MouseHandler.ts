@@ -243,6 +243,7 @@ export class MouseHandler {
     event: "mouseup" | "mousedown",
     callback: (entity: BaseEntity) => void,
   ) {
-    this.entityEventSubscribers.set(event, [callback]);
+    const events = this.entityEventSubscribers.get(event) || [];
+    this.entityEventSubscribers.set(event, [...events, callback]);
   }
 }
