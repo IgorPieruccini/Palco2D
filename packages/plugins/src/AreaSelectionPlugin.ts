@@ -11,6 +11,13 @@ export class AreaSelectionPlugin extends ScenePlugin {
     this.scene.mouseHandler.onCanvas("mousemove", this.onMouseMove.bind(this));
     this.scene.mouseHandler.onCanvas("mouseup", this.onMouseUp.bind(this));
     this.scene.mouseHandler.onEntity("mouseup", this.onMouseUp.bind(this));
+
+    window.addEventListener("keydown", (event: KeyboardEvent) => {
+      if (event.code === "Space") {
+        this.startPoint = null;
+        this.bounds = null;
+      }
+    });
   }
 
   onMouseDown() {
