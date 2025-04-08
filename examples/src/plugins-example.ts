@@ -10,6 +10,7 @@ import {
   AreaSelectionPlugin,
   InfinityCanvasPlugin,
   MoveEntityPlugin,
+  RotateEntityPlugin,
 } from "@palco-2d/plugins";
 
 export class PluginsExample extends Scene {
@@ -21,6 +22,7 @@ export class PluginsExample extends Scene {
     this.addPlugin(ActiveSelectionPlugin, "activeSelection");
     this.addPlugin(MoveEntityPlugin, "moveEntity");
     this.addPlugin(AreaSelectionPlugin, "areaSelection");
+    this.addPlugin(RotateEntityPlugin, "rotateEntity");
 
     const frog = new Sprite({
       id: "frog",
