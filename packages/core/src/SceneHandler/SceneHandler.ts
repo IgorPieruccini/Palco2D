@@ -82,8 +82,9 @@ export class SceneHandler {
   /**
    * Adds a scene to the handler so later it can be referenced by its name.
    */
-  public addScene<T extends Scene>(scene: T, name: string) {
-    this.scenes.set(name, scene);
+  public addScene(scene: typeof Scene, name: string) {
+    const newScene = new scene();
+    this.scenes.set(name, newScene);
   }
 
   /**

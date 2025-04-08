@@ -19,21 +19,21 @@ import { SvgImageScene } from "./src/svgImage";
 
 const sceneHandler = new SceneHandler();
 
-sceneHandler.addScene(new TileMapExample(), "TileMap");
-sceneHandler.addScene(new SpriteExample(), "SpriteExample");
-sceneHandler.addScene(new ObjectEventsExample(), "ObjectEventsExample");
-sceneHandler.addScene(new LayersExample(), "LayersExample");
-sceneHandler.addScene(new DragExample(), "DragExample");
-sceneHandler.addScene(new BatchExample(), "BatchExample");
-sceneHandler.addScene(new TextExample(), "TextExample");
-sceneHandler.addScene(new FlipSpriteExample(), "FlipSpriteExample");
-sceneHandler.addScene(new BlendingModeExample(), "BlendingModeExample");
-sceneHandler.addScene(new SerializeExample(), "SerializeExample");
-sceneHandler.addScene(new InvitiyCanvasSceneExample(), "InfinityCanvas");
-sceneHandler.addScene(new PluginsExample(), "PluginsExample");
-sceneHandler.addScene(new AddRemoveEntityExample(), "AddRemoveEntity");
-sceneHandler.addScene(new QuadrantExamples(), "QuadrantsExample");
-sceneHandler.addScene(new SvgImageScene(), "SvgImage");
+sceneHandler.addScene(TileMapExample, "TileMap");
+sceneHandler.addScene(SpriteExample, "SpriteExample");
+sceneHandler.addScene(ObjectEventsExample, "ObjectEventsExample");
+sceneHandler.addScene(LayersExample, "LayersExample");
+sceneHandler.addScene(DragExample, "DragExample");
+sceneHandler.addScene(BatchExample, "BatchExample");
+sceneHandler.addScene(TextExample, "TextExample");
+sceneHandler.addScene(FlipSpriteExample, "FlipSpriteExample");
+sceneHandler.addScene(BlendingModeExample, "BlendingModeExample");
+sceneHandler.addScene(SerializeExample, "SerializeExample");
+sceneHandler.addScene(InvitiyCanvasSceneExample, "InfinityCanvas");
+sceneHandler.addScene(PluginsExample, "PluginsExample");
+sceneHandler.addScene(AddRemoveEntityExample, "AddRemoveEntity");
+sceneHandler.addScene(QuadrantExamples, "QuadrantsExample");
+sceneHandler.addScene(SvgImageScene, "SvgImage");
 
 const initialScene = "PluginsExample";
 
@@ -41,7 +41,7 @@ const createSceneDropdown = () => {
   const select = document.getElementById("select-example") as HTMLSelectElement;
 
   if (!select) {
-    throw new Error("Select element not found");
+    throw Error("Select element not found");
   }
 
   sceneHandler.getSceneNames().forEach((name) => {
