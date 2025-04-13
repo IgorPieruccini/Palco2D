@@ -1,6 +1,6 @@
 import { BaseEntity, ScenePlugin, WorldHandler } from "@palco-2d/core";
 import { getBoundingFromEntities } from "@palco-2d/core/src/utils";
-import { BoundingBox, Vec2 } from "@palco-2d/core/types";
+import { BoundingBox } from "@palco-2d/core/types";
 import { ActiveSelectionManager } from "./ActiveSelectionManager";
 import { RotateControl } from "./RotateControl";
 
@@ -9,7 +9,6 @@ export class RotateEntityPlugin extends ScenePlugin {
   private control = new RotateControl();
 
   init() {
-    this.scene.mouseHandler.onCanvas("mousedown", this.onMouseDown.bind(this));
     this.scene.mouseHandler.onCanvas("mousemove", this.onMouseMove.bind(this));
     this.control = new RotateControl();
     this.control.on("mousedown", () => {
@@ -17,15 +16,11 @@ export class RotateEntityPlugin extends ScenePlugin {
     });
   }
 
-  private onMouseDown() {
-    if (this.currentSelectionBound) {
-      this.currentSelectionBound = null;
-      this.scene.removeEntity(this.control);
-    }
-  }
-
   private onMouseMove() {
-    if (this.currentSelectionBound) {
+    if (
+      this.currentSelectionBound &&
+      ActiveSelectionManager.selectedEntities.size > 0
+    ) {
       this.currentSelectionBound = getBoundingFromEntities(
         Array.from(ActiveSelectionManager.selectedEntities.values()),
       );
@@ -50,7 +45,15 @@ export class RotateEntityPlugin extends ScenePlugin {
     entities: BaseEntity[],
   ): void {
     this.currentSelectionBound = getBoundingFromEntities(entities);
-    this.scene.addEntity(this.control);
+    this.addEntity(this.control);
     this.updatePosition();
+  }
+
+  protected onClearSelection(): void {
+    if (
+      ScenePlugin.renderHandler.getEntityByAddress(this.control.getIdAdress())
+    ) {
+      this.removeEntity(this.control);
+    }
   }
 }

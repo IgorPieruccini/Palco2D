@@ -286,8 +286,10 @@ export class RenderHandler {
 
     this.fpsHandler.loop();
 
+    //NOTE: No need to clear this.upperCtx because it's only used by ScenePlugin
+    //and Scene plugin pass UpperCanvas as first argument, therefore this.ctx is
+    //the direct reference for UpperCanvas ctx
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    this.upperCtx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
     this.renderPlugins();
 

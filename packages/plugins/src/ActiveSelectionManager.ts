@@ -16,6 +16,8 @@ export class ActiveSelectionManager {
     (entity: BaseEntity, entities: BaseEntity[]) => void
   > = [];
 
+  static clearSelectionSubscribers: Array<() => void> = [];
+
   constructor() {
     this.listenToKeyboardEvents();
 
@@ -34,6 +36,7 @@ export class ActiveSelectionManager {
     scene.mouseHandler.onCanvas("mousedown", () => {
       if (!this.pressingSpace) {
         this.clearSelection();
+        this.notifyClearSelectionSubscribers();
       }
     });
   }
@@ -89,12 +92,22 @@ export class ActiveSelectionManager {
     ActiveSelectionManager.subscribers.push(callback);
   }
 
+  public onClearSelection(callback: () => void) {
+    ActiveSelectionManager.clearSelectionSubscribers.push(callback);
+  }
+
   public notifySubscribers(entity: BaseEntity) {
     ActiveSelectionManager.subscribers.forEach((callback) => {
       callback(
         entity,
         Array.from(ActiveSelectionManager.selectedEntities.values()),
       );
+    });
+  }
+
+  public notifyClearSelectionSubscribers() {
+    ActiveSelectionManager.clearSelectionSubscribers.forEach((callback) => {
+      callback();
     });
   }
 
