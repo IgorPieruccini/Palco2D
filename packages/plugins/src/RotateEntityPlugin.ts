@@ -11,9 +11,6 @@ export class RotateEntityPlugin extends ScenePlugin {
   init() {
     this.scene.mouseHandler.onCanvas("mousemove", this.onMouseMove.bind(this));
     this.control = new RotateControl();
-    this.control.on("mousedown", () => {
-      console.log("Rotate control clicked");
-    });
   }
 
   private onMouseMove() {
@@ -45,7 +42,16 @@ export class RotateEntityPlugin extends ScenePlugin {
     entities: BaseEntity[],
   ): void {
     this.currentSelectionBound = getBoundingFromEntities(entities);
-    this.addEntity(this.control);
+
+    if (
+      !ScenePlugin.renderHandler.getEntityByAddress(this.control.getIdAdress())
+    ) {
+      this.addEntity(this.control);
+      this.control.on("mousedown", () => {
+        console.log("Rotate control clicked");
+      });
+    }
+
     this.updatePosition();
   }
 

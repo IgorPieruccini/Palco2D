@@ -23,15 +23,7 @@ export class ActiveSelectionManager {
 
     const scene = SceneHandler.currentScene;
 
-    scene.eventHandler.subscribeToSceneEvent(
-      "addEntity",
-      this.addOnMouseDown.bind(this),
-    );
-
-    scene.eventHandler.subscribeToSceneEvent(
-      "addChild",
-      this.addOnMouseDown.bind(this),
-    );
+    scene.mouseHandler.onEntity("mousedown", this.addOnMouseDown.bind(this));
 
     scene.mouseHandler.onCanvas("mousedown", () => {
       if (!this.pressingSpace) {
@@ -42,22 +34,20 @@ export class ActiveSelectionManager {
   }
 
   addOnMouseDown(entity: BaseEntity) {
-    entity.on("mousedown", () => {
-      if (this.pressingSpace) {
-        return;
-      }
+    if (this.pressingSpace) {
+      return;
+    }
 
-      const isAlreadySelected = ActiveSelectionManager.selectedEntities.has(
-        entity.id,
-      );
+    const isAlreadySelected = ActiveSelectionManager.selectedEntities.has(
+      entity.id,
+    );
 
-      if (!this.pressingShift && !isAlreadySelected) {
-        this.clearSelection();
-      }
+    if (!this.pressingShift && !isAlreadySelected) {
+      this.clearSelection();
+    }
 
-      ActiveSelectionManager.selectedEntities.set(entity.id, entity);
-      this.notifySubscribers(entity);
-    });
+    ActiveSelectionManager.selectedEntities.set(entity.id, entity);
+    this.notifySubscribers(entity);
   }
 
   private clearSelection() {

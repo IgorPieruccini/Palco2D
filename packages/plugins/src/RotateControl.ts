@@ -13,10 +13,13 @@ export class RotateControl extends BaseEntity {
       position: { x: 0, y: 0 },
       size: SIZE,
       rotation: 0,
+      // TODO: Implement a special layer for UI
+      layer: 9,
     });
   }
 
   render(ctx: CanvasRenderingContext2D) {
+    super.render(ctx);
     ctx.save();
     ctx.strokeStyle = "red";
     ctx.lineWidth = 1 / WorldHandler.getZoom();
