@@ -13,8 +13,7 @@ export class RotateControl extends BaseEntity {
       position: { x: 0, y: 0 },
       size: SIZE,
       rotation: 0,
-      // TODO: Implement a special layer for UI
-      layer: 9,
+      isUI: true,
     });
   }
 

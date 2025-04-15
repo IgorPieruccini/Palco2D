@@ -94,6 +94,7 @@ export interface BaseEntityProps {
   id?: string;
   static?: boolean;
   globalCompositeOperation?: GlobalCompositeOperation;
+  isUI?: boolean;
 }
 
 export type SpriteProps = Omit<BaseEntityProps, "size"> & {

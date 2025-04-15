@@ -28,6 +28,9 @@ export class ActiveSelectionPlugin extends ScenePlugin {
   }
 
   onActiveSelectionUpdate(_: BaseEntity, entities: BaseEntity[]) {
+    if (entities.length === 0) {
+      return;
+    }
     this.boundingSelectionBox = getBoundingFromEntities(entities);
   }
 

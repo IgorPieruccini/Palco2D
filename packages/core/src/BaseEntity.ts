@@ -163,6 +163,12 @@ export class BaseEntity {
   private static: boolean = false;
 
   /**
+   * When isUI is set to true the entity will be render in the upper canvas,
+   * when the mouse detection will preoritize the UI entities over others.
+   */
+  public isUI: boolean = false;
+
+  /**
    * The globalCompositeOperation property sets the type of compositing operation to apply when drawing the render method.
    * The default value is source-over.
    */
@@ -211,6 +217,7 @@ export class BaseEntity {
       props.globalCompositeOperation || "source-over";
     this.quadrant = new EntityQuadrant(this);
     this.updateTransform();
+    this.isUI = props.isUI || false;
   }
 
   public on(event: EventsType, callback: () => void) {
@@ -489,10 +496,10 @@ export class BaseEntity {
     if (
       boundingBox.x + boundingBox.width / 2 - viewport.position.x >= 0 &&
       boundingBox.x - boundingBox.width / 2 - viewport.position.x <=
-      viewport.size.x &&
+        viewport.size.x &&
       boundingBox.y + boundingBox.height / 2 - viewport.position.y >= 0 &&
       boundingBox.y - boundingBox.height / 2 - viewport.position.y <=
-      viewport.size.y
+        viewport.size.y
     ) {
       inViewport = true;
     }

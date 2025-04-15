@@ -105,7 +105,17 @@ export class MouseHandler {
   }
 
   private getTopLayerHoveredEntity() {
-    return this.hoveredEntities.sort((a, b) => b.layer - a.layer)[0];
+    return this.hoveredEntities.sort((a, b) => {
+      if (a.isUI && !b.isUI) {
+        return 1;
+      }
+
+      if (!a.isUI && b.isUI) {
+        return -1;
+      }
+
+      return b.layer - a.layer;
+    })[0];
   }
 
   private onMouseDown(ev: MouseEvent) {

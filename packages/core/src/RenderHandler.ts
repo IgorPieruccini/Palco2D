@@ -179,6 +179,8 @@ export class RenderHandler {
     while (!layerIteratorResult.done) {
       const [_, entity] = layerIteratorResult.value;
 
+      const currentCtx = entity.isUI ? this.upperCtx : this.ctx;
+
       const viewportPosition = {
         x: -offset.x / zoom,
         y: -offset.y / zoom,
@@ -194,19 +196,19 @@ export class RenderHandler {
         size: viewportSize,
       });
 
-      this.ctx.save();
+      currentCtx.save();
 
       if (!entity.parent) {
         const offset = WorldHandler.getOffset();
-        this.ctx.translate(offset.x, offset.y);
+        currentCtx.translate(offset.x, offset.y);
 
         const zoom = WorldHandler.getZoom();
-        this.ctx.scale(zoom, zoom);
+        currentCtx.scale(zoom, zoom);
       }
 
-      this.ctx.save();
+      currentCtx.save();
       const matrix = entity.matrix;
-      this.ctx.transform(
+      currentCtx.transform(
         matrix[0][0], // a
         matrix[1][0], // b
         matrix[0][1], // c
@@ -216,19 +218,19 @@ export class RenderHandler {
       );
 
       if (isInViewPort && !entity.getStatic()) {
-        entity.render(this.ctx);
+        entity.render(currentCtx);
         this.animateEntity(entity);
       }
 
-      this.ctx.restore();
+      currentCtx.restore();
 
       const childrenIterator = entity.children.entries();
       let childrenIteratorResult = childrenIterator.next();
 
       while (!childrenIteratorResult.done) {
-        this.ctx.save();
+        currentCtx.save();
         const entityMatrix = entity.matrix;
-        this.ctx.transform(
+        currentCtx.transform(
           entityMatrix[0][0], // a
           entityMatrix[1][0], // b
           entityMatrix[0][1], // c
@@ -244,11 +246,11 @@ export class RenderHandler {
           }
         }
 
-        this.ctx.restore();
+        currentCtx.restore();
         childrenIteratorResult = childrenIterator.next();
       }
 
-      this.ctx.restore();
+      currentCtx.restore();
       layerIteratorResult = layerIterator.next();
     }
   }
@@ -286,10 +288,13 @@ export class RenderHandler {
 
     this.fpsHandler.loop();
 
-    //NOTE: No need to clear this.upperCtx because it's only used by ScenePlugin
-    //and Scene plugin pass UpperCanvas as first argument, therefore this.ctx is
-    //the direct reference for UpperCanvas ctx
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    this.upperCtx.clearRect(
+      0,
+      0,
+      this.upperCanvas.width,
+      this.upperCanvas.height,
+    );
 
     this.renderPlugins();
 

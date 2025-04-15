@@ -6,17 +6,33 @@ import { BaseEntity, SceneHandler } from "@palco-2d/core";
  */
 export class ActiveSelectionManager {
   public static selectedEntities: Map<string, BaseEntity> = new Map();
+  public static selectedEntitiesUI: Map<string, BaseEntity> = new Map();
   private pressingShift: boolean = false;
   private pressingSpace: boolean = false;
 
   /**
    * Subscriber will be notified when active selection changes
    */
-  static subscribers: Array<
+  static onActiveSelectionSubscribers: Array<
     (entity: BaseEntity, entities: BaseEntity[]) => void
   > = [];
 
+  /**
+   * Subscriber will be notified when active UI selection changes
+   */
+  static onActiveSelectionUISubscribers: Array<
+    (entity: BaseEntity, entities: BaseEntity[]) => void
+  > = [];
+
+  /**
+   * Subscriber will be notified when active selection is cleared
+   */
   static clearSelectionSubscribers: Array<() => void> = [];
+
+  /**
+   * Subscriber will be notified when active UI selection is cleared
+   */
+  static clearSelectionUISubscribers: Array<() => void> = [];
 
   constructor() {
     this.listenToKeyboardEvents();
@@ -27,8 +43,10 @@ export class ActiveSelectionManager {
 
     scene.mouseHandler.onCanvas("mousedown", () => {
       if (!this.pressingSpace) {
-        this.clearSelection();
+        this.clearSelection(false);
+        this.clearSelection(true);
         this.notifyClearSelectionSubscribers();
+        this.notifyClearUISelectionSubscribers();
       }
     });
   }
@@ -38,20 +56,35 @@ export class ActiveSelectionManager {
       return;
     }
 
-    const isAlreadySelected = ActiveSelectionManager.selectedEntities.has(
-      entity.id,
-    );
+    const updateSelection = (isUI: boolean) => {
+      const selectedEntities = isUI
+        ? ActiveSelectionManager.selectedEntitiesUI
+        : ActiveSelectionManager.selectedEntities;
 
-    if (!this.pressingShift && !isAlreadySelected) {
-      this.clearSelection();
-    }
+      const isAlreadySelected = selectedEntities.has(entity.id);
 
-    ActiveSelectionManager.selectedEntities.set(entity.id, entity);
-    this.notifySubscribers(entity);
+      if (!this.pressingShift && !isAlreadySelected) {
+        this.clearSelection(isUI);
+      }
+
+      selectedEntities.set(entity.id, entity);
+
+      if (isUI) {
+        this.notifyUISubscribers(entity);
+      } else {
+        this.notifySubscribers(entity);
+      }
+    };
+
+    updateSelection(entity.isUI);
   }
 
-  private clearSelection() {
-    ActiveSelectionManager.selectedEntities.clear();
+  private clearSelection(isUI: boolean) {
+    if (isUI) {
+      ActiveSelectionManager.selectedEntitiesUI.clear();
+    } else {
+      ActiveSelectionManager.selectedEntities.clear();
+    }
   }
 
   private listenToKeyboardEvents() {
@@ -76,18 +109,48 @@ export class ActiveSelectionManager {
     });
   }
 
+  /**
+   * Subscribe to active selection event.
+   * @param callback - The callback function to be called when the selection changes.
+   */
   public onActiveSelection(
     callback: (entity: BaseEntity, entities: BaseEntity[]) => void,
   ) {
-    ActiveSelectionManager.subscribers.push(callback);
+    ActiveSelectionManager.onActiveSelectionSubscribers.push(callback);
   }
 
+  /**
+   * Subscribe to active UI selection event.
+   * @param callback - The callback function to be called when the selection changes.
+   */
+  public onActiveUISelection(
+    callback: (entity: BaseEntity, entities: BaseEntity[]) => void,
+  ) {
+    ActiveSelectionManager.onActiveSelectionUISubscribers.push(callback);
+  }
+
+  /**
+   * Subscribe to clear selection event.
+   * @param callback - The callback function to be called when the selection is cleared.
+   */
   public onClearSelection(callback: () => void) {
     ActiveSelectionManager.clearSelectionSubscribers.push(callback);
   }
 
+  /**
+   * Subscribe to clear UI selection event.
+   * @param callback - The callback function to be called when the selection is cleared.
+   */
+  public onClearUISelection(callback: () => void) {
+    ActiveSelectionManager.clearSelectionUISubscribers.push(callback);
+  }
+
+  /*
+   * Notify all subscribers that the selection has changed.
+   * @param entity - The entity that was selected or deselected.
+   */
   public notifySubscribers(entity: BaseEntity) {
-    ActiveSelectionManager.subscribers.forEach((callback) => {
+    ActiveSelectionManager.onActiveSelectionSubscribers.forEach((callback) => {
       callback(
         entity,
         Array.from(ActiveSelectionManager.selectedEntities.values()),
@@ -95,8 +158,35 @@ export class ActiveSelectionManager {
     });
   }
 
+  /*
+   * Notify all subscribers that the UI selection has changed.
+   * @param entity - The entity that was selected or deselected.
+   */
+  public notifyUISubscribers(entity: BaseEntity) {
+    ActiveSelectionManager.onActiveSelectionUISubscribers.forEach(
+      (callback) => {
+        callback(
+          entity,
+          Array.from(ActiveSelectionManager.selectedEntitiesUI.values()),
+        );
+      },
+    );
+  }
+
+  /*
+   * Notify all subscribers that the selection has been cleared.
+   */
   public notifyClearSelectionSubscribers() {
     ActiveSelectionManager.clearSelectionSubscribers.forEach((callback) => {
+      callback();
+    });
+  }
+
+  /*
+   * Notify all subscribers that the UI selection has been cleared.
+   */
+  public notifyClearUISelectionSubscribers() {
+    ActiveSelectionManager.clearSelectionUISubscribers.forEach((callback) => {
       callback();
     });
   }
