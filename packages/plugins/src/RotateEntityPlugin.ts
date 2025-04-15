@@ -46,8 +46,18 @@ export class RotateEntityPlugin extends ScenePlugin {
 
     if (!this.scene.render.getEntityByAddress(this.control.getIdAdress())) {
       this.scene.addEntity(this.control);
+
       this.control.on("mousedown", () => {
-        console.log("Rotate control clicked");
+        this.scene.getPlugin("moveEntity").stop();
+
+        //TODO:  Get event ID to unsubscribe
+        this.scene.mouseHandler.onCanvas("mouseup", () => {
+          this.scene.getPlugin("moveEntity").start();
+        });
+
+        this.scene.mouseHandler.onEntity("mouseup", () => {
+          this.scene.getPlugin("moveEntity").start();
+        });
       });
     }
 

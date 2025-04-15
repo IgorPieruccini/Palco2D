@@ -45,8 +45,6 @@ export class ActiveSelectionManager {
       if (!this.pressingSpace) {
         this.clearSelection(false);
         this.clearSelection(true);
-        this.notifyClearSelectionSubscribers();
-        this.notifyClearUISelectionSubscribers();
       }
     });
   }
@@ -79,11 +77,17 @@ export class ActiveSelectionManager {
     updateSelection(entity.isUI);
   }
 
-  private clearSelection(isUI: boolean) {
+  /**
+   * Clear the selection of entities.
+   * @param isUI - If true, clear the UI selection; otherwise, clear the regular selection.
+   */
+  public clearSelection(isUI: boolean) {
     if (isUI) {
       ActiveSelectionManager.selectedEntitiesUI.clear();
+      this.notifyClearUISelectionSubscribers();
     } else {
       ActiveSelectionManager.selectedEntities.clear();
+      this.notifyClearSelectionSubscribers();
     }
   }
 
@@ -191,8 +195,19 @@ export class ActiveSelectionManager {
     });
   }
 
+  /**
+   * Add an entity to the active selection.
+   */
   public addEntityToSelection(entity: BaseEntity) {
     ActiveSelectionManager.selectedEntities.set(entity.id, entity);
     this.notifySubscribers(entity);
+  }
+
+  /**
+   * Add an entity to the active UI selection.
+   */
+  public addEntityToUISelection(entity: BaseEntity) {
+    ActiveSelectionManager.selectedEntitiesUI.set(entity.id, entity);
+    this.notifyUISubscribers(entity);
   }
 }
