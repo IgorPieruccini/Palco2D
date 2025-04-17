@@ -22,11 +22,11 @@ export class MoveEntityPlugin extends ScenePlugin {
     this.holdingMouseRightClick = true;
     this.onClickPosition = this.scene.mouseHandler.position;
 
-    const selectectEntities = entity.isUI
+    const selectedEntities = entity.isUI
       ? ActiveSelectionManager.selectedEntitiesUI
       : ActiveSelectionManager.selectedEntities;
 
-    selectectEntities.forEach((entity) => {
+    selectedEntities.forEach((entity) => {
       const relativePosition = entity.getRelativePostion(
         this.scene.mouseHandler.position,
         true,
@@ -44,15 +44,15 @@ export class MoveEntityPlugin extends ScenePlugin {
 
   onMouseMove() {
     if (!this.running) return;
-    const selectectEntities = ActiveSelectionManager.selectedEntities;
+    const selectedEntities = ActiveSelectionManager.selectedEntities;
 
     if (
       this.holdingMouseRightClick &&
       this.onClickPosition &&
       this.distanceFromEntity.length > 0 &&
-      selectectEntities.size > 0
+      selectedEntities.size > 0
     ) {
-      const iterator = selectectEntities.entries();
+      const iterator = selectedEntities.entries();
       let iteratorResult = iterator.next();
       let index = 0;
 

@@ -3,6 +3,7 @@ import { BaseEntity, SceneHandler } from "@palco-2d/core";
 /**
  * ActiveSelectionManager Keeps track of the currently selected entities in the scene
  * and notifies subscribers when the selection changes.
+ * the selection is separated by elements in the canvas and upper canvas (eg: elements with isUI)
  */
 export class ActiveSelectionManager {
   public static selectedEntities: Map<string, BaseEntity> = new Map();

@@ -4,14 +4,19 @@ import { BoundingBox } from "@palco-2d/core/types";
 import { ActiveSelectionManager } from "./ActiveSelectionManager";
 import { RotateControl } from "./RotateControl";
 
+
+/**
+* Renders rotation controllers and the logic to rotate the selected entities
+*/
 export class RotateEntityPlugin extends ScenePlugin {
+  // The current bounds of the selected entities, used to calculate where to render the rotate controller
   private currentSelectionBound: BoundingBox | null = null;
+  // The entity responsible for rendering the rotate controller
   private control = new RotateControl();
 
   init() {
     this.scene.mouseHandler.onCanvas("mousemove", this.onMouseMove.bind(this));
     this.control = new RotateControl();
-    console.log(this.control.isUI);
   }
 
   private onMouseMove() {

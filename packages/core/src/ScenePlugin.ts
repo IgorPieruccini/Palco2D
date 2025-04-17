@@ -10,6 +10,7 @@ export class ScenePlugin {
   constructor(scene: Scene) {
     this.scene = scene;
 
+    // ##### subscribe to active selection events #####
     this.activeSelectionHandler.onActiveSelection(
       this.onActiveSelectionUpdate.bind(this),
     );
@@ -17,6 +18,15 @@ export class ScenePlugin {
     this.activeSelectionHandler.onClearSelection(
       this.onClearSelection.bind(this),
     );
+
+    // ##### subscribe to active UI selection events #####
+    this.activeSelectionHandler.onActiveUISelection(
+      this.onClearUISelection.bind(this)
+    )
+
+    this.activeSelectionHandler.onClearUISelection(
+      this.onClearUISelection.bind(this)
+    )
 
     this.init();
   }
@@ -53,4 +63,21 @@ export class ScenePlugin {
    *  side effects when the user deselect all entities
    */
   protected onClearSelection() { }
+
+  /**
+   * Called when the active UI selection changes.
+   * This is where you can implement your own logic to handle what's
+   * happening when an entity is selected or deselected.
+   */
+  protected onActiveUISelectionUpdate(
+    entity: BaseEntity | null,
+    entities: BaseEntity[],
+  ) { }
+
+  /**
+   * Called when the active UI selection is cleared.
+   * This is where you can implement your own logic to handle what's
+   * happening when the user deselects all entities.
+   */
+  protected onClearUISelection() { }
 }
