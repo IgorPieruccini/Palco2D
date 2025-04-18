@@ -6,7 +6,7 @@ import { WorldHandler } from "./WorldHandler";
 
 const dpr = window.devicePixelRatio;
 const MAX_LAYERS = 10;
-const MAX_CHILDER_LAYERS = 5;
+const MAX_CHILDREN_LAYERS = 5;
 
 export class RenderHandler {
   canvas: HTMLCanvasElement;
@@ -125,7 +125,7 @@ export class RenderHandler {
    */
   public removeEntity(entity: BaseEntity) {
     const address = entity.getIdAdress();
-    this.removeEntityByAdress(address);
+    this.removeEntityByAddress(address);
   }
 
   /**
@@ -153,7 +153,7 @@ export class RenderHandler {
    * Find the entity by its id and remove it from the scene
    * if the entity has children, they will be removed as well
    */
-  public removeEntityByAdress(address: string) {
+  public removeEntityByAddress(address: string) {
     const location = address.split("/");
 
     const entity = this.getEntityByAddress(address);
@@ -239,7 +239,7 @@ export class RenderHandler {
           entityMatrix[1][2], // f
         );
 
-        for (let i = 0; i < MAX_CHILDER_LAYERS; i++) {
+        for (let i = 0; i < MAX_CHILDREN_LAYERS; i++) {
           const layer = entity.children.get(i);
           if (layer) {
             this.renderLayers(layer);
