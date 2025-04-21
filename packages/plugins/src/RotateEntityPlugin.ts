@@ -24,22 +24,10 @@ export class RotateEntityPlugin extends ScenePlugin {
   // to aid calculating the delta angle
   private initialEntitiesMatrix: Map<string, number[][]> = new Map();
 
-  init() {
-    this.scene.mouseHandler.onCanvas("mousemove", this.onMouseMove.bind(this));
-    this.control = new RotateControl();
-  }
+  private initialControlMatrix: number[][] = [];
 
-  private onMouseMove() {
-    if (
-      !this.isRotating &&
-      this.currentSelectionBound &&
-      ActiveSelectionManager.selectedEntities.size > 0
-    ) {
-      this.currentSelectionBound = getBoundingFromEntities(
-        Array.from(ActiveSelectionManager.selectedEntities.values()),
-      );
-      this.updatePosition();
-    }
+  init() {
+    this.control = new RotateControl();
   }
 
   private updatePosition() {
@@ -72,6 +60,7 @@ export class RotateEntityPlugin extends ScenePlugin {
     this.control.on("mousedown", () => {
       this.isRotating = true;
       this.initialAngle = null;
+      this.initialControlMatrix = this.control.matrix;
       ActiveSelectionManager.selectedEntities.forEach(entity => {
         this.initialEntitiesMatrix.set(entity.id, entity.matrix);
       });
@@ -132,10 +121,13 @@ export class RotateEntityPlugin extends ScenePlugin {
 
       const position = rotateAround(initialPosition, center, deltaAngle * Math.PI / 180);
 
+      const initialControlPosition = getPositionFromMatrix(this.initialControlMatrix);
+      const controlPosition = rotateAround(initialControlPosition, center, deltaAngle * Math.PI / 180)
+
       entity.rotation = deltaAngle + initialAngle;
       entity.position = position;
 
-      this.updatePosition();
+      this.control.position = controlPosition;
     });
   }
 
