@@ -1,10 +1,5 @@
 import { BaseEntity } from "./BaseEntity";
 import { BaseEntityProps, Vec2 } from "../types";
-import {
-  getPositionFromMatrix,
-  getRotationAngleFromMatrix,
-  multiplyMatrices,
-} from "./utils";
 
 type Shadow = {
   shadowColor: string;

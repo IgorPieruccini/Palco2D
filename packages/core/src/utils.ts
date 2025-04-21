@@ -44,7 +44,7 @@ export const getScaleFromMatrix = (matrix: number[][]) => {
   return { x, y };
 };
 
-export function getRotationAngleFromMatrix(matrix: number[][]) {
+export function getRadFromMatrix(matrix: number[][]) {
   const cosTheta = matrix[0][0];
   const sinTheta = matrix[1][0];
   return Math.atan2(sinTheta, cosTheta);

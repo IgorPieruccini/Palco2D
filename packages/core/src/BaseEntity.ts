@@ -13,7 +13,7 @@ import {
   getMatrixRotation,
   getMatrixScale,
   getPositionFromMatrix,
-  getRotationAngleFromMatrix,
+  getRadFromMatrix,
   getScaleFromMatrix,
   identityMatrix,
   multiplyMatrices,
@@ -301,7 +301,7 @@ export class BaseEntity {
    */
   protected getCoords(): Coords {
     const parentMatrix = this.getWorldMatrix();
-    const parentRotation = getRotationAngleFromMatrix(parentMatrix);
+    const parentRotation = getRadFromMatrix(parentMatrix);
     const matrix = this.getMatrix();
 
     const finalMatrix = multiplyMatrices(parentMatrix, matrix);
@@ -361,7 +361,7 @@ export class BaseEntity {
     const matrix = this.getWorldMatrix();
 
     // parent
-    const globalRotation = getRotationAngleFromMatrix(matrix);
+    const globalRotation = getRadFromMatrix(matrix);
     const globalPosition = getPositionFromMatrix(matrix);
     const globalScale = getScaleFromMatrix(matrix);
 
