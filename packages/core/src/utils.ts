@@ -235,3 +235,19 @@ export function getBoundingFromEntities(entities: BaseEntity[]) {
     height: maxY - minY,
   };
 }
+
+
+export function rotateAround(entityPosition: Vec2, pivot: Vec2, rad: number): Vec2 {
+    const cos = Math.cos(rad);
+    const sin = Math.sin(rad);
+
+    const x = entityPosition.x;
+    const y = entityPosition.y;
+    const px = pivot.x;
+    const py = pivot.y;
+
+    return {
+      x: cos * (x - px) - sin * (y - py) + px,
+      y: sin * (x - px) + cos * (y - py) + py
+    }
+}

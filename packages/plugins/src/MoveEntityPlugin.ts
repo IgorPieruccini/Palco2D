@@ -27,7 +27,7 @@ export class MoveEntityPlugin extends ScenePlugin {
       : ActiveSelectionManager.selectedEntities;
 
     selectedEntities.forEach((entity) => {
-      const relativePosition = entity.getRelativePostion(
+      const relativePosition = entity.getRelativePosition(
         this.scene.mouseHandler.position,
         true,
       );
@@ -58,7 +58,7 @@ export class MoveEntityPlugin extends ScenePlugin {
 
       while (!iteratorResult.done) {
         const [_, entity] = iteratorResult.value;
-        const relativePosition = entity.getRelativePostion(
+        const relativePosition = entity.getRelativePosition(
           this.scene.mouseHandler.position,
           true,
         );

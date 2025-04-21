@@ -1,6 +1,6 @@
 import { BaseEntity, ScenePlugin } from "@palco-2d/core";
-import { applyTransformation, getBoundingFromEntities, getMatrixPosition, getMatrixRotation, getPositionFromMatrix, getRotationAngleFromMatrix, invertMatrix, multiplyMatrices } from "@palco-2d/core/src/utils";
-import { BoundingBox } from "@palco-2d/core/types";
+import { getBoundingFromEntities, getPositionFromMatrix, rotateAround } from "@palco-2d/core/src/utils";
+import { BoundingBox, Vec2 } from "@palco-2d/core/types";
 import { ActiveSelectionManager } from "./ActiveSelectionManager";
 import { RotateControl } from "./RotateControl";
 
@@ -30,6 +30,7 @@ export class RotateEntityPlugin extends ScenePlugin {
 
   private onMouseMove() {
     if (
+      !this.isRotating &&
       this.currentSelectionBound &&
       ActiveSelectionManager.selectedEntities.size > 0
     ) {
@@ -104,11 +105,12 @@ export class RotateEntityPlugin extends ScenePlugin {
   private handleEntityRotation() {
     if (!this.currentSelectionBound) return;
 
-
     const center = {
       x: this.currentSelectionBound.x + this.currentSelectionBound.width / 2,
       y: this.currentSelectionBound.y + this.currentSelectionBound.height / 2,
     };
+
+    // console.log(center)
 
     // Calculate the radian angle between the mouse position and the center of the selection in radians
     const rad = Math.atan2(
@@ -116,7 +118,6 @@ export class RotateEntityPlugin extends ScenePlugin {
       this.scene.mouseHandler.position.x - center.x,
     );
 
-    // Assign the delta rad only on the first iteration of initialRotation
     // to aid calculate the delta
     if (this.initialRad === null) {
       this.initialRad = rad;
@@ -125,28 +126,15 @@ export class RotateEntityPlugin extends ScenePlugin {
     const deltaAngle = rad * (180 / Math.PI) - this.initialRad * (180 / Math.PI);
 
     ActiveSelectionManager.selectedEntities.forEach((entity) => {
-      if(!this.currentSelectionBound) return;
-
-      // Create a matrix from current selection and rotation
-      const positionMatrix = getMatrixPosition(
-        this.currentSelectionBound.x + this.currentSelectionBound.width / 2,
-        this.currentSelectionBound.y + this.currentSelectionBound.height / 2);
-
-      const deltaRad = deltaAngle * (Math.PI / 180);
-
-      const rotationMatrix = getMatrixRotation(deltaRad);
-      const matrix = multiplyMatrices(positionMatrix, rotationMatrix);
+      if (!this.currentSelectionBound) return;
 
       const initialMatrix = this.initialEntitiesMatrix.get(entity.id);
-      if(!initialMatrix) return;
-      const entityMatrix = multiplyMatrices(matrix, initialMatrix);
+      if (!initialMatrix) return;
 
-      const position = applyTransformation(entity.position, matrix);
-      const rotation = getRotationAngleFromMatrix(entityMatrix);
-      const angle = rotation * (180 / Math.PI);
+      const initialPosition = getPositionFromMatrix(initialMatrix);
+      const position = rotateAround(initialPosition, center, deltaAngle * Math.PI / 180);
 
-      entity.rotation = angle;
-      // THIS IS WRONG
+      entity.rotation = deltaAngle;
       entity.position = position;
     });
   }

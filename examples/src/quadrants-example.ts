@@ -67,7 +67,7 @@ export class QuadrantExamples extends Scene {
       const mousePosition: Vec2 = { x: event.clientX, y: event.clientY };
       if (this.draggingEntity) {
         if (this.draggingEntity) {
-          const relativePosition = this.draggingEntity.getRelativePostion(
+          const relativePosition = this.draggingEntity.getRelativePosition(
             mousePosition,
             true,
           );

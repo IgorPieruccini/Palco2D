@@ -357,7 +357,7 @@ export class BaseEntity {
     };
   }
 
-  getRelativePostion(mousePosition: Vec2, relativeToParent?: boolean) {
+  getRelativePosition(mousePosition: Vec2, relativeToParent?: boolean) {
     const matrix = this.getWorldMatrix();
 
     // parent
@@ -466,7 +466,7 @@ export class BaseEntity {
    * Check if the point is over the entity.
    */
   isPointOverEntity(point: Vec2) {
-    const relativePosition = this.getRelativePostion(point);
+    const relativePosition = this.getRelativePosition(point);
 
     const matrix = this.getWorldMatrix();
     const globalScale = getScaleFromMatrix(matrix);

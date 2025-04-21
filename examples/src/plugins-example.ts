@@ -5,6 +5,7 @@ import {
   Sprite,
   SquareEntity,
 } from "@palco-2d/core";
+import { rotateAround } from "@palco-2d/core/src/utils";
 import {
   ActiveSelectionPlugin,
   AreaSelectionPlugin,
@@ -35,9 +36,9 @@ export class PluginsExample extends Scene {
 
     const rect = new SquareEntity({
       id: "rect",
-      position: { x: 600, y: 200 },
-      size: { x: 60, y: 100 },
-      rotation: 45,
+      position: { x: 600, y: 500 },
+      size: { x: 60, y: 60 },
+      rotation: 0,
     });
 
     const character = new SVGImageEntity({
@@ -50,6 +51,9 @@ export class PluginsExample extends Scene {
     // setTimeout(() => {
     //   character.unfold();
     // }, 1000);
+    //
+    // const pos = rotateAround(rect.position, character.position, 180 * Math.PI / 180);
+    // rect.position = pos;
 
     rect.on("mousedown", () => {
       character.fold();
