@@ -530,7 +530,7 @@ export class BaseEntity {
       rotation: this._rotation,
       layer: this.layer,
       children: serializedChildren,
-      address: this.getIdAdress(),
+      address: this.getIdAddress(),
     };
   }
 
@@ -542,7 +542,7 @@ export class BaseEntity {
    *
    * the first layer and id is the entity itself, the next layers and ids are the parents of the entity.
    */
-  public getIdAdress() {
+  public getIdAddress() {
     const parents = this.getAllParents();
 
     const address = parents.reduce((acc, parent) => {

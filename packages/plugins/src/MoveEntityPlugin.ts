@@ -26,6 +26,7 @@ export class MoveEntityPlugin extends ScenePlugin {
       ? ActiveSelectionManager.selectedEntitiesUI
       : ActiveSelectionManager.selectedEntities;
 
+    // Assign initial distance from each selected element
     selectedEntities.forEach((entity) => {
       const relativePosition = entity.getRelativePosition(
         this.scene.mouseHandler.position,

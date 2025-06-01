@@ -48,7 +48,7 @@ export class RotateEntityPlugin extends ScenePlugin {
   ): void {
     this.currentSelectionBound = getBoundingFromEntities(entities);
 
-    if (!this.scene.render.getEntityByAddress(this.control.getIdAdress())) {
+    if (!this.scene.render.getEntityByAddress(this.control.getIdAddress())) {
       this.scene.addEntity(this.control);
       this.addControllerListeners();
     }
@@ -81,7 +81,7 @@ export class RotateEntityPlugin extends ScenePlugin {
   }
 
   protected onClearSelection(): void {
-    if (this.scene.render.getEntityByAddress(this.control.getIdAdress())) {
+    if (this.scene.render.getEntityByAddress(this.control.getIdAddress())) {
       this.scene.removeEntity(this.control);
     }
   }

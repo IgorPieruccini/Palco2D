@@ -12,7 +12,7 @@ import { Path2DEntity } from "./Path2DEntity";
 import { calculateSVGBoundingBox } from "./utils";
 
 export class SVGImageEntity extends BaseEntity {
-  private foldedElemnts: Map<string, Path2DEntity> = new Map<
+  private foldedElements: Map<string, Path2DEntity> = new Map<
     string,
     Path2DEntity
   >();
@@ -113,7 +113,7 @@ export class SVGImageEntity extends BaseEntity {
       });
 
       this.addChild(path2D);
-      this.foldedElemnts.set(path2D.getIdAdress(), path2D);
+      this.foldedElements.set(path2D.getIdAddress(), path2D);
     }
   }
 
@@ -123,12 +123,12 @@ export class SVGImageEntity extends BaseEntity {
    * and then removes the Path2DEntity from the children of SVGImageEntity.
    */
   public fold() {
-    if (this.foldedElemnts.size === 0) {
+    if (this.foldedElements.size === 0) {
       return;
     }
 
     const bounds = getBoundingFromEntities(
-      Array.from(this.foldedElemnts.values()),
+      Array.from(this.foldedElements.values()),
     );
 
     const center = {
@@ -137,7 +137,7 @@ export class SVGImageEntity extends BaseEntity {
     };
 
     let index = 0;
-    this.foldedElemnts.forEach((path2D) => {
+    this.foldedElements.forEach((path2D) => {
       const svgData = this.svgData[index];
 
       const diff = {
@@ -156,7 +156,7 @@ export class SVGImageEntity extends BaseEntity {
       this.removeChild(path2D.getOwnAddress());
       index++;
     });
-    this.foldedElemnts.clear();
+    this.foldedElements.clear();
     this.updateBoundingBox();
 
     this.initialSize = {
@@ -177,7 +177,7 @@ export class SVGImageEntity extends BaseEntity {
    * Returns true if the SVGImageEntity is folded, false otherwise.
    */
   public isFolded(): boolean {
-    return this.foldedElemnts.size === 0;
+    return this.foldedElements.size === 0;
   }
 
   render(ctx: CanvasRenderingContext2D) {

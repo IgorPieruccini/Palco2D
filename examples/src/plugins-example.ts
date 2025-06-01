@@ -5,7 +5,6 @@ import {
   Sprite,
   SquareEntity,
 } from "@palco-2d/core";
-import { rotateAround } from "@palco-2d/core/src/utils";
 import {
   ActiveSelectionPlugin,
   AreaSelectionPlugin,

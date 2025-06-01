@@ -124,7 +124,7 @@ export class RenderHandler {
    * if the entity has children, they will be removed as well
    */
   public removeEntity(entity: BaseEntity) {
-    const address = entity.getIdAdress();
+    const address = entity.getIdAddress();
     this.removeEntityByAddress(address);
   }
 
