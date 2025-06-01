@@ -52,6 +52,8 @@ export class MoveEntityPlugin extends ScenePlugin {
 
   onMouseUp() {
     this.clearMouseData();
+    const selectedEntities = ActiveSelectionManager.selectedEntities;
+    this.rotateControl.hide = selectedEntities.size === 0;
   }
 
   onMouseMove() {
@@ -105,15 +107,11 @@ export class MoveEntityPlugin extends ScenePlugin {
      this.rotateControl.hide = false;
   }
 
-  protected onClearSelection(): void {
-    console.log('clear')
-    // this.rotateControl.hide = true;
-  }
-
   clearMouseData() {
     this.holdingMouseRightClick = false;
     this.onClickPosition = null;
     this.distanceFromEntity = [];
-    this.rotateControl.hide = false;
+    // maybe we can hide without resetting transform
+    this.rotateControl.hide = true;
   }
 }

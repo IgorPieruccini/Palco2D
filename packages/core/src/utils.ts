@@ -1,4 +1,4 @@
-import { Vec2 } from "../types";
+import { BoundingBox, Vec2 } from "../types";
 import { BaseEntity } from "./BaseEntity";
 
 export const identityMatrix = [
@@ -200,7 +200,7 @@ function transpose3x3(m: number[][]) {
   ];
 }
 
-export function getBoundingFromEntities(entities: BaseEntity[]) {
+export function getBoundingFromEntities(entities: BaseEntity[]): BoundingBox {
   const firstEntity = entities[0];
 
   if (!firstEntity) {

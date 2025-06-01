@@ -73,11 +73,16 @@ export class AreaSelectionPlugin extends ScenePlugin {
       const key = quadrantsKeys[i];
       const entities = this.scene.mouseHandler.quadrant.quadrants.get(key);
       if (entities) {
-        const layerInterator = entities.entries();
-        let iteratorResult = layerInterator.next();
+        const layerIterator = entities.entries();
+        let iteratorResult = layerIterator.next();
 
         while (!iteratorResult.done) {
           const [_, entity] = iteratorResult.value;
+          if (entity.isUI) {
+            iteratorResult = layerIterator.next();
+            continue;
+          }
+
           const isInsideArea = entity.isObjectInViewport({
             position: {
               x: this.bounds.x,
@@ -90,19 +95,19 @@ export class AreaSelectionPlugin extends ScenePlugin {
           });
 
           if (isInsideArea) {
-            const isAlreayAdded = ActiveSelectionManager.selectedEntities.has(
+            const isAlreadyAdded = ActiveSelectionManager.selectedEntities.has(
               entity.id,
             );
 
-            if (isAlreayAdded) {
-              iteratorResult = layerInterator.next();
+            if (isAlreadyAdded) {
+              iteratorResult = layerIterator.next();
               continue;
             }
 
             this.activeSelectionHandler.addEntityToSelection(entity);
           }
 
-          iteratorResult = layerInterator.next();
+          iteratorResult = layerIterator.next();
         }
       }
     }
