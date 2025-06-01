@@ -251,3 +251,9 @@ export function rotateAround(entityPosition: Vec2, pivot: Vec2, rad: number): Ve
       y: sin * (x - px) + cos * (y - py) + py
     }
 }
+
+export function getDistance(pointA: Vec2, pointB: Vec2): number {
+   const dx = pointB.x - pointA.x;
+   const dy = pointB.y - pointA.y;
+   return Math.sqrt(dx * dx + dy * dy);
+}
