@@ -38,7 +38,7 @@ export class AssetHandler {
 
   /**
    * Load a svg image from the given path.
-   * it scans the svg for path elements then store the stringfied coordinates in an array,
+   * it scans the svg for path elements then store the stringified coordinates in an array,
    * to be accessed later by the SVGImage  entity.
    * @param {string} path - Path to the svg image.
    */
@@ -123,7 +123,7 @@ export class AssetHandler {
       font
         .load()
         .then((loadedFont) => {
-          //@ts-ignore FontFaceSet does have a add method: https://developer.mozilla.org/en-US/docs/Web/API/FontFaceSet/add
+          //@ts-expect-error FontFaceSet does have a add method: https://developer.mozilla.org/en-US/docs/Web/API/FontFaceSet/add
           document.fonts.add(loadedFont);
           resolve(loadedFont);
         })
