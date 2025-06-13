@@ -24,8 +24,11 @@
   "devDependencies": {
     "@eslint/js": "^9.28.0",
     "eslint": "^9.28.0",
+    "eslint-config-prettier": "^10.1.5",
+    "eslint-plugin-prettier": "^5.4.1",
     "globals": "^16.2.0",
     "html-webpack-plugin": "5.6.0",
+    "prettier": "3.5.3",
     "ts-loader": "9.5.1",
     "typedoc": "^0.27.9",
     "typedoc-github-theme": "^0.2.1",
