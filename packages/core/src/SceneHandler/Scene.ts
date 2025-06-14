@@ -67,7 +67,7 @@ export class Scene {
    * It's the perfect place to create all the entities and plugins you need and add them
    * to the scene.
    */
-  public async start() { }
+  public async start() {}
 
   /**
    * Stops render and mouse handler from running.
@@ -101,7 +101,7 @@ export class Scene {
 
   /**
    * add the plugin to the scene, to run the custom logic of the plugin, the plugin must be started.
-   * @param plugin - The plugin to add to the scene.
+   * @param Plugin - The plugin to add to the scene.
    */
   public addPlugin(Plugin: typeof ScenePlugin, key: string) {
     const plug = new Plugin(this);
