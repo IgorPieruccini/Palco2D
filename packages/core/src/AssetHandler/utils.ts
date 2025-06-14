@@ -6,7 +6,7 @@ import { identityMatrix, multiplyMatrices } from "../utils";
  * using one single command character eg: L 100 100 200 200 300 300, or using multiple command characters eg: L 100 100 L 200 200 L 300 300.
  * We have this list to know where to split the values of the command to generate the right array of commands
  */
-const SVGCommandValueLenght: Record<SVGCommandKey, number> = {
+const SVGCommandValueLength: Record<SVGCommandKey, number> = {
   M: 2,
   m: 2,
   L: 2,
@@ -61,7 +61,7 @@ export const createSVGCommandsFromSVGStringCoordinates = (d: string) => {
       }
       const numberValues = values.map(Number);
       const expectedLength =
-        SVGCommandValueLenght[characterCommand as SVGCommandKey];
+        SVGCommandValueLength[characterCommand as SVGCommandKey];
 
       if (numberValues.length > expectedLength) {
         const splitValues: number[][] = [];

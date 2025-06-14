@@ -77,7 +77,7 @@ export type SVGData = Omit<SVGAsset, "coordinates" | "strokeWidth"> & {
   strokeWidth: number;
 };
 
-export type SupportedAssetsExtention = "png" | "json";
+export type SupportedAssetsExtension = "png" | "json";
 
 export type JsonType = { [key: string]: string | number | JsonType };
 export type SupportedAssetsType =
