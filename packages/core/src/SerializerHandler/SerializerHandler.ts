@@ -5,7 +5,7 @@ import { SquareEntity } from "../SquareEntity";
 import { Text } from "../Text";
 
 export interface SerializableClass {
-  new(args: any): BaseEntity;
+  new (args: any): BaseEntity;
 }
 
 export type SerializableClasses<T = Record<string, SerializableClass>> = T;

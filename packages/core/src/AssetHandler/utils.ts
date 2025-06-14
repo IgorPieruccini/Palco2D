@@ -101,7 +101,7 @@ const getPropertiesFromElement = (element: SVGElement) => {
   const strokeMiterlimit = element.getAttribute("stroke-miterlimit");
   const transform = element.getAttribute("transform");
 
-  let styleProperties: Omit<SVGAsset, "coordinates"> = {
+  const styleProperties: Omit<SVGAsset, "coordinates"> = {
     fill: "none",
     stroke: "none",
     strokeWidth: "0",
@@ -369,7 +369,7 @@ export const getSVGAssetsFromEllipseElement = (
 };
 
 export const parentIsClipMask = (element: SVGElement) => {
-  let parent = element.parentElement;
+  const parent = element.parentElement;
   if (!parent) return false;
   return parent.tagName === "clipPath";
 };

@@ -512,7 +512,7 @@ export class BaseEntity {
   }
 
   public serialize(): SerializedBaseEntityProps {
-    let serializedChildren: SerializedBaseEntityProps["children"] = [];
+    const serializedChildren: SerializedBaseEntityProps["children"] = [];
 
     const layers = Array.from(this.children.entries());
     for (const [_, entities] of layers) {

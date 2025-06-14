@@ -21,17 +21,17 @@ export class ScenePlugin {
 
     // ##### subscribe to active UI selection events #####
     this.activeSelectionHandler.onActiveUISelection(
-      this.onClearUISelection.bind(this)
-    )
+      this.onClearUISelection.bind(this),
+    );
 
     this.activeSelectionHandler.onClearUISelection(
-      this.onClearUISelection.bind(this)
-    )
+      this.onClearUISelection.bind(this),
+    );
 
     this.init();
   }
 
-  public init() { }
+  public init() {}
 
   public start() {
     this.running = true;
@@ -45,7 +45,7 @@ export class ScenePlugin {
    * Called every frame to render the plugin.
    * @param ctx - The canvas rendering context.
    */
-  public render(ctx: CanvasRenderingContext2D) { }
+  public render(ctx: CanvasRenderingContext2D) {}
 
   /**
    * Called when the active selection changes.
@@ -55,14 +55,14 @@ export class ScenePlugin {
   protected onActiveSelectionUpdate(
     entity: BaseEntity | null,
     entities: BaseEntity[],
-  ) { }
+  ) {}
 
   /**
    * Called when active selection is clear (no entity selected)
    * this is where you can implement your when logic to handle
    *  side effects when the user deselect all entities
    */
-  protected onClearSelection() { }
+  protected onClearSelection() {}
 
   /**
    * Called when the active UI selection changes.
@@ -72,12 +72,12 @@ export class ScenePlugin {
   protected onActiveUISelectionUpdate(
     entity: BaseEntity | null,
     entities: BaseEntity[],
-  ) { }
+  ) {}
 
   /**
    * Called when the active UI selection is cleared.
    * This is where you can implement your own logic to handle what's
    * happening when the user deselects all entities.
    */
-  protected onClearUISelection() { }
+  protected onClearUISelection() {}
 }

@@ -9,7 +9,7 @@ export class EntityPlugin {
     this.key = key;
   }
 
-  public render(ctx: CanvasRenderingContext2D) { }
+  public render(ctx: CanvasRenderingContext2D) {}
 
-  public destroy() { }
+  public destroy() {}
 }

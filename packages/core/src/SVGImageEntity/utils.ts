@@ -30,12 +30,12 @@ export function arcToCubicBezier(
   const sinPhi = Math.sin((phi * Math.PI) / 180);
   const cosPhi = Math.cos((phi * Math.PI) / 180);
 
-  let dx = (x1 - x2) / 2;
-  let dy = (y1 - y2) / 2;
-  let x1p = cosPhi * dx + sinPhi * dy;
-  let y1p = -sinPhi * dx + cosPhi * dy;
+  const dx = (x1 - x2) / 2;
+  const dy = (y1 - y2) / 2;
+  const x1p = cosPhi * dx + sinPhi * dy;
+  const y1p = -sinPhi * dx + cosPhi * dy;
 
-  let lambda = (x1p * x1p) / (rx * rx) + (y1p * y1p) / (ry * ry);
+  const lambda = (x1p * x1p) / (rx * rx) + (y1p * y1p) / (ry * ry);
   if (lambda > 1) {
     const sqrtLambda = Math.sqrt(lambda);
     rx *= sqrtLambda;
@@ -51,7 +51,7 @@ export function arcToCubicBezier(
     Math.max(
       0,
       (rxSq * rySq - rxSq * y1pSq - rySq * x1pSq) /
-      (rxSq * y1pSq + rySq * x1pSq),
+        (rxSq * y1pSq + rySq * x1pSq),
     ),
   );
   if (largeArcFlag === sweepFlag) factor = -factor;
@@ -62,7 +62,7 @@ export function arcToCubicBezier(
   const cx = cosPhi * cxp - sinPhi * cyp + (x1 + x2) / 2;
   const cy = sinPhi * cxp + cosPhi * cyp + (y1 + y2) / 2;
 
-  let theta1 = Math.atan2((y1p - cyp) / ry, (x1p - cxp) / rx);
+  const theta1 = Math.atan2((y1p - cyp) / ry, (x1p - cxp) / rx);
   let deltaTheta = Math.atan2((-y1p - cyp) / ry, (-x1p - cxp) / rx) - theta1;
 
   if (sweepFlag === 0 && deltaTheta > 0) {
@@ -110,7 +110,7 @@ export function calculateSVGBoundingBox(svgsData: Array<SVGData>): BoundingBox {
     const svgData = svgsData[i];
     const { x, y, width, height } = calculatePathBoundingBox(svgData);
 
-    let transformedPosition = applyTransformation(
+    const transformedPosition = applyTransformation(
       {
         x: x + svgData.translate.x,
         y: y + svgData.translate.y,
@@ -178,16 +178,16 @@ export function calculatePathBoundingBox(data: SVGData): BoundingBox {
    * @param p1 - End point
    */
   function quadraticBezierBounds(p0: Vec2, cp: Vec2, p1: Vec2) {
-    let tx = (p0.x - cp.x) / (p0.x - 2 * cp.x + p1.x);
-    let ty = (p0.y - cp.y) / (p0.y - 2 * cp.y + p1.y);
+    const tx = (p0.x - cp.x) / (p0.x - 2 * cp.x + p1.x);
+    const ty = (p0.y - cp.y) / (p0.y - 2 * cp.y + p1.y);
 
     updateBounds(p0.x, p0.y);
     updateBounds(p1.x, p1.y);
 
     [tx, ty].forEach((t) => {
       if (t > 0 && t < 1) {
-        let x = (1 - t) ** 2 * p0.x + 2 * (1 - t) * t * cp.x + t ** 2 * p1.x;
-        let y = (1 - t) ** 2 * p0.y + 2 * (1 - t) * t * cp.y + t ** 2 * p1.y;
+        const x = (1 - t) ** 2 * p0.x + 2 * (1 - t) * t * cp.x + t ** 2 * p1.x;
+        const y = (1 - t) ** 2 * p0.y + 2 * (1 - t) * t * cp.y + t ** 2 * p1.y;
         updateBounds(x, y);
       }
     });
@@ -201,16 +201,16 @@ export function calculatePathBoundingBox(data: SVGData): BoundingBox {
    */
   function cubicBezierBounds(p0: Vec2, p1: Vec2, p2: Vec2, p3: Vec2) {
     function extrema(p0: number, p1: number, p2: number, p3: number): number[] {
-      let a = -p0 + 3 * p1 - 3 * p2 + p3;
-      let b = 2 * (p0 - 2 * p1 + p2);
-      let c = p1 - p0;
-      let discriminant = b * b - 4 * a * c;
-      let ts: number[] = [];
+      const a = -p0 + 3 * p1 - 3 * p2 + p3;
+      const b = 2 * (p0 - 2 * p1 + p2);
+      const c = p1 - p0;
+      const discriminant = b * b - 4 * a * c;
+      const ts: number[] = [];
 
       if (discriminant >= 0) {
-        let sqrtD = Math.sqrt(discriminant);
-        let t1 = (-b + sqrtD) / (2 * a);
-        let t2 = (-b - sqrtD) / (2 * a);
+        const sqrtD = Math.sqrt(discriminant);
+        const t1 = (-b + sqrtD) / (2 * a);
+        const t2 = (-b - sqrtD) / (2 * a);
         [t1, t2].forEach((t) => t > 0 && t < 1 && ts.push(t));
       }
 
@@ -221,7 +221,7 @@ export function calculatePathBoundingBox(data: SVGData): BoundingBox {
     updateBounds(p3.x, p3.y);
 
     extrema(p0.x, p1.x, p2.x, p3.x).forEach((t) => {
-      let x =
+      const x =
         (1 - t) ** 3 * p0.x +
         3 * (1 - t) ** 2 * t * p1.x +
         3 * (1 - t) * t ** 2 * p2.x +
@@ -230,7 +230,7 @@ export function calculatePathBoundingBox(data: SVGData): BoundingBox {
     });
 
     extrema(p0.y, p1.y, p2.y, p3.y).forEach((t) => {
-      let y =
+      const y =
         (1 - t) ** 3 * p0.y +
         3 * (1 - t) ** 2 * t * p1.y +
         3 * (1 - t) * t ** 2 * p2.y +
@@ -242,7 +242,7 @@ export function calculatePathBoundingBox(data: SVGData): BoundingBox {
   let current = { x: 0, y: 0 };
   let lastControlPoint: Vec2 | null = null;
   let initialPoint: Vec2 | null = null;
-  for (let cmd of data.commands) {
+  for (const cmd of data.commands) {
     switch (cmd[0]) {
       case "M":
         current = { x: cmd[1], y: cmd[2] };
@@ -361,7 +361,7 @@ export function calculatePathBoundingBox(data: SVGData): BoundingBox {
           cmd[7], // y2
         );
 
-        for (let bezier of beziers) {
+        for (const bezier of beziers) {
           cubicBezierBounds(
             current,
             { x: bezier[0], y: bezier[1] },
@@ -387,7 +387,7 @@ export function calculatePathBoundingBox(data: SVGData): BoundingBox {
           current.y + cmd[7], // y2
         );
 
-        for (let bezier of beziers) {
+        for (const bezier of beziers) {
           cubicBezierBounds(
             current,
             { x: bezier[0], y: bezier[1] },
