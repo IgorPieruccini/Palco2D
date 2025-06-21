@@ -177,7 +177,7 @@ export class RenderHandler {
     let layerIteratorResult = layerIterator.next();
 
     while (!layerIteratorResult.done) {
-      const [_, entity] = layerIteratorResult.value;
+      const [, entity] = layerIteratorResult.value;
 
       const currentCtx = entity.isUI ? this.upperCtx : this.ctx;
 
@@ -206,6 +206,14 @@ export class RenderHandler {
         currentCtx.scale(zoom, zoom);
       }
 
+      if (entity.useAsMask) {
+        currentCtx.globalCompositeOperation = "destination-in";
+      } else {
+        if (entity.globalCompositeOperation) {
+          currentCtx.globalCompositeOperation = entity.globalCompositeOperation;
+        }
+      }
+
       currentCtx.save();
       const matrix = entity.matrix;
       currentCtx.transform(
@@ -229,6 +237,7 @@ export class RenderHandler {
 
       while (!childrenIteratorResult.done) {
         currentCtx.save();
+
         const entityMatrix = entity.matrix;
         currentCtx.transform(
           entityMatrix[0][0], // a

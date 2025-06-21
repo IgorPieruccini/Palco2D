@@ -78,9 +78,6 @@ export class Sprite extends BaseEntity {
 
   render(ctx: CanvasRenderingContext2D) {
     super.render(ctx);
-    if (this.globalCompositeOperation) {
-      ctx.globalCompositeOperation = this.globalCompositeOperation;
-    }
 
     ctx.drawImage(
       this.texture,

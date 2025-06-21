@@ -89,12 +89,13 @@ export type SupportedAssetsType =
 export interface BaseEntityProps {
   position: Vec2;
   size: Vec2;
-  rotation: number;
+  rotation?: number;
   layer?: number;
   id?: string;
   static?: boolean;
   globalCompositeOperation?: GlobalCompositeOperation;
   isUI?: boolean;
+  useAsMask?: boolean;
 }
 
 export type SpriteProps = Omit<BaseEntityProps, "size"> & {

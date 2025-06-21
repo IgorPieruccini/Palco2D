@@ -13,9 +13,7 @@ export class SquareEntity extends BaseEntity {
 
   render(ctx: CanvasRenderingContext2D) {
     super.render(ctx);
-    if (this.globalCompositeOperation) {
-      ctx.globalCompositeOperation = this.globalCompositeOperation;
-    }
+
     ctx.fillStyle = this.color;
     ctx.fillRect(-this.size.x / 2, -this.size.y / 2, this.size.x, this.size.y);
   }

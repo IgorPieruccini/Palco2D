@@ -143,9 +143,15 @@ export class BaseEntity {
   public onEntityEvent: EntityEvents = new Map();
 
   /**
+   * When set to true all elements behind will be masked
+   * Note: When using and element as a mask globalCompositeOperation does not take effect
+   */
+  public useAsMask: boolean = false;
+
+  /**
    * The parent of the entity, if the entity is not a child, the parent is null.
    */
-  public _parent: BaseEntity | null = null;
+  private _parent: BaseEntity | null = null;
 
   public get parent() {
     return this._parent;
@@ -207,7 +213,7 @@ export class BaseEntity {
     this._position = props.position;
     this._size = props.size;
     this.initialSize = { x: props.size.x, y: props.size.y };
-    this._rotation = props.rotation;
+    this._rotation = props.rotation || 0;
     this.isMouseHover = false;
     this.layer = props.layer || 0;
     this.children = new Map();
@@ -218,6 +224,7 @@ export class BaseEntity {
     this.quadrant = new EntityQuadrant(this);
     this.updateTransform();
     this.isUI = props.isUI || false;
+    this.useAsMask = props.useAsMask || false;
   }
 
   public on(event: EventsType, callback: () => void) {
@@ -515,9 +522,9 @@ export class BaseEntity {
     const serializedChildren: SerializedBaseEntityProps["children"] = [];
 
     const layers = Array.from(this.children.entries());
-    for (const [_, entities] of layers) {
+    for (const [, entities] of layers) {
       const entitiesArray = Array.from(entities.entries());
-      for (const [_, entity] of entitiesArray) {
+      for (const [, entity] of entitiesArray) {
         serializedChildren.push(entity.serialize());
       }
     }
