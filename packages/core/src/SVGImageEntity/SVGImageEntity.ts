@@ -182,6 +182,12 @@ export class SVGImageEntity extends BaseEntity {
 
   render(ctx: CanvasRenderingContext2D) {
     super.render(ctx);
+
+    // TODO: Should each Entity handle this individually?
+    if (this.mask.enabled) {
+      return;
+    }
+
     // No need to render the SVGImageEntity if it is folded, because the path2DEntities
     // render them selves as children of the SVGImageEntity
     if (!this.isFolded()) {
@@ -216,6 +222,7 @@ export class SVGImageEntity extends BaseEntity {
       ctx.strokeStyle = data.stroke;
       ctx.lineWidth = Number(data.strokeWidth);
       ctx.fill(data.coordinates);
+      // ctx.globalCompositeOperation = "destination-over";
 
       ctx.restore();
     }

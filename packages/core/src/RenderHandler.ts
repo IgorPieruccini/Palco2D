@@ -181,6 +181,11 @@ export class RenderHandler {
 
       const currentCtx = entity.isUI ? this.upperCtx : this.ctx;
 
+      // WHERE SHOULD THIS GO?
+      // if (entity.mask.enabled) {
+      //   currentCtx.globalCompositeOperation = "source-in";
+      // }
+
       const viewportPosition = {
         x: -offset.x / zoom,
         y: -offset.y / zoom,
@@ -204,14 +209,6 @@ export class RenderHandler {
 
         const zoom = WorldHandler.getZoom();
         currentCtx.scale(zoom, zoom);
-      }
-
-      if (entity.useAsMask) {
-        currentCtx.globalCompositeOperation = "destination-in";
-      } else {
-        if (entity.globalCompositeOperation) {
-          currentCtx.globalCompositeOperation = entity.globalCompositeOperation;
-        }
       }
 
       currentCtx.save();

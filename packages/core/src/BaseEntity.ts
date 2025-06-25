@@ -20,6 +20,7 @@ import {
 } from "./utils";
 import { EntityQuadrant } from "./QuadrantsHandler/EntityQuadrant";
 import { SceneHandler } from "./SceneHandler/SceneHandler";
+import { Mask } from "./Mask/Mask";
 
 /**
  *
@@ -149,6 +150,11 @@ export class BaseEntity {
   public useAsMask: boolean = false;
 
   /**
+   * TODO: Add description
+   */
+  public mask: Mask;
+
+  /**
    * The parent of the entity, if the entity is not a child, the parent is null.
    */
   private _parent: BaseEntity | null = null;
@@ -225,6 +231,7 @@ export class BaseEntity {
     this.updateTransform();
     this.isUI = props.isUI || false;
     this.useAsMask = props.useAsMask || false;
+    this.mask = new Mask(this);
   }
 
   public on(event: EventsType, callback: () => void) {
@@ -256,6 +263,10 @@ export class BaseEntity {
     if (!this.static && this.quadrant.needToUpdateQuadrant()) {
       SceneHandler.currentScene.mouseHandler.quadrant.updateQuadrants(this);
       this.quadrant.shouldUpdate = false;
+    }
+
+    if (this.mask.enabled && this.mask.canvas) {
+      ctx.drawImage(this.mask.canvas, 0, 0);
     }
   }
 

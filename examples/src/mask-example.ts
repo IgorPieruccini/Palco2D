@@ -1,8 +1,15 @@
-import { AssetHandler, Scene, Sprite, SquareEntity } from "@palco-2d/core";
+import {
+  AssetHandler,
+  SVGImageEntity,
+  Scene,
+  Sprite,
+  SquareEntity,
+} from "@palco-2d/core";
 
 export class MaskExample extends Scene {
   public async start() {
     await AssetHandler.loadPng("assets/ninja-frog-jump.png");
+    await AssetHandler.loadSVG("assets/svg-test.svg");
 
     const squareMask = new SquareEntity({
       color: "blue",
@@ -47,7 +54,7 @@ export class MaskExample extends Scene {
         x: 150,
         y: 100,
       },
-      useAsMask: true,
+      //useAsMask: true,
     });
 
     sprite.size = {
@@ -72,9 +79,20 @@ export class MaskExample extends Scene {
     squareMask.addChild(maskedSquare);
     squareMask.addChild(maskedSquareTwo);
 
+    const svg = new SVGImageEntity({
+      id: "SVG-TEST",
+      src: "assets/svg-test.svg",
+      position: {
+        x: 100,
+        y: 100,
+      },
+    });
+
+    svg.mask.setAsMask();
+    this.addEntity(svg);
     this.addEntity(squareMask);
-    this.addEntity(sprite);
-    this.addEntity(frog);
+    // this.addEntity(sprite);
+    // this.addEntity(frog);
     this.render.startRender();
   }
 }
