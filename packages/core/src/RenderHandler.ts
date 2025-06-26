@@ -181,11 +181,6 @@ export class RenderHandler {
 
       const currentCtx = entity.isUI ? this.upperCtx : this.ctx;
 
-      // WHERE SHOULD THIS GO?
-      // if (entity.mask.enabled) {
-      //   currentCtx.globalCompositeOperation = "source-in";
-      // }
-
       const viewportPosition = {
         x: -offset.x / zoom,
         y: -offset.y / zoom,
@@ -258,6 +253,10 @@ export class RenderHandler {
 
       currentCtx.restore();
       layerIteratorResult = layerIterator.next();
+
+      if (entity.useAsMask) {
+        currentCtx.globalCompositeOperation = "source-in";
+      }
     }
   }
 

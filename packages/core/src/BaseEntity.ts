@@ -144,15 +144,25 @@ export class BaseEntity {
   public onEntityEvent: EntityEvents = new Map();
 
   /**
+   * TODO: Add description
+   */
+  private mask: Mask;
+
+  /**
    * When set to true all elements behind will be masked
    * Note: When using and element as a mask globalCompositeOperation does not take effect
    */
-  public useAsMask: boolean = false;
+  public get useAsMask() {
+    return this.mask.enabled;
+  }
 
-  /**
-   * TODO: Add description
-   */
-  public mask: Mask;
+  public set useAsMask(enable: boolean) {
+    if (enable) {
+      this.mask.setAsMask();
+    } else {
+      this.mask.disableMask();
+    }
+  }
 
   /**
    * The parent of the entity, if the entity is not a child, the parent is null.
@@ -230,8 +240,8 @@ export class BaseEntity {
     this.quadrant = new EntityQuadrant(this);
     this.updateTransform();
     this.isUI = props.isUI || false;
-    this.useAsMask = props.useAsMask || false;
     this.mask = new Mask(this);
+    this.useAsMask = props.useAsMask || false;
   }
 
   public on(event: EventsType, callback: () => void) {
@@ -265,9 +275,9 @@ export class BaseEntity {
       this.quadrant.shouldUpdate = false;
     }
 
-    if (this.mask.enabled && this.mask.canvas) {
-      ctx.drawImage(this.mask.canvas, 0, 0);
-    }
+    // if (this.mask.enabled && this.mask.canvas) {
+    //   ctx.drawImage(this.mask.canvas, 0, 0);
+    // }
   }
 
   private getAllParents() {

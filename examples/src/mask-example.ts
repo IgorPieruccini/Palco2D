@@ -88,7 +88,6 @@ export class MaskExample extends Scene {
       },
     });
 
-    svg.mask.setAsMask();
     this.addEntity(svg);
     this.addEntity(squareMask);
     // this.addEntity(sprite);
