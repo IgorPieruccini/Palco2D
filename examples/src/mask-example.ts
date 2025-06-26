@@ -76,20 +76,21 @@ export class MaskExample extends Scene {
       y: 100,
     };
 
-    squareMask.addChild(maskedSquare);
-    squareMask.addChild(maskedSquareTwo);
-
     const svg = new SVGImageEntity({
       id: "SVG-TEST",
       src: "assets/svg-test.svg",
       position: {
-        x: 100,
-        y: 100,
+        x: 300,
+        y: 200,
       },
+      useAsMask: true,
     });
 
+    svg.addChild(squareMask);
+    svg.addChild(maskedSquare);
+    svg.addChild(maskedSquareTwo);
+
     this.addEntity(svg);
-    this.addEntity(squareMask);
     // this.addEntity(sprite);
     // this.addEntity(frog);
     this.render.startRender();

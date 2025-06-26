@@ -146,7 +146,7 @@ export class BaseEntity {
   /**
    * TODO: Add description
    */
-  private mask: Mask;
+  public mask: Mask;
 
   /**
    * When set to true all elements behind will be masked
@@ -274,10 +274,6 @@ export class BaseEntity {
       SceneHandler.currentScene.mouseHandler.quadrant.updateQuadrants(this);
       this.quadrant.shouldUpdate = false;
     }
-
-    // if (this.mask.enabled && this.mask.canvas) {
-    //   ctx.drawImage(this.mask.canvas, 0, 0);
-    // }
   }
 
   private getAllParents() {

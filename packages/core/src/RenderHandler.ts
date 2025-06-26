@@ -169,7 +169,10 @@ export class RenderHandler {
     }
   }
 
-  private renderLayers(entities: Map<string, BaseEntity>) {
+  public renderLayers(
+    entities: Map<string, BaseEntity>,
+    ctx?: CanvasRenderingContext2D,
+  ) {
     const offset = WorldHandler.getOffset();
     const zoom = WorldHandler.getZoom();
 
@@ -179,7 +182,7 @@ export class RenderHandler {
     while (!layerIteratorResult.done) {
       const [, entity] = layerIteratorResult.value;
 
-      const currentCtx = entity.isUI ? this.upperCtx : this.ctx;
+      const currentCtx = ctx ? ctx : entity.isUI ? this.upperCtx : this.ctx;
 
       const viewportPosition = {
         x: -offset.x / zoom,
@@ -218,6 +221,22 @@ export class RenderHandler {
       );
 
       if (isInViewPort && !entity.getStatic()) {
+        // When the element is a mask, don't call render
+        // instead render the out put the mask
+        if (entity.useAsMask) {
+          const canvas = entity.mask.render(entity);
+          if (canvas) {
+            currentCtx.drawImage(
+              canvas,
+              -entity.size.x / 2,
+              -entity.size.y / 2,
+            );
+            currentCtx.restore();
+            layerIteratorResult = layerIterator.next();
+            return;
+          }
+        }
+
         entity.render(currentCtx);
         this.animateEntity(entity);
       }
@@ -253,10 +272,6 @@ export class RenderHandler {
 
       currentCtx.restore();
       layerIteratorResult = layerIterator.next();
-
-      if (entity.useAsMask) {
-        currentCtx.globalCompositeOperation = "source-in";
-      }
     }
   }
 
