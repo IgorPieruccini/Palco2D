@@ -240,7 +240,7 @@ export class BaseEntity {
     this.quadrant = new EntityQuadrant(this);
     this.updateTransform();
     this.isUI = props.isUI || false;
-    this.mask = new Mask(this);
+    this.mask = new Mask();
     this.useAsMask = props.useAsMask || false;
   }
 

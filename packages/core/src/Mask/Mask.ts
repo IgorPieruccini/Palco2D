@@ -5,12 +5,9 @@ export class Mask {
   public enabled: boolean = false;
   public canvas: HTMLCanvasElement | null = null;
   private ctx: CanvasRenderingContext2D | null = null;
-  private entity: BaseEntity;
 
-  constructor(entity: BaseEntity) {
-    // Store the entity render method so we can batch the ctx into a static canvas
-    this.entity = entity;
-  }
+  private maskCanvas: HTMLCanvasElement | null = null;
+  private maskCtx: CanvasRenderingContext2D | null = null;
 
   /**
    * TODO: We should not create a static canvas for each object, but instead have one that fits all
@@ -19,39 +16,45 @@ export class Mask {
   private createStaticCanvas() {
     this.canvas = document.createElement("canvas");
     const ctx = this.canvas.getContext("2d");
-    // document.body.append(this.canvas);
-    // this.canvas.setAttribute("style", "position:absolute");
+
+    this.maskCanvas = document.createElement("canvas");
+    const maskCtx = this.maskCanvas.getContext("2d");
+
     if (!ctx) {
       throw new Error("Fail to create static canvas");
     }
 
+    if (!maskCtx) {
+      throw new Error("Fail to create the mask canvas");
+    }
+
     this.ctx = ctx;
+    this.maskCtx = maskCtx;
   }
 
   public setAsMask() {
     this.createStaticCanvas();
-
-    if (!this.ctx) {
-      throw new Error("SetAsMask should not be called before initialization");
-    }
-
     this.enabled = true;
   }
 
   public disableMask() {
     this.canvas = null;
     this.ctx = null;
+
+    this.maskCanvas = null;
+    this.maskCtx = null;
+
     this.enabled = false;
   }
 
   public render(entity: BaseEntity) {
-    if (!this.ctx) {
+    if (!this.ctx || !this.maskCtx) {
       throw new Error(
         "Render should not be called before initialization - ctx is undefined",
       );
     }
 
-    if (!this.canvas) {
+    if (!this.canvas || !this.maskCanvas) {
       throw new Error(
         "Render should not be called before initialization - Canvas in undefined",
       );
@@ -59,6 +62,8 @@ export class Mask {
 
     this.canvas.setAttribute("width", `${entity.size.x}`);
     this.canvas.setAttribute("height", `${entity.size.y}`);
+    this.maskCanvas.setAttribute("width", `${entity.size.x}`);
+    this.maskCanvas.setAttribute("height", `${entity.size.y}`);
 
     this.ctx.transform(
       1, // a
@@ -69,7 +74,16 @@ export class Mask {
       entity.size.y / 2, // f
     );
 
-    const children = this.entity.children;
+    this.maskCtx.transform(
+      1, // a
+      0, // b
+      0, // c
+      1, // d
+      entity.size.x / 2, // e
+      entity.size.y / 2, // f
+    );
+
+    const children = entity.children;
     const layerIterator = children.entries();
     let layerIteratorResult = layerIterator.next();
 
@@ -82,9 +96,10 @@ export class Mask {
 
     this.ctx.restore();
 
-    this.ctx.globalCompositeOperation = "destination-out";
+    this.ctx.globalCompositeOperation = "destination-in";
     this.ctx.beginPath();
-    entity.render(this.ctx);
+    entity.render(this.maskCtx);
+    this.ctx.drawImage(this.maskCanvas, -entity.size.x / 2, -entity.size.y / 2);
     this.ctx.restore();
 
     return this.canvas;
