@@ -1,5 +1,6 @@
 import { BaseEntity } from "../BaseEntity";
 import { SceneHandler } from "../SceneHandler/SceneHandler";
+import { WorldHandler } from "../WorldHandler";
 
 export class Mask {
   public enabled: boolean = false;
@@ -40,10 +41,8 @@ export class Mask {
   public disableMask() {
     this.canvas = null;
     this.ctx = null;
-
     this.maskCanvas = null;
     this.maskCtx = null;
-
     this.enabled = false;
   }
 
@@ -60,47 +59,32 @@ export class Mask {
       );
     }
 
-    this.canvas.setAttribute("width", `${entity.size.x}`);
-    this.canvas.setAttribute("height", `${entity.size.y}`);
-    this.maskCanvas.setAttribute("width", `${entity.size.x}`);
-    this.maskCanvas.setAttribute("height", `${entity.size.y}`);
+    const zoom = WorldHandler.getZoom();
 
-    this.ctx.transform(
-      1, // a
-      0, // b
-      0, // c
-      1, // d
-      entity.size.x / 2, // e
-      entity.size.y / 2, // f
-    );
+    this.canvas.setAttribute("width", `${entity.size.x * zoom} `);
+    this.canvas.setAttribute("height", `${entity.size.y * zoom}`);
+    this.maskCanvas.setAttribute("width", `${entity.size.x * zoom}`);
+    this.maskCanvas.setAttribute("height", `${entity.size.y * zoom}`);
 
-    this.maskCtx.transform(
-      1, // a
-      0, // b
-      0, // c
-      1, // d
-      entity.size.x / 2, // e
-      entity.size.y / 2, // f
-    );
-
+    this.ctx.save();
+    this.ctx.scale(zoom, zoom);
+    this.ctx.translate(entity.size.x / 2, entity.size.y / 2);
     const children = entity.children;
     const layerIterator = children.entries();
     let layerIteratorResult = layerIterator.next();
 
-    this.ctx.save();
     while (!layerIteratorResult.done) {
       const [, layer] = layerIteratorResult.value;
       SceneHandler.currentScene.render.renderLayers(layer, this.ctx);
       layerIteratorResult = layerIterator.next();
     }
-
     this.ctx.restore();
 
+    this.maskCtx.scale(zoom, zoom);
+    this.maskCtx.translate(entity.size.x / 2, entity.size.y / 2);
     this.ctx.globalCompositeOperation = "destination-in";
-    this.ctx.beginPath();
     entity.render(this.maskCtx);
-    this.ctx.drawImage(this.maskCanvas, -entity.size.x / 2, -entity.size.y / 2);
-    this.ctx.restore();
+    this.ctx.drawImage(this.maskCanvas, 0, 0);
 
     return this.canvas;
   }

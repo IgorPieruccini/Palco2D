@@ -73,19 +73,19 @@ export class MaskExample extends Scene {
       y: 200,
     };
 
-    // const frog = new Sprite({
-    //   texture: "assets/ninja-frog-jump.png",
-    //   position: {
-    //     x: 150,
-    //     y: 100,
-    //   },
-    //   globalCompositeOperation: "hard-light",
-    // });
+    const frog = new Sprite({
+      id: "frog",
+      texture: "assets/ninja-frog-jump.png",
+      position: {
+        x: 150,
+        y: 600,
+      },
+    });
 
-    // frog.size = {
-    //   x: 100,
-    //   y: 100,
-    // };
+    frog.size = {
+      x: 100,
+      y: 100,
+    };
 
     const svg = new SVGImageEntity({
       id: "SVG-TEST",
@@ -103,8 +103,8 @@ export class MaskExample extends Scene {
     svg.addChild(sprite);
 
     this.addEntity(svg);
-    // this.addEntity(sprite);
-    // this.addEntity(frog);
+    this.addEntity(frog);
+
     this.render.startRender();
     this.startAllPlugins();
     this.mouseHandler.start();

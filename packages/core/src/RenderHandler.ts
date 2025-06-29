@@ -176,6 +176,16 @@ export class RenderHandler {
     const offset = WorldHandler.getOffset();
     const zoom = WorldHandler.getZoom();
 
+    const viewportPosition = {
+      x: -offset.x / zoom,
+      y: -offset.y / zoom,
+    };
+
+    const viewportSize = {
+      x: this.canvas.clientWidth / zoom,
+      y: this.canvas.clientHeight / zoom,
+    };
+
     const layerIterator = entities.entries();
     let layerIteratorResult = layerIterator.next();
 
@@ -184,15 +194,28 @@ export class RenderHandler {
 
       const currentCtx = ctx ? ctx : entity.isUI ? this.upperCtx : this.ctx;
 
-      const viewportPosition = {
-        x: -offset.x / zoom,
-        y: -offset.y / zoom,
-      };
+      // When the element is a mask, don't call render
+      // instead render the out put the mask
+      if (entity.useAsMask) {
+        currentCtx.save();
+        currentCtx.translate(offset.x, offset.y);
 
-      const viewportSize = {
-        x: this.canvas.clientWidth / zoom,
-        y: this.canvas.clientHeight / zoom,
-      };
+        const canvas = entity.mask.render(entity);
+        if (canvas) {
+          currentCtx.save();
+          currentCtx.drawImage(
+            canvas,
+            (entity.position.x - entity.size.x / 2) * zoom,
+            (entity.position.y - entity.size.y / 2) * zoom,
+          );
+          currentCtx.restore();
+          currentCtx.restore();
+
+          // THIS IS CAUSING TO SKIP LAST ELEMENT
+          layerIteratorResult = layerIterator.next();
+          return;
+        }
+      }
 
       const isInViewPort = entity.isObjectInViewport({
         position: viewportPosition,
@@ -202,10 +225,7 @@ export class RenderHandler {
       currentCtx.save();
 
       if (!entity.parent) {
-        const offset = WorldHandler.getOffset();
         currentCtx.translate(offset.x, offset.y);
-
-        const zoom = WorldHandler.getZoom();
         currentCtx.scale(zoom, zoom);
       }
 
@@ -221,22 +241,6 @@ export class RenderHandler {
       );
 
       if (isInViewPort && !entity.getStatic()) {
-        // When the element is a mask, don't call render
-        // instead render the out put the mask
-        if (entity.useAsMask) {
-          const canvas = entity.mask.render(entity);
-          if (canvas) {
-            currentCtx.drawImage(
-              canvas,
-              -entity.size.x / 2,
-              -entity.size.y / 2,
-            );
-            currentCtx.restore();
-            layerIteratorResult = layerIterator.next();
-            return;
-          }
-        }
-
         entity.render(currentCtx);
         this.animateEntity(entity);
       }
