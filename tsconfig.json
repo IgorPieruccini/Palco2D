@@ -8,11 +8,8 @@
     "moduleResolution": "node",
     "strict": true,
     "strictNullChecks": true,
-    "sourceMap": true
+    "sourceMap": true,
+    "downlevelIteration": true
   },
-  "include": [
-    "./src/**/*",
-    "./packages/**/*",
-    "custom.d.ts"
-  ]
+  "include": ["./src/**/*", "./packages/**/*", "custom.d.ts"]
 }

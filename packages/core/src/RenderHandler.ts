@@ -186,12 +186,7 @@ export class RenderHandler {
       y: this.canvas.clientHeight / zoom,
     };
 
-    const layerIterator = entities.entries();
-    let layerIteratorResult = layerIterator.next();
-
-    while (!layerIteratorResult.done) {
-      const [, entity] = layerIteratorResult.value;
-
+    for (const [, entity] of entities) {
       const currentCtx = ctx ? ctx : entity.isUI ? this.upperCtx : this.ctx;
 
       // When the element is a mask, don't call render
@@ -211,9 +206,7 @@ export class RenderHandler {
           currentCtx.restore();
           currentCtx.restore();
 
-          // THIS IS CAUSING TO SKIP LAST ELEMENT
-          layerIteratorResult = layerIterator.next();
-          return;
+          continue;
         }
       }
 
@@ -247,10 +240,7 @@ export class RenderHandler {
 
       currentCtx.restore();
 
-      const childrenIterator = entity.children.entries();
-      let childrenIteratorResult = childrenIterator.next();
-
-      while (!childrenIteratorResult.done) {
+      entity.children.forEach(() => {
         currentCtx.save();
 
         const entityMatrix = entity.matrix;
@@ -271,11 +261,8 @@ export class RenderHandler {
         }
 
         currentCtx.restore();
-        childrenIteratorResult = childrenIterator.next();
-      }
-
+      });
       currentCtx.restore();
-      layerIteratorResult = layerIterator.next();
     }
   }
 
