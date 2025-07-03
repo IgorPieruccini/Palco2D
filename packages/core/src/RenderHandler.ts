@@ -238,30 +238,15 @@ export class RenderHandler {
         this.animateEntity(entity);
       }
 
-      currentCtx.restore();
-
       entity.children.forEach(() => {
-        currentCtx.save();
-
-        const entityMatrix = entity.matrix;
-        currentCtx.transform(
-          entityMatrix[0][0], // a
-          entityMatrix[1][0], // b
-          entityMatrix[0][1], // c
-          entityMatrix[1][1], // d
-          entityMatrix[0][2], // e
-          entityMatrix[1][2], // f
-        );
-
         for (let i = 0; i < MAX_CHILDREN_LAYERS; i++) {
           const layer = entity.children.get(i);
           if (layer) {
             this.renderLayers(layer);
           }
         }
-
-        currentCtx.restore();
       });
+      currentCtx.restore();
       currentCtx.restore();
     }
   }
