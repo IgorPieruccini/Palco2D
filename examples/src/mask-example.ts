@@ -27,12 +27,12 @@ export class MaskExample extends Scene {
     const squareMask = new SquareEntity({
       color: "blue",
       position: {
-        x: 100,
-        y: 100,
+        x: 0,
+        y: 0,
       },
       size: {
-        x: 200,
-        y: 200,
+        x: 50,
+        y: 50,
       },
     });
 
@@ -63,14 +63,15 @@ export class MaskExample extends Scene {
     const sprite = new Sprite({
       texture: "assets/ninja-frog-jump.png",
       position: {
-        x: 150,
-        y: 100,
+        x: 100,
+        y: 120,
       },
+      useAsMask: true,
     });
 
     sprite.size = {
-      x: 200,
-      y: 200,
+      x: 100,
+      y: 100,
     };
 
     const frog = new Sprite({
@@ -97,13 +98,15 @@ export class MaskExample extends Scene {
       useAsMask: true,
     });
 
-    svg.addChild(squareMask);
     svg.addChild(maskedSquare);
     svg.addChild(maskedSquareTwo);
+
+    sprite.addChild(squareMask);
     svg.addChild(sprite);
 
     this.addEntity(svg);
     this.addEntity(frog);
+    // this.addEntity(sprite);
 
     this.render.startRender();
     this.startAllPlugins();

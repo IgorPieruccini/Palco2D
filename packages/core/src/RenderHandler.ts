@@ -94,6 +94,7 @@ export class RenderHandler {
     // Set the canvas to the correct size
     window.addEventListener("resize", this.setCanvasSize.bind(this));
     this.setCanvasSize();
+
     this.render.bind(this)();
   }
 
@@ -198,10 +199,14 @@ export class RenderHandler {
         const canvas = entity.mask.render(entity);
         if (canvas) {
           currentCtx.save();
+          const entityScaledSize = {
+            x: entity.size.x * entity.getScale().x,
+            y: entity.size.y * entity.getScale().y,
+          };
           currentCtx.drawImage(
             canvas,
-            (entity.position.x - entity.size.x / 2) * zoom,
-            (entity.position.y - entity.size.y / 2) * zoom,
+            (entity.position.x - entityScaledSize.x / 2) * zoom,
+            (entity.position.y - entityScaledSize.y / 2) * zoom,
           );
           currentCtx.restore();
           currentCtx.restore();
@@ -217,6 +222,7 @@ export class RenderHandler {
 
       currentCtx.save();
 
+      // Set world pan and zoom
       if (!entity.parent) {
         currentCtx.translate(offset.x, offset.y);
         currentCtx.scale(zoom, zoom);

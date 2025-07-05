@@ -1,6 +1,7 @@
 import { BaseEntity } from "../BaseEntity";
 import { SceneHandler } from "../SceneHandler/SceneHandler";
 import { WorldHandler } from "../WorldHandler";
+import { getScaleFromMatrix } from "../utils";
 
 export class Mask {
   public enabled: boolean = false;
@@ -60,30 +61,56 @@ export class Mask {
     }
 
     const zoom = WorldHandler.getZoom();
+    const entityScale = entity.getScale();
 
-    this.canvas.setAttribute("width", `${entity.size.x * zoom} `);
-    this.canvas.setAttribute("height", `${entity.size.y * zoom}`);
-    this.maskCanvas.setAttribute("width", `${entity.size.x * zoom}`);
-    this.maskCanvas.setAttribute("height", `${entity.size.y * zoom}`);
+    const entityScaledSize = {
+      x: entity.size.x * entityScale.x,
+      y: entity.size.y * entityScale.y,
+    };
 
+    const matrixScale = getScaleFromMatrix(entity.matrix);
+
+    // TODO: does not need to be set on every frame
+    this.canvas.setAttribute("width", `${entityScaledSize.x * zoom} `);
+    this.canvas.setAttribute("height", `${entityScaledSize.y * zoom}`);
+    this.maskCanvas.setAttribute("width", `${entityScaledSize.x * zoom}`);
+    this.maskCanvas.setAttribute("height", `${entityScaledSize.y * zoom}`);
+
+    // SET WORLD ZOOM
     this.ctx.save();
     this.ctx.scale(zoom, zoom);
-    this.ctx.translate(entity.size.x / 2, entity.size.y / 2);
-    const children = entity.children;
-    const layerIterator = children.entries();
-    let layerIteratorResult = layerIterator.next();
+    this.ctx.save();
 
-    while (!layerIteratorResult.done) {
-      const [, layer] = layerIteratorResult.value;
-      SceneHandler.currentScene.render.renderLayers(layer, this.ctx);
-      layerIteratorResult = layerIterator.next();
-    }
+    const matrix = entity.matrix;
+    this.ctx.transform(
+      matrix[0][0], // a
+      matrix[1][0], // b
+      matrix[0][1], // c
+      matrix[1][1], // d
+      entityScaledSize.x / 2, // e
+      entityScaledSize.y / 2, // f
+    );
+
+    const children = entity.children;
+    children.forEach((layer) => {
+      if (this.ctx) {
+        SceneHandler.currentScene.render.renderLayers(layer, this.ctx);
+      }
+    });
+
+    this.ctx.restore();
     this.ctx.restore();
 
     this.maskCtx.scale(zoom, zoom);
+
+    this.maskCtx.save();
+    this.maskCtx.scale(entity.getScale().x, entity.getScale().y);
     this.maskCtx.translate(entity.size.x / 2, entity.size.y / 2);
+
     this.ctx.globalCompositeOperation = "destination-in";
     entity.render(this.maskCtx);
+    this.maskCtx.restore();
+
     this.ctx.drawImage(this.maskCanvas, 0, 0);
 
     return this.canvas;
