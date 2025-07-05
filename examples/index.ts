@@ -16,6 +16,7 @@ import { PluginsExample } from "./src/plugins-example";
 import { AddRemoveEntityExample } from "./src/add-remove-entity";
 import { QuadrantExamples } from "./src/quadrants-example";
 import { SvgImageScene } from "./src/svgImage";
+import { GroupExample } from "./src/groups-examples";
 
 const sceneHandler = new SceneHandler();
 
@@ -34,8 +35,9 @@ sceneHandler.addScene(PluginsExample, "PluginsExample");
 sceneHandler.addScene(AddRemoveEntityExample, "AddRemoveEntity");
 sceneHandler.addScene(QuadrantExamples, "QuadrantsExample");
 sceneHandler.addScene(SvgImageScene, "SvgImage");
+sceneHandler.addScene(GroupExample, "GroupExample");
 
-const initialScene = "PluginsExample";
+const initialScene = "GroupExample";
 
 const createSceneDropdown = () => {
   const select = document.getElementById("select-example") as HTMLSelectElement;
