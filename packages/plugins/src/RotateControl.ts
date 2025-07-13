@@ -1,5 +1,10 @@
 import { BaseEntity, Scene, SceneHandler, WorldHandler } from "@palco-2d/core";
-import { getBoundingFromEntities, getPositionFromMatrix, getRadFromMatrix, rotateAround } from "@palco-2d/core/src/utils";
+import {
+  getBoundingFromEntities,
+  getPositionFromMatrix,
+  getRadFromMatrix,
+  rotateAround,
+} from "@palco-2d/core/src/utils";
 import { BoundingBox, Vec2 } from "@palco-2d/core/types";
 import { ActiveSelectionManager } from "./ActiveSelectionManager";
 
@@ -9,7 +14,6 @@ const SIZE: Vec2 = {
 };
 
 export class RotateControl extends BaseEntity {
-
   public isRotating: boolean = false;
   private startedToRotate: boolean = false;
   private scene: Scene;
@@ -23,28 +27,28 @@ export class RotateControl extends BaseEntity {
 
   private _hide: boolean = true;
   public set hide(hide: boolean) {
-    this.setStatic(hide)
+    this.setStatic(hide);
     this._hide = hide;
 
     if (!hide) {
       const selectedEntities = ActiveSelectionManager.selectedEntities;
       if (selectedEntities.size === 0 || this.startedToRotate) return;
 
-        selectedEntities.forEach(entity => {
-          this.initialEntitiesMatrix.set(entity.id, entity.matrix);
-        });
-        const entitiesArray = Array.from(selectedEntities.values());
-        const entitiesBounds = getBoundingFromEntities(entitiesArray);
-        this._bounds = entitiesBounds;
+      selectedEntities.forEach((entity) => {
+        this.initialEntitiesMatrix.set(entity.id, entity.matrix);
+      });
+      const entitiesArray = Array.from(selectedEntities.values());
+      const entitiesBounds = getBoundingFromEntities(entitiesArray);
+      this._bounds = entitiesBounds;
 
-        this.position = {
-          x: entitiesBounds.x + entitiesBounds.width / 2,
-          y: entitiesBounds.y + entitiesBounds.height + SIZE.y
-        }
+      this.position = {
+        x: entitiesBounds.x + entitiesBounds.width / 2,
+        y: entitiesBounds.y + entitiesBounds.height + SIZE.y,
+      };
 
-        this.initialControlMatrix = this.matrix;
+      this.initialControlMatrix = this.matrix;
     } else {
-      this.initialEntitiesMatrix.clear()
+      this.initialEntitiesMatrix.clear();
       this.startedToRotate = false;
     }
   }
@@ -66,31 +70,27 @@ export class RotateControl extends BaseEntity {
   }
 
   public addListener() {
-    console.log("add addListener")
-    this.on('mousedown',this.onMouseDown.bind(this) )
-    this.on('mouseup', this.onMouseUp.bind(this))
-    this.scene.mouseHandler.onCanvas('mouseup', this.onMouseUp.bind(this));
-    this.scene.mouseHandler.onEntity('mouseup', this.onMouseUp.bind(this));
+    this.on("mousedown", this.onMouseDown.bind(this));
+    this.on("mouseup", this.onMouseUp.bind(this));
+    this.scene.mouseHandler.onCanvas("mouseup", this.onMouseUp.bind(this));
+    this.scene.mouseHandler.onEntity("mouseup", this.onMouseUp.bind(this));
   }
 
   private onMouseDown() {
-    console.log('onMouseDown')
     this.isRotating = true;
     this.scene.getPlugin("moveEntity").stop();
-
   }
 
   private onMouseUp() {
-    if(this.isRotating){
-      console.log("onMouseUp");
+    if (this.isRotating) {
       this.isRotating = false;
-      this.scene.getPlugin("moveEntity").start()
+      this.scene.getPlugin("moveEntity").start();
     }
   }
 
   private handleRotate() {
     if (!this._bounds) {
-      return
+      return;
     }
 
     this.startedToRotate = true;
@@ -110,24 +110,33 @@ export class RotateControl extends BaseEntity {
 
     // To aid calculate the delta
     if (this._initialAngle === null) {
-       this._initialAngle = rad * (180 / Math.PI);
+      this._initialAngle = rad * (180 / Math.PI);
     }
 
     const deltaAngle = angle - this._initialAngle;
 
     ActiveSelectionManager.selectedEntities.forEach((entity) => {
-
-    const initialMatrix = this.initialEntitiesMatrix.get(entity.id);
+      const initialMatrix = this.initialEntitiesMatrix.get(entity.id);
       if (!initialMatrix) return;
 
       const initialPosition = getPositionFromMatrix(initialMatrix);
       const initialRad = getRadFromMatrix(initialMatrix);
       const initialAngle = initialRad * (180 / Math.PI);
 
-      const position = rotateAround(initialPosition, center, deltaAngle * Math.PI / 180);
+      const position = rotateAround(
+        initialPosition,
+        center,
+        (deltaAngle * Math.PI) / 180,
+      );
 
-      const initialControlPosition = getPositionFromMatrix(this.initialControlMatrix);
-      const controlPosition = rotateAround(initialControlPosition, center, deltaAngle * Math.PI / 180)
+      const initialControlPosition = getPositionFromMatrix(
+        this.initialControlMatrix,
+      );
+      const controlPosition = rotateAround(
+        initialControlPosition,
+        center,
+        (deltaAngle * Math.PI) / 180,
+      );
 
       entity.rotation = deltaAngle + initialAngle;
       entity.position = position;
