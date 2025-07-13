@@ -194,20 +194,35 @@ export class RenderHandler {
       // instead render the out put the mask
       if (entity.useAsMask) {
         currentCtx.save();
-        currentCtx.translate(offset.x, offset.y);
+        if (!entity.parent) {
+          currentCtx.translate(offset.x, offset.y);
+        }
 
         const canvas = entity.mask.render(entity);
         if (canvas) {
           currentCtx.save();
+
           const entityScaledSize = {
             x: entity.size.x * entity.getScale().x,
             y: entity.size.y * entity.getScale().y,
           };
-          currentCtx.drawImage(
-            canvas,
-            (entity.position.x - entityScaledSize.x / 2) * zoom,
-            (entity.position.y - entityScaledSize.y / 2) * zoom,
-          );
+
+          if (entity.parent) {
+            currentCtx.drawImage(
+              canvas,
+              entity.position.x - entityScaledSize.x / 2,
+              entity.position.y - entityScaledSize.y / 2,
+              entityScaledSize.x,
+              entityScaledSize.y,
+            );
+          } else {
+            currentCtx.drawImage(
+              canvas,
+              (entity.position.x - entityScaledSize.x / 2) * zoom,
+              (entity.position.y - entityScaledSize.y / 2) * zoom,
+            );
+          }
+
           currentCtx.restore();
           currentCtx.restore();
 

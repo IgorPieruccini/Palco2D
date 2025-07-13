@@ -1,7 +1,6 @@
 import { BaseEntity } from "../BaseEntity";
 import { SceneHandler } from "../SceneHandler/SceneHandler";
 import { WorldHandler } from "../WorldHandler";
-import { getScaleFromMatrix } from "../utils";
 
 export class Mask {
   public enabled: boolean = false;
@@ -67,8 +66,6 @@ export class Mask {
       x: entity.size.x * entityScale.x,
       y: entity.size.y * entityScale.y,
     };
-
-    const matrixScale = getScaleFromMatrix(entity.matrix);
 
     // TODO: does not need to be set on every frame
     this.canvas.setAttribute("width", `${entityScaledSize.x * zoom} `);
