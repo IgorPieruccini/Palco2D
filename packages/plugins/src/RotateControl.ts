@@ -77,14 +77,12 @@ export class RotateControl extends BaseEntity {
   }
 
   private onMouseDown() {
-    console.log("onMouseDown");
     this.isRotating = true;
     this.scene.getPlugin("moveEntity").stop();
   }
 
   private onMouseUp() {
     if (this.isRotating) {
-      console.log("onMouseUp");
       this.isRotating = false;
       this.scene.getPlugin("moveEntity").start();
     }

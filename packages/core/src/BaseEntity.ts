@@ -331,11 +331,18 @@ export class BaseEntity {
     const finalMatrix = multiplyMatrices(parentMatrix, matrix);
     const position = getPositionFromMatrix(finalMatrix);
 
+    const parentScale = getScaleFromMatrix(parentMatrix);
+
+    const scaledSize = {
+      x: this._size.x * parentScale.x,
+      y: this._size.y * parentScale.y,
+    };
+
     const fixedCorners = [
-      { x: -this._size.x / 2, y: -this._size.y / 2 },
-      { x: this._size.x / 2, y: -this._size.y / 2 },
-      { x: this._size.x / 2, y: this._size.y / 2 },
-      { x: -this._size.x / 2, y: this._size.y / 2 },
+      { x: -scaledSize.x / 2, y: -scaledSize.y / 2 },
+      { x: scaledSize.x / 2, y: -scaledSize.y / 2 },
+      { x: scaledSize.x / 2, y: scaledSize.y / 2 },
+      { x: -scaledSize.x / 2, y: scaledSize.y / 2 },
     ];
 
     const angle = parentRotation * (180 / Math.PI);

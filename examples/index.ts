@@ -17,6 +17,7 @@ import { AddRemoveEntityExample } from "./src/add-remove-entity";
 import { QuadrantExamples } from "./src/quadrants-example";
 import { SvgImageScene } from "./src/svgImage";
 import { MaskExample } from "./src/mask-example";
+import { GroupExample } from "./src/groups-examples";
 
 const sceneHandler = new SceneHandler();
 
@@ -36,6 +37,7 @@ sceneHandler.addScene(AddRemoveEntityExample, "AddRemoveEntity");
 sceneHandler.addScene(QuadrantExamples, "QuadrantsExample");
 sceneHandler.addScene(SvgImageScene, "SvgImage");
 sceneHandler.addScene(MaskExample, "MaskExample");
+sceneHandler.addScene(GroupExample, "GroupExample");
 
 const initialScene = "MaskExample";
 
