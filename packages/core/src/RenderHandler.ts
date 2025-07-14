@@ -190,44 +190,10 @@ export class RenderHandler {
     for (const [, entity] of entities) {
       const currentCtx = ctx ? ctx : entity.isUI ? this.upperCtx : this.ctx;
 
-      // When the element is a mask, don't call render
-      // instead render the out put the mask
+      // When the element is a mask use render method of the entity mask
       if (entity.useAsMask) {
-        currentCtx.save();
-        if (!entity.parent) {
-          currentCtx.translate(offset.x, offset.y);
-        }
-
-        const canvas = entity.mask.render(entity);
-        if (canvas) {
-          currentCtx.save();
-
-          const entityScaledSize = {
-            x: entity.size.x * entity.getScale().x,
-            y: entity.size.y * entity.getScale().y,
-          };
-
-          if (entity.parent) {
-            currentCtx.drawImage(
-              canvas,
-              entity.position.x - entityScaledSize.x / 2,
-              entity.position.y - entityScaledSize.y / 2,
-              entityScaledSize.x,
-              entityScaledSize.y,
-            );
-          } else {
-            currentCtx.drawImage(
-              canvas,
-              (entity.position.x - entityScaledSize.x / 2) * zoom,
-              (entity.position.y - entityScaledSize.y / 2) * zoom,
-            );
-          }
-
-          currentCtx.restore();
-          currentCtx.restore();
-
-          continue;
-        }
+        this.renderMask(entity, currentCtx);
+        continue;
       }
 
       const isInViewPort = entity.isObjectInViewport({
@@ -269,6 +235,45 @@ export class RenderHandler {
       });
       currentCtx.restore();
       currentCtx.restore();
+    }
+  }
+
+  private renderMask(entity: BaseEntity, ctx: CanvasRenderingContext2D) {
+    const offset = WorldHandler.getOffset();
+    const zoom = WorldHandler.getZoom();
+
+    ctx.save();
+    if (!entity.parent) {
+      // Only apply pan to elements that are directly in the root
+      // children are moved within the parent entity transform
+      ctx.translate(offset.x, offset.y);
+    }
+
+    const canvas = entity.mask.render(entity);
+
+    if (canvas) {
+      const entityScaledSize = {
+        x: entity.size.x * entity.getScale().x,
+        y: entity.size.y * entity.getScale().y,
+      };
+
+      if (entity.parent) {
+        ctx.drawImage(
+          canvas,
+          entity.position.x - entityScaledSize.x / 2,
+          entity.position.y - entityScaledSize.y / 2,
+          entityScaledSize.x,
+          entityScaledSize.y,
+        );
+      } else {
+        ctx.drawImage(
+          canvas,
+          (entity.position.x - entityScaledSize.x / 2) * zoom,
+          (entity.position.y - entityScaledSize.y / 2) * zoom,
+        );
+      }
+
+      ctx.restore();
     }
   }
 
