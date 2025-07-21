@@ -53,9 +53,10 @@ export class BaseEntity {
   }
 
   /**
-   * Do not use this property directly, use the position property instead.
+   * Do not use this property directly, use the size property instead.
    */
   private _size: Vec2;
+
   /**
    * The size of the entity in the canvas.
    * if the entity is a child, the size is relative to the parent.
@@ -72,6 +73,14 @@ export class BaseEntity {
     this._size = size;
 
     this.updateTransform();
+  }
+
+  /**
+   * The size of the element property (not considering canvas transformation)
+   * @returns Vec2
+   */
+  public get realSize() {
+    return this._size;
   }
 
   /**
@@ -256,6 +265,7 @@ export class BaseEntity {
         y: 1,
       };
     }
+
     return {
       x: this._size.x / this.initialSize.x,
       y: this._size.y / this.initialSize.y,

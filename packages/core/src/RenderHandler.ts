@@ -252,24 +252,19 @@ export class RenderHandler {
     const canvas = entity.mask.render(entity);
 
     if (canvas) {
-      const entityScaledSize = {
-        x: entity.size.x * entity.getScale().x,
-        y: entity.size.y * entity.getScale().y,
-      };
-
       if (entity.parent) {
         ctx.drawImage(
           canvas,
-          entity.position.x - entityScaledSize.x / 2,
-          entity.position.y - entityScaledSize.y / 2,
-          entityScaledSize.x,
-          entityScaledSize.y,
+          entity.position.x - entity.realSize.x / 2,
+          entity.position.y - entity.realSize.y / 2,
+          entity.realSize.x,
+          entity.realSize.y,
         );
       } else {
         ctx.drawImage(
           canvas,
-          (entity.position.x - entityScaledSize.x / 2) * zoom,
-          (entity.position.y - entityScaledSize.y / 2) * zoom,
+          (entity.position.x - entity.realSize.x / 2) * zoom,
+          (entity.position.y - entity.realSize.y / 2) * zoom,
         );
       }
 
