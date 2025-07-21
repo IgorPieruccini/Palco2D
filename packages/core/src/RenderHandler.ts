@@ -196,6 +196,8 @@ export class RenderHandler {
         continue;
       }
 
+      currentCtx.globalCompositeOperation = entity.globalCompositeOperation;
+
       const isInViewPort = entity.isObjectInViewport({
         position: viewportPosition,
         size: viewportSize,
