@@ -3,15 +3,18 @@ import { SceneHandler } from "../SceneHandler/SceneHandler";
 import { WorldHandler } from "../WorldHandler";
 
 export class Mask {
-  public enabled: boolean = false;
+  public cached: boolean = false;
+  public useAsMask: boolean = false;
   public canvas: HTMLCanvasElement | null = null;
-  private ctx: CanvasRenderingContext2D | null = null;
 
+  private ctx: CanvasRenderingContext2D | null = null;
   private maskCanvas: HTMLCanvasElement | null = null;
   private maskCtx: CanvasRenderingContext2D | null = null;
+  private entity: BaseEntity | null = null;
+  private zoomSubscription: string | null = null;
 
-  constructor() {
-    // WorldHandler.subscribeToZoomUpdate(this._setCanvasSize);
+  constructor(entity: BaseEntity) {
+    this.entity = entity;
   }
 
   /**
@@ -35,13 +38,16 @@ export class Mask {
 
     this.ctx = ctx;
     this.maskCtx = maskCtx;
-
-    // this._setCanvasSize();
   }
 
   public setAsMask() {
     this.createStaticCanvas();
-    this.enabled = true;
+    this.cached = false;
+    this.useAsMask = true;
+    this.zoomSubscription = WorldHandler.subscribeToZoomUpdate(
+      this.updateCanvasSize.bind(this),
+    );
+    this.updateCanvasSize();
   }
 
   public disableMask() {
@@ -49,30 +55,19 @@ export class Mask {
     this.ctx = null;
     this.maskCanvas = null;
     this.maskCtx = null;
-    this.enabled = false;
+    this.cached = false;
+    this.useAsMask = false;
+
+    if (this.zoomSubscription) {
+      WorldHandler.unsubscribeFromZoomUpdate(this.zoomSubscription);
+    }
   }
 
-  // private _setCanvasSize() {
-  //   const zoom = WorldHandler.getZoom();
-  //   if (!this.ctx || !this.maskCtx) {
-  //     throw new Error(
-  //       "Render should not be called before initialization - ctx is undefined",
-  //     );
-  //   }
+  private getCoreProps() {
+    if (!this.entity) {
+      throw new Error("Entity needs to be set before calling _setCanvasSize");
+    }
 
-  //   if (!this.canvas || !this.maskCanvas) {
-  //     throw new Error(
-  //       "Render should not be called before initialization - Canvas in undefined",
-  //     );
-  //   }
-
-  //   this.canvas.setAttribute("width", `${entity.realSize.x * zoom} `);
-  //   this.canvas.setAttribute("height", `${entity.realSize.y * zoom}`);
-  //   this.maskCanvas.setAttribute("width", `${entity.realSize.x * zoom}`);
-  //   this.maskCanvas.setAttribute("height", `${entity.realSize.y * zoom}`);
-  // }
-
-  public render(entity: BaseEntity) {
     if (!this.ctx || !this.maskCtx) {
       throw new Error(
         "Render should not be called before initialization - ctx is undefined",
@@ -85,33 +80,55 @@ export class Mask {
       );
     }
 
+    return {
+      canvas: this.canvas,
+      ctx: this.ctx,
+      maskCanvas: this.maskCanvas,
+      maskCtx: this.maskCtx,
+      entity: this.entity,
+    };
+  }
+
+  public updateCanvasSize() {
+    const { canvas, maskCanvas, entity } = this.getCoreProps();
+
     const zoom = WorldHandler.getZoom();
 
-    this.canvas.setAttribute("width", `${entity.realSize.x * zoom} `);
-    this.canvas.setAttribute("height", `${entity.realSize.y * zoom}`);
-    this.maskCanvas.setAttribute("width", `${entity.realSize.x * zoom}`);
-    this.maskCanvas.setAttribute("height", `${entity.realSize.y * zoom}`);
+    canvas.setAttribute("width", `${entity.realSize.x * zoom} `);
+    canvas.setAttribute("height", `${entity.realSize.y * zoom}`);
+    maskCanvas.setAttribute("width", `${entity.realSize.x * zoom}`);
+    maskCanvas.setAttribute("height", `${entity.realSize.y * zoom}`);
+
+    this.cached = false;
+  }
+
+  public render() {
+    const { canvas, ctx, maskCanvas, maskCtx, entity } = this.getCoreProps();
+
+    if (this.cached) return canvas;
+    this.cached = true;
 
     // masked elements
-    this.ctx.save();
-    this._setContextTransformation(this.ctx, entity);
+    ctx.save();
+    this._setContextTransformation(ctx, entity);
     const children = entity.children;
     children.forEach((layer) => {
-      if (this.ctx) {
-        SceneHandler.currentScene.render.renderLayers(layer, this.ctx);
+      if (ctx) {
+        SceneHandler.currentScene.render.renderLayers(layer, ctx);
       }
     });
-    this.ctx.restore();
+    ctx.restore();
 
     // the mask
-    this.maskCtx.save();
-    this._setContextTransformation(this.maskCtx, entity);
-    this.ctx.globalCompositeOperation = "destination-in";
-    entity.render(this.maskCtx);
-    this.maskCtx.restore();
+    maskCtx.save();
+    this._setContextTransformation(maskCtx, entity);
+    ctx.globalCompositeOperation = "destination-in";
+    entity.render(maskCtx);
+    maskCtx.restore();
 
-    this.ctx.drawImage(this.maskCanvas, 0, 0);
-    return this.canvas;
+    ctx.drawImage(maskCanvas, 0, 0);
+
+    return canvas;
   }
 
   private _setContextTransformation(

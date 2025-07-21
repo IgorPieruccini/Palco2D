@@ -249,7 +249,7 @@ export class RenderHandler {
       ctx.translate(offset.x, offset.y);
     }
 
-    const canvas = entity.mask.render(entity);
+    const canvas = entity.mask.render();
 
     if (canvas) {
       if (entity.parent) {

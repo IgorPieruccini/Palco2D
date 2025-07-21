@@ -50,6 +50,7 @@ export class WorldHandler {
   static subscribeToZoomUpdate(callback: (zoom: number) => void) {
     const id = generateUUID();
     WorldHandler.listeners.push({ id, callback });
+    return id;
   }
 
   /**

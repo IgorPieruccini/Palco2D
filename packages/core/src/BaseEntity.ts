@@ -72,6 +72,16 @@ export class BaseEntity {
   public set size(size: Vec2) {
     this._size = size;
 
+    // When the size of entity changes and the entity is used as mask, set the mask cached to false to recalculate the mask
+    // Many entities might start with the size equal to infinity, so we also check for it
+    if (
+      this._size.x !== Infinity &&
+      this.size.y !== Infinity &&
+      this.mask.useAsMask
+    ) {
+      this.mask.updateCanvasSize();
+    }
+
     this.updateTransform();
   }
 
@@ -162,7 +172,7 @@ export class BaseEntity {
    * Note: When using and element as a mask globalCompositeOperation does not take effect
    */
   public get useAsMask() {
-    return this.mask.enabled;
+    return this.mask.useAsMask;
   }
 
   public set useAsMask(enable: boolean) {
@@ -249,7 +259,7 @@ export class BaseEntity {
     this.quadrant = new EntityQuadrant(this);
     this.updateTransform();
     this.isUI = props.isUI || false;
-    this.mask = new Mask();
+    this.mask = new Mask(this);
     this.useAsMask = props.useAsMask || false;
   }
 
