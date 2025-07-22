@@ -5,10 +5,18 @@ import { WorldHandler } from "../WorldHandler";
 export class Mask {
   public cached: boolean = false;
   public useAsMask: boolean = false;
-  public canvas: HTMLCanvasElement | null = null;
+
+  /**
+   * Canvas for rendering the elements that are masked
+   */
+  private maskedElementsCanvas: HTMLCanvasElement | null = null;
+
+  /**
+   * Canvas for rendering the msk element
+   */
+  private maskingCanvas: HTMLCanvasElement | null = null;
 
   private ctx: CanvasRenderingContext2D | null = null;
-  private maskCanvas: HTMLCanvasElement | null = null;
   private maskCtx: CanvasRenderingContext2D | null = null;
   private entity: BaseEntity | null = null;
   private zoomSubscription: string | null = null;
@@ -22,11 +30,11 @@ export class Mask {
    * Create and assign a static canvas to be used to render the context and create the mask content
    */
   private createStaticCanvas() {
-    this.canvas = document.createElement("canvas");
-    const ctx = this.canvas.getContext("2d");
+    this.maskedElementsCanvas = document.createElement("canvas");
+    const ctx = this.maskedElementsCanvas.getContext("2d");
 
-    this.maskCanvas = document.createElement("canvas");
-    const maskCtx = this.maskCanvas.getContext("2d");
+    this.maskingCanvas = document.createElement("canvas");
+    const maskCtx = this.maskingCanvas.getContext("2d");
 
     if (!ctx) {
       throw new Error("Fail to create static canvas");
@@ -51,9 +59,9 @@ export class Mask {
   }
 
   public disableMask() {
-    this.canvas = null;
+    this.maskedElementsCanvas = null;
     this.ctx = null;
-    this.maskCanvas = null;
+    this.maskingCanvas = null;
     this.maskCtx = null;
     this.cached = false;
     this.useAsMask = false;
@@ -61,6 +69,30 @@ export class Mask {
     if (this.zoomSubscription) {
       WorldHandler.unsubscribeFromZoomUpdate(this.zoomSubscription);
     }
+  }
+
+  /**
+   * Clear canvas context and cached property to ensure
+   * next time render is called recreates the mask
+   */
+  public forceUpdate() {
+    if (this.entity) {
+      this.ctx?.clearRect(
+        0,
+        0,
+        this.entity?.realSize.x,
+        this.entity?.realSize.x,
+      );
+
+      this.maskCtx?.clearRect(
+        0,
+        0,
+        this.entity?.realSize.x,
+        this.entity?.realSize.x,
+      );
+    }
+
+    this.cached = false;
   }
 
   private getCoreProps() {
@@ -74,16 +106,16 @@ export class Mask {
       );
     }
 
-    if (!this.canvas || !this.maskCanvas) {
+    if (!this.maskedElementsCanvas || !this.maskingCanvas) {
       throw new Error(
         "Render should not be called before initialization - Canvas in undefined",
       );
     }
 
     return {
-      canvas: this.canvas,
+      canvas: this.maskedElementsCanvas,
       ctx: this.ctx,
-      maskCanvas: this.maskCanvas,
+      maskCanvas: this.maskingCanvas,
       maskCtx: this.maskCtx,
       entity: this.entity,
     };
@@ -94,10 +126,32 @@ export class Mask {
 
     const zoom = WorldHandler.getZoom();
 
-    canvas.setAttribute("width", `${entity.realSize.x * zoom} `);
-    canvas.setAttribute("height", `${entity.realSize.y * zoom}`);
-    maskCanvas.setAttribute("width", `${entity.realSize.x * zoom}`);
-    maskCanvas.setAttribute("height", `${entity.realSize.y * zoom}`);
+    let width = entity.realSize.x * zoom;
+    let height = entity.realSize.y * zoom;
+
+    // If the mask width or height is less than one we need to make sure to set to 1, canvas size can not be less than 1
+    if (width <= 1 || height <= 1) {
+      width = 1;
+      height = 1;
+      // otherwise we need to check if the mask is larger than the main canvas, if it is we set the mask to the size of the main canvas,
+      // to preventing low performance due to rendering a large mask
+    } else {
+      const canvasWidth = SceneHandler.currentScene.canvas.width;
+      const canvasHeight = SceneHandler.currentScene.canvas.height;
+
+      if (width > canvasWidth) {
+        width = canvasWidth;
+      }
+
+      if (height > canvasHeight) {
+        height = canvasHeight;
+      }
+    }
+
+    canvas.setAttribute("width", `${width} `);
+    canvas.setAttribute("height", `${height}`);
+    maskCanvas.setAttribute("width", `${width}`);
+    maskCanvas.setAttribute("height", `${height}`);
 
     this.cached = false;
   }

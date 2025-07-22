@@ -41,6 +41,8 @@ export class RenderHandler {
 
     const sortedLayers = entities.sort((a, b) => a.layer - b.layer);
     this.addEntities(sortedLayers);
+
+    this.setCanvasSize();
   }
 
   private setIdentityMatrix() {
@@ -93,7 +95,6 @@ export class RenderHandler {
     this.ctx.save();
     // Set the canvas to the correct size
     window.addEventListener("resize", this.setCanvasSize.bind(this));
-    this.setCanvasSize();
 
     this.render.bind(this)();
   }

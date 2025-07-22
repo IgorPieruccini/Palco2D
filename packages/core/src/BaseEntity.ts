@@ -48,8 +48,11 @@ export class BaseEntity {
 
   public set position(position: Vec2) {
     this._position = position;
-
     this.updateTransform();
+
+    if (this.parent?.mask.useAsMask) {
+      this.parent.mask.forceUpdate();
+    }
   }
 
   /**
@@ -71,7 +74,9 @@ export class BaseEntity {
 
   public set size(size: Vec2) {
     this._size = size;
+    this.updateTransform();
 
+    // TODO: Might be a better way of doing this
     // When the size of entity changes and the entity is used as mask, set the mask cached to false to recalculate the mask
     // Many entities might start with the size equal to infinity, so we also check for it
     if (
@@ -82,7 +87,9 @@ export class BaseEntity {
       this.mask.updateCanvasSize();
     }
 
-    this.updateTransform();
+    if (this.parent?.mask.useAsMask) {
+      this.parent.mask.forceUpdate();
+    }
   }
 
   /**
@@ -127,6 +134,10 @@ export class BaseEntity {
     this._rotation = rotation;
 
     this.updateTransform();
+
+    if (this.parent?.mask.useAsMask) {
+      this.parent.mask.forceUpdate();
+    }
   }
 
   /**
@@ -260,7 +271,9 @@ export class BaseEntity {
     this.updateTransform();
     this.isUI = props.isUI || false;
     this.mask = new Mask(this);
-    this.useAsMask = props.useAsMask || false;
+    if (props.useAsMask) {
+      this.useAsMask = true;
+    }
   }
 
   public on(event: EventsType, callback: () => void) {
