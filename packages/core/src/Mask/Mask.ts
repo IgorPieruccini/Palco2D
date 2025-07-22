@@ -80,15 +80,15 @@ export class Mask {
       this.ctx?.clearRect(
         0,
         0,
-        this.entity?.realSize.x,
-        this.entity?.realSize.x,
+        this.maskedElementsCanvas?.width || 0,
+        this.maskedElementsCanvas?.height || 0,
       );
 
       this.maskCtx?.clearRect(
         0,
         0,
-        this.entity?.realSize.x,
-        this.entity?.realSize.x,
+        this.maskingCanvas?.width || 0,
+        this.maskingCanvas?.height || 0,
       );
     }
 

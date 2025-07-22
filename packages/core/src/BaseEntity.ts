@@ -76,14 +76,9 @@ export class BaseEntity {
     this._size = size;
     this.updateTransform();
 
-    // TODO: Might be a better way of doing this
-    // When the size of entity changes and the entity is used as mask, set the mask cached to false to recalculate the mask
-    // Many entities might start with the size equal to infinity, so we also check for it
-    if (
-      this._size.x !== Infinity &&
-      this.size.y !== Infinity &&
-      this.mask.useAsMask
-    ) {
+    // when initializing a entity the size might not be set as it needs to load from src, in this case
+    // we watch when the size is set, and then update the mask, only if the cache is false
+    if (this.mask.useAsMask && !this.mask.cached) {
       this.mask.updateCanvasSize();
     }
 
