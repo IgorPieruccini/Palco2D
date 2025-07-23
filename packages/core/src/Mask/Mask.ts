@@ -1,50 +1,62 @@
-import { Vec2 } from "../../types";
 import { BaseEntity } from "../BaseEntity";
 import { SceneHandler } from "../SceneHandler/SceneHandler";
 import { WorldHandler } from "../WorldHandler";
 
+/**
+ * Mask is responsible for masking children elements.
+ * it uses the parent element graphics to mask the children.
+ */
 export class Mask {
+  /**
+   * Indicates whether the mask is cached.
+   * if true the render will not recalculated but instead use the cached canvas. (the previous drawing)
+   */
   public cached: boolean = false;
+
+  /**
+   * Indicates whether the mask is used.
+   * if true the render logic will run to mask the children elements.
+   */
   public useAsMask: boolean = false;
 
   /**
-   * Canvas for rendering the elements that are masked
+   * Static canvas for rendering the elements that are masked
    */
   private maskedElementsCanvas: HTMLCanvasElement | null = null;
 
   /**
-   * Canvas for rendering the msk element
+   * Static canvas for rendering the msk element
    */
   private maskingCanvas: HTMLCanvasElement | null = null;
 
-  private ctx: CanvasRenderingContext2D | null = null;
-  private maskCtx: CanvasRenderingContext2D | null = null;
+  /**
+   * Context of the maskedElementsCanvas
+   */
+  private maskedElementsCtx: CanvasRenderingContext2D | null = null;
+
+  /**
+   * Context of the maskingCanvas
+   */
+  private maskingElementCtx: CanvasRenderingContext2D | null = null;
+
+  /**
+   * A reference to the element that is used as mask
+   */
   private entity: BaseEntity | null = null;
+
+  /**
+   * Subscription to the zoom update event, it's used to know when to invalidate the current cached
+   * so when zooming into a mask, the mask re-renders maintaining high quality image
+   */
   private zoomSubscription: string | null = null;
 
   constructor(entity: BaseEntity) {
     this.entity = entity;
   }
 
-  private createStaticCanvas() {
-    this.maskedElementsCanvas = document.createElement("canvas");
-    const ctx = this.maskedElementsCanvas.getContext("2d");
-
-    this.maskingCanvas = document.createElement("canvas");
-    const maskCtx = this.maskingCanvas.getContext("2d");
-
-    if (!ctx) {
-      throw new Error("Fail to create static canvas");
-    }
-
-    if (!maskCtx) {
-      throw new Error("Fail to create the mask canvas");
-    }
-
-    this.ctx = ctx;
-    this.maskCtx = maskCtx;
-  }
-
+  /**
+   * Set the entity to be used as mask
+   */
   public setAsMask() {
     this.createStaticCanvas();
     this.cached = false;
@@ -55,11 +67,15 @@ export class Mask {
     this.updateCanvasSize();
   }
 
+  /**
+   * Set the entity to NOT be a mask,
+   * resets all mask properties
+   */
   public disableMask() {
     this.maskedElementsCanvas = null;
-    this.ctx = null;
+    this.maskedElementsCtx = null;
     this.maskingCanvas = null;
-    this.maskCtx = null;
+    this.maskingElementCtx = null;
     this.cached = false;
     this.useAsMask = false;
 
@@ -74,14 +90,14 @@ export class Mask {
    */
   public forceUpdate() {
     if (this.entity) {
-      this.ctx?.clearRect(
+      this.maskedElementsCtx?.clearRect(
         0,
         0,
         this.maskedElementsCanvas?.width || 0,
         this.maskedElementsCanvas?.height || 0,
       );
 
-      this.maskCtx?.clearRect(
+      this.maskingElementCtx?.clearRect(
         0,
         0,
         this.maskingCanvas?.width || 0,
@@ -92,32 +108,10 @@ export class Mask {
     this.cached = false;
   }
 
-  private getCoreProps() {
-    if (!this.entity) {
-      throw new Error("Entity needs to be set before calling _setCanvasSize");
-    }
-
-    if (!this.ctx || !this.maskCtx) {
-      throw new Error(
-        "Render should not be called before initialization - ctx is undefined",
-      );
-    }
-
-    if (!this.maskedElementsCanvas || !this.maskingCanvas) {
-      throw new Error(
-        "Render should not be called before initialization - Canvas in undefined",
-      );
-    }
-
-    return {
-      canvas: this.maskedElementsCanvas,
-      ctx: this.ctx,
-      maskCanvas: this.maskingCanvas,
-      maskCtx: this.maskCtx,
-      entity: this.entity,
-    };
-  }
-
+  /**
+   * Updates the canvas size used to render the mask depending on the entity size to maintain the crispy high quality rendering
+   * to prevent low performance due to rendering a large mask, we limit the canvas size to the size of the screen
+   */
   public updateCanvasSize() {
     const { canvas, maskCanvas, entity } = this.getCoreProps();
 
@@ -155,6 +149,9 @@ export class Mask {
     this.cached = false;
   }
 
+  /*
+   * Render children elements inside the mask, the mask being the parent element graphics
+   */
   public render() {
     const { canvas, ctx, maskCanvas, maskCtx, entity } = this.getCoreProps();
 
@@ -184,6 +181,31 @@ export class Mask {
     return canvas;
   }
 
+  /**
+   * Creates the canvas and Canvas2DContext that will be use to render the mask
+   */
+  private createStaticCanvas() {
+    this.maskedElementsCanvas = document.createElement("canvas");
+    const ctx = this.maskedElementsCanvas.getContext("2d");
+
+    this.maskingCanvas = document.createElement("canvas");
+    const maskCtx = this.maskingCanvas.getContext("2d");
+
+    if (!ctx) {
+      throw new Error("Fail to create static canvas");
+    }
+
+    if (!maskCtx) {
+      throw new Error("Fail to create the mask canvas");
+    }
+
+    this.maskedElementsCtx = ctx;
+    this.maskingElementCtx = maskCtx;
+  }
+
+  /**
+   * Sets the transformation matrix for the given context
+   */
   private _setContextTransformation(
     ctx: CanvasRenderingContext2D,
     entity: BaseEntity,
@@ -200,5 +222,34 @@ export class Mask {
       entity.realSize.x / 2, // e
       entity.realSize.y / 2, // f
     );
+  }
+
+  /**
+   * A method to help checking if all required props for rendering the canvas is defined
+   */
+  private getCoreProps() {
+    if (!this.entity) {
+      throw new Error("Entity needs to be set before calling _setCanvasSize");
+    }
+
+    if (!this.maskedElementsCtx || !this.maskingElementCtx) {
+      throw new Error(
+        "Render should not be called before initialization - ctx is undefined",
+      );
+    }
+
+    if (!this.maskedElementsCanvas || !this.maskingCanvas) {
+      throw new Error(
+        "Render should not be called before initialization - Canvas in undefined",
+      );
+    }
+
+    return {
+      canvas: this.maskedElementsCanvas,
+      ctx: this.maskedElementsCtx,
+      maskCanvas: this.maskingCanvas,
+      maskCtx: this.maskingElementCtx,
+      entity: this.entity,
+    };
   }
 }
