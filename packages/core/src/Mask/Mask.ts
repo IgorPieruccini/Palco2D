@@ -133,6 +133,8 @@ export class Mask {
       // otherwise we need to check if the mask is larger than the main canvas, if it is we set the mask to the size of the main canvas,
       // to preventing low performance due to rendering a large mask
     } else {
+      // THIS IS CLIPPING THE MASK WRONGLY WHEN ZOOMED IN
+      // NEEDS TO BE FIXED
       const canvasWidth = SceneHandler.currentScene.canvas.width;
       const canvasHeight = SceneHandler.currentScene.canvas.height;
 
