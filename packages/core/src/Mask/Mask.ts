@@ -1,3 +1,4 @@
+import { Vec2 } from "../../types";
 import { BaseEntity } from "../BaseEntity";
 import { SceneHandler } from "../SceneHandler/SceneHandler";
 import { WorldHandler } from "../WorldHandler";
@@ -25,10 +26,6 @@ export class Mask {
     this.entity = entity;
   }
 
-  /**
-   * TODO: We should not create a static canvas for each object, but instead have one that fits all
-   * Create and assign a static canvas to be used to render the context and create the mask content
-   */
   private createStaticCanvas() {
     this.maskedElementsCanvas = document.createElement("canvas");
     const ctx = this.maskedElementsCanvas.getContext("2d");
