@@ -104,7 +104,6 @@ export class RenderHandler {
     this.render();
   }
 
-  // TODO: use binary search to find the correct position to insert the entity
   public addEntity(entity: BaseEntity) {
     let layer = this.entities.get(entity.layer);
     if (!layer) {
@@ -232,7 +231,7 @@ export class RenderHandler {
         for (let i = 0; i < MAX_CHILDREN_LAYERS; i++) {
           const layer = entity.children.get(i);
           if (layer) {
-            this.renderLayers(layer);
+            this.renderLayers(layer, currentCtx);
           }
         }
       });

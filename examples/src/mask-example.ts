@@ -106,7 +106,6 @@ export class MaskExample extends Scene {
 
     this.addEntity(svg);
     this.addEntity(frog);
-    // this.addEntity(sprite);
 
     this.render.startRender();
     this.startAllPlugins();
