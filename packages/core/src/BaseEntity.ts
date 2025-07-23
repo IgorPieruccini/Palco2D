@@ -169,12 +169,12 @@ export class BaseEntity {
   public onEntityEvent: EntityEvents = new Map();
 
   /**
-   * TODO: Add description
+   * Mask Handler to handle the masking of the entity.
    */
   public mask: Mask;
 
   /**
-   * When set to true all elements behind will be masked
+   * When set to true children elements will be masked
    * Note: When using and element as a mask globalCompositeOperation does not take effect
    */
   public get useAsMask() {
