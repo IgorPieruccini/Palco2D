@@ -2,6 +2,8 @@
 
 Canvas2D framework to simplify manipulating 2D graphics in a comprehensive way, making development easier and more efficient, ideal for create tools with Canvas2D.
 
+# [Documentation](https://igorpieruccini.github.io/Palco2D/docs/API%20Reference/core/globals)
+
 ## Scripts
 
 ### Development Environment

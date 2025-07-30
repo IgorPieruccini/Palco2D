@@ -11,7 +11,6 @@ export { ScenePlugin } from "./src/ScenePlugin";
 export { EntityPlugin } from "./src/EntityPlugin";
 export { Sprite } from "./src/Sprite";
 export { SVGImageEntity } from "./src/SVGImageEntity/SVGImageEntity";
-export { Path2DEntity } from "./src/SVGImageEntity/Path2DEntity";
 export { Text } from "./src/Text";
 export { WorldHandler } from "./src/WorldHandler";
 export { FPSHandler } from "./src/FPSHandler";
