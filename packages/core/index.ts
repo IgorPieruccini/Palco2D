@@ -15,3 +15,4 @@ export { Path2DEntity } from "./src/SVGImageEntity/Path2DEntity";
 export { Text } from "./src/Text";
 export { WorldHandler } from "./src/WorldHandler";
 export { FPSHandler } from "./src/FPSHandler";
+export { GroupEntity } from "./src/GroupEntity";
