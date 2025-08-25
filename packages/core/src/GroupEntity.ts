@@ -1,4 +1,4 @@
-import { BaseEntityProps, Vec2 } from "../types";
+import { BaseEntityProps, BoundingBox, Coords, Vec2 } from "../types";
 import { BaseEntity } from "./BaseEntity";
 import { Mask } from "./Mask/Mask";
 
@@ -39,5 +39,67 @@ export class GroupEntity extends BaseEntity {
     }
 
     return false;
+  }
+
+  /**
+   * @override
+   */
+  public getCoords(): Coords {
+    const childrenCoords: Coords[] = [];
+
+    // Flatten the coords
+    for (const [, layer] of this.children) {
+      for (const [, child] of layer) {
+        childrenCoords.push(child.getCoords());
+      }
+    }
+
+    const allCorners = childrenCoords.flatMap((childrenCoords) => [
+      ...childrenCoords.corners,
+    ]);
+
+    const xValues = allCorners.map((corner) => corner.x);
+    const yValues = allCorners.map((corner) => corner.y);
+
+    const minX = Math.min(...xValues);
+    const maxX = Math.max(...xValues);
+    const minY = Math.min(...yValues);
+    const maxY = Math.max(...yValues);
+
+    const sizeX = maxX - minX;
+    const sizeY = maxY - minY;
+    const positionX = minX + sizeX / 2;
+    const positionY = minY + sizeY / 2;
+
+    const boundingBox: BoundingBox = {
+      x: positionX,
+      y: positionY,
+      width: sizeX,
+      height: sizeY,
+    };
+
+    const corners: Vec2[] = [
+      {
+        x: positionX,
+        y: positionY,
+      },
+      {
+        x: positionX + sizeX,
+        y: positionY,
+      },
+      {
+        x: positionX + sizeX,
+        y: positionY + sizeY,
+      },
+      {
+        x: positionX,
+        y: positionY + sizeY,
+      },
+    ];
+
+    return {
+      boundingBox,
+      corners,
+    };
   }
 }

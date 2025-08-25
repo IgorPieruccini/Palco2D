@@ -351,7 +351,7 @@ export class BaseEntity {
    * the coords are the corners of the entity in the canvas.
    * eg: top-left, top-right, bottom-right, bottom-left
    */
-  protected getCoords(): Coords {
+  public getCoords(): Coords {
     const parentMatrix = this.getWorldMatrix();
     const parentRotation = getRadFromMatrix(parentMatrix);
     const matrix = this.getMatrix();

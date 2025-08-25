@@ -23,12 +23,14 @@ export class GroupExample extends Scene {
     });
 
     const redSquare = new SquareEntity({
+      id: "redSquare",
       color: "#FF0000",
       position: { x: 0, y: 0 },
       size: { x: 50, y: 50 },
     });
 
     const blueSquare = new SquareEntity({
+      id: "blueSquare",
       color: "#0000FF",
       position: { x: 50, y: 50 },
       size: { x: 50, y: 50 },

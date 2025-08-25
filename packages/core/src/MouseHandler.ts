@@ -3,6 +3,7 @@ import { WorldHandler } from "./WorldHandler";
 import { Vec2 } from "../types";
 import { inverseTransform } from "./utils";
 import { QuadrantsHandler } from "./QuadrantsHandler/QuadrantsHandler";
+import { GroupEntity } from "./GroupEntity";
 
 export class MouseHandler {
   public position: Vec2;
@@ -194,7 +195,13 @@ export class MouseHandler {
     let iteratorResult = iterator.next();
 
     while (!iteratorResult.done) {
-      const [_, entity] = iteratorResult.value;
+      const [, entity] = iteratorResult.value;
+
+      // if parent is group and is folded, not need to further check
+      if (entity.parent instanceof GroupEntity && !entity.parent.unfolded) {
+        iteratorResult = iterator.next();
+        return;
+      }
 
       const viewportPosition = {
         x: -offset.x / zoom,
