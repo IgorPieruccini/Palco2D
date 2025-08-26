@@ -238,7 +238,7 @@ export class BaseEntity {
    */
   protected initialSize: Vec2;
 
-  private updateTransform() {
+  protected updateTransform() {
     this.coords = this.getCoords();
     this.matrix = this.getMatrix();
 

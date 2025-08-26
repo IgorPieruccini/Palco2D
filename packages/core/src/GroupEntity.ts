@@ -102,4 +102,14 @@ export class GroupEntity extends BaseEntity {
       corners,
     };
   }
+
+  /**
+   * Add child to the group entity
+   * @override BaseEntity
+   * @param child
+   */
+  addChild(child: BaseEntity): void {
+    super.addChild(child);
+    this.updateTransform();
+  }
 }

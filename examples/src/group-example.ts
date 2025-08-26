@@ -15,6 +15,7 @@ export class GroupExample extends Scene {
     // this.addPlugin(RotateEntityPlugin, "RotateEntityPlugin");
 
     const group = new GroupEntity({
+      id: "group",
       position: { x: 200, y: 200 },
     });
 
